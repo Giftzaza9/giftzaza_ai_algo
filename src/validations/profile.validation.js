@@ -2,13 +2,18 @@ const Joi = require('joi');
 
 const getProfile = {
   params: Joi.object().keys({
-    bubble_id: Joi.string(),
+    profileId: Joi.string(),
+  }),
+};
+
+const deleteProfile = {
+  params: Joi.object().keys({
+    profileId: Joi.string(),
   }),
 };
 
 const createProfile = {
   body: Joi.object().keys({
-    bubble_id: Joi.string(),
     preferences: Joi.string(),
     min_price: Joi.number(),
     max_price: Joi.number(),
@@ -17,5 +22,6 @@ const createProfile = {
 
 module.exports = {
   getProfile,
-  createProfile
+  createProfile,
+  deleteProfile
 };

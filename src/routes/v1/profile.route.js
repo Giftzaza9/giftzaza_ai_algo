@@ -6,11 +6,10 @@ const profileController = require('../../controllers/profile.controller');
 const router = express.Router();
 
 router
-router
-  .route('/:bubble_id')
+  .route('/:profileId')
   .get(validate(profileValidation.getProfile), profileController.getProfile)
+  .delete(validate(profileValidation.deleteProfile), profileController.deleteProfile)
 
-router
 router
   .route('/')
   .post(validate(profileValidation.createProfile), profileController.createProfile)

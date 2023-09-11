@@ -24,7 +24,7 @@ async function main() {
 
     // Recorrer el array de objetos
     for (const product of products) {
-        const dbProduct = await new Product({ title: product.title, description: product.description, link: product.link, image: product.image, rating: product.review_score, price: product.price, categories: product.categories })
+        const dbProduct = await new Product({ title: product.title, description: product.description, link: product.link, image: product.image, rating: product.review_score, price: product.price, tags: product.categories })
         await dbProduct.save()
     }
 }

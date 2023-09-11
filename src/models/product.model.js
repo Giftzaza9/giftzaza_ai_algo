@@ -27,7 +27,11 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  categories: [String],
+  views: {
+    type: Number,
+    default: 0,
+  },
+  tags: [String],
 });
 
 productSchema.plugin(toJSON);

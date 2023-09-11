@@ -1,15 +1,15 @@
 const httpStatus = require('http-status');
 const { Profile, Product } = require('../models');
 const ApiError = require('../utils/ApiError');
-const jaccardSimilarity = require('../lib/jaccardSimilarity')
+const calculateSimilarity = require('../lib/calculateSimilarity')
 
 /**
  * Get profile by id
- * @param {String} bubble_id
+ * @param {ObjectId} profileId
  * @returns {Promise<Profile>}
  */
-const getProfileByBubbleId = async (id) => {
-  return Profile.find({ bubble_id: id }).populate("recommended_products").exec();
+const getProfileById = async (profileId) => {
+  return Profile.findById(profileId).populate("recommended_products").exec();
 };
 
 /**
@@ -18,18 +18,13 @@ const getProfileByBubbleId = async (id) => {
  * @returns {Promise<Profile>}
  */
 const createProfile = async (profileBody) => {
-  profileBody.preferences = JSON.parse(profileBody.preferences)
-  if (await Profile.isRegistered(profileBody.bubble_id)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Profile already exists');
-  }
-  const profile = await Profile.create(profileBody);
+  const profile = await Profile.create({});
   const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } })
 
   for (const product of products) {
-    product.similarity = jaccardSimilarity(product.categories, profile.preferences);
+    product.similarity = calculateSimilarity(profileBody.preferences, product.tags);
   }
 
-  // Ordena el array en función del valor de la propiedad 'numero' de forma descendente.
   products.sort((a, b) => b.similarity - a.similarity);
 
   if (products.length > 30) {
@@ -38,10 +33,26 @@ const createProfile = async (profileBody) => {
     profile.recommended_products = products
   }
 
-  return profile.save()
+  await profile.save()
+  return profile
+};
+
+/**
+ * Delete profile by id
+ * @param {ObjectId} profileId
+ * @returns {Promise<Profile>}
+ */
+const deleteProfileById = async (profileId) => {
+  const profile = await Profile.findById(profileId);
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
+  }
+  await profile.remove();
+  return profile;
 };
 
 module.exports = {
-  getProfileByBubbleId,
-  createProfile
+  getProfileById,
+  createProfile,
+  deleteProfileById
 };
