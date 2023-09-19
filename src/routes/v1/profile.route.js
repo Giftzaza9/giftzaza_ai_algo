@@ -8,6 +8,7 @@ const router = express.Router();
 router
   .route('/:profileId')
   .get(validate(profileValidation.getProfile), profileController.getProfile)
+  .patch(validate(profileValidation.updateProfile), profileController.updateProfile)
   .delete(validate(profileValidation.deleteProfile), profileController.deleteProfile)
 
 router

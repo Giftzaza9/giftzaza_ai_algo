@@ -22,8 +22,20 @@ const deleteProfile = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const updateProfile =  catchAsync(async (req, res) => {
+  const profile = await profileService.getProfileById(req.params.profileId);
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
+  }
+  req.body.preferences = JSON.parse(req.body.preferences)
+  profile = await profileService.updateProfile(req.body, profile);
+  res.status(httpStatus.CREATED).send(profile);
+});
+
+
 module.exports = {
   getProfile,
   createProfile,
-  deleteProfile
+  deleteProfile,
+  updateProfile
 };

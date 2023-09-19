@@ -1,20 +1,10 @@
 const { Product } = require('../src/models');
 const fs = require("fs");
-const mongoose = require('mongoose');
+const {connectDB, disconnectDB} = require('./settings');
 
-const mongoURI = 'mongodb://localhost/giftzaza';
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+connectDB();
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'Error de conexión a MongoDB:'));
-db.once('open', () => {
-  console.log('Conexión exitosa a MongoDB.');
-});
-
-const filePath = '/Users/nachopiris/Developer/giftzaza/giftzaza-api/products.json';
+const filePath = './products.json';
 
 async function main() {
     const jsonData = fs.readFileSync(filePath, 'utf8');
@@ -24,9 +14,12 @@ async function main() {
 
     // Recorrer el array de objetos
     for (const product of products) {
+        console.log(product.title)
         const dbProduct = await new Product({ title: product.title, description: product.description, link: product.link, image: product.image, rating: product.review_score, price: product.price, tags: product.categories })
         await dbProduct.save()
     }
+    console.log('Products saved on MongoDB.')
+    disconnectDB();
 }
 
 main()

@@ -69,7 +69,7 @@ cp .env.example .env
 - **NoSQL database**: [MongoDB](https://www.mongodb.com) object data modeling using [Mongoose](https://mongoosejs.com)
 - **Authentication and authorization**: using [passport](http://www.passportjs.org)
 - **Validation**: request data validation using [Joi](https://github.com/hapijs/joi)
-- **Logging**: using [winston](https://github.com/winstonjs/winston) and [morgan](https://github.com/expressjs/morgan)
+- **Logging**: using [winston](https://github.com/winstonjs/winston)
 - **Testing**: unit and integration tests using [Jest](https://jestjs.io)
 - **Error handling**: centralized error handling mechanism
 - **API documentation**: with [swagger-jsdoc](https://github.com/Surnet/swagger-jsdoc) and [swagger-ui-express](https://github.com/scottie1984/swagger-ui-express)
@@ -344,7 +344,7 @@ In production mode, only `info`, `warn`, and `error` logs will be printed to the
 It is up to the server (or process manager) to actually read them from the console and store them in log files.\
 This app uses pm2 in production mode, which is already configured to store the logs in log files.
 
-Note: API request information (request url, response code, timestamp, etc.) are also automatically logged (using [morgan](https://github.com/expressjs/morgan)).
+
 
 ## Custom Mongoose Plugins
 

@@ -20,8 +20,19 @@ const createProfile = {
   }),
 };
 
+const updateProfile = {
+  body: Joi.object().keys({
+    profileId: Joi.string(),
+    preferences: Joi.string(),
+    min_price: Joi.number(),
+    max_price: Joi.number(),
+  }),
+};
+
+
 module.exports = {
   getProfile,
   createProfile,
-  deleteProfile
+  deleteProfile,
+  updateProfile
 };

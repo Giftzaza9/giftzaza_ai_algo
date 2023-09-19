@@ -7,6 +7,7 @@ const getProducts = catchAsync(async (req, res) => {
   const filter = { title: new RegExp(req.query.title, 'i') }
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await productService.queryProducts(filter, options);
+  console.log(result)
   res.send(result);
 });
 

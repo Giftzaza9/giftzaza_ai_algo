@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 async function scrapeProduct(product_link) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: "new" });
     try {
         const page = await browser.newPage();
 
@@ -25,7 +25,7 @@ async function scrapeProduct(product_link) {
 
         const product_price = await page.evaluate(() => {
             let spanElement = document.querySelector("span.a-offscreen")
-
+            console.log(spanElement)
             if (spanElement === null) {
                 spanElement = document.querySelector('span.a-price')
                 const spanPriceElement = spanElement.querySelector('span')
@@ -61,13 +61,13 @@ async function scrapeProduct(product_link) {
         })
 
         await browser.close();
-
+        
         return {
             title: product_title,
             image: product_image,
             link: product_link,
             rating: Number(product_rating.split(" ")[0].trim()),
-            price: Number(product_price.replace("$", "").trim()),
+            price: Number(product_price.replace("$", "").trim()) || Number(product_price.replace("US$", "").trim()),
             description: (product_title + " " + product_description).replace(/\s+/g, ' ').replace(/[^\w\s]/g, '').replace(/\n/g, '').toLowerCase().trim()
         }
     } catch (error) {

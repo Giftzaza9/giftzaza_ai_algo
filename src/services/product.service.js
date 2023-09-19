@@ -23,12 +23,20 @@ const queryProducts = async (filter, options) => {
  * @returns {Promise<Product>}
  */
 const createProduct = async (productBody) => {
+  const productDB = Product.findOne({link: productBody});
+  if(productDB){
+    return productDB;
+  }
+
   const product_data = await scrapeProduct(productBody.product_link)
+ 
   if (!product_data || !product_data.description) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
   product_data.tags = await classificateProduct(product_data.description)
-  return Product.create(product_data);
+  const product = await Product.create(product_data);
+  await product.save();
+  return product;
 };
 
 /**
@@ -39,10 +47,16 @@ const createProduct = async (productBody) => {
  */
 const updateProductById = async (productId, updateBody) => {
   const product = await Product.findById(productId);
+  const product_data = await scrapeProduct(product.link)
   if (!product) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   }
-  product.tags = updateBody.tags
+  product.tags = updateBody.tags;
+  product.title = product_data.title;
+  product.price = product_data.price;
+  product.image = product_data.image;
+  product.description = product_data.description;
+  product.rating = product_data.rating;
   await product.save();
   return product
 };
