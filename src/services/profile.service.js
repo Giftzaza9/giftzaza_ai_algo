@@ -9,7 +9,7 @@ const calculateSimilarity = require('../lib/calculateSimilarity')
  * @returns {Promise<Profile>}
  */
 const getProfileById = async (profileId) => {
-    const profile = Profile.findById(profileId);
+    const profile = await Profile.findById(profileId);
     if(!profile){
       throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
     }

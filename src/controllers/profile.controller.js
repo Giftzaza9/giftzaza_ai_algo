@@ -23,12 +23,12 @@ const deleteProfile = catchAsync(async (req, res) => {
 });
 
 const updateProfile =  catchAsync(async (req, res) => {
-  const profile = await profileService.getProfileById(req.params.profileId);
+  let profile = await profileService.getProfileById(req.params.profileId);
   if (!profile) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
   }
   req.body.preferences = JSON.parse(req.body.preferences)
-  profile = await profileService.updateProfile(req.body, profile);
+  profile = await profileService.updateProfile(profile, req.body,);
   res.status(httpStatus.CREATED).send(profile);
 });
 
