@@ -27,7 +27,8 @@
     "docker:test": "docker-compose -f docker-compose.yml -f docker-compose.test.yml up",
     "prepare": "npx husky install",
     "migrateProduct": "node ./scripts/migrate_products",
-    "updateProducts": "node ./scripts/update-products"
+    "updateProducts": "node ./scripts/update-products",
+    "createAdmin" : "node ./scripts/create-admin"
   },
   "keywords": [
     "node",

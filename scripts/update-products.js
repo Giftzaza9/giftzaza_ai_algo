@@ -2,9 +2,8 @@ const { Product } = require('../src/models');
 const {connectDB, disconnectDB} = require('./settings');
 const scrapeProduct = require('../src/lib/scrapeProduct');
 
-connectDB();
-
 async function main() {
+    await connectDB();
     const products = await Product.find();
     products.forEach(async (product) =>{
         console.log(product.title)

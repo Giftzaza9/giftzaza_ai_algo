@@ -2,11 +2,11 @@ const { Product } = require('../src/models');
 const fs = require("fs");
 const {connectDB, disconnectDB} = require('./settings');
 
-connectDB();
 
 const filePath = './products.json';
 
 async function main() {
+    await connectDB();
     const jsonData = fs.readFileSync(filePath, 'utf8');
 
     // Analiza el contenido JSON en un objeto

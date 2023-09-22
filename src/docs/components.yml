@@ -19,6 +19,38 @@ components:
         name: fake name
         role: user
 
+    Profile:
+      type: object
+      properties:
+        recommended_products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        link:
+          type: string
+        price:
+          type: number
+        image:
+          type: string
+        rating:
+          type: number
+        views:
+          type: number
+        tags:
+          type: array
+          items: 
+            type: string
+
     Token:
       type: object
       properties:
