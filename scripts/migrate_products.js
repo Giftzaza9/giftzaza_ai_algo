@@ -3,7 +3,7 @@ const fs = require("fs");
 const {connectDB, disconnectDB} = require('./settings');
 
 
-const filePath = './products.json';
+const filePath = '/home/ubuntu/giftzaza_ai_algo/scripts/products.json';
 
 async function main() {
     await connectDB();
