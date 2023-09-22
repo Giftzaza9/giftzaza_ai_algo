@@ -4,7 +4,7 @@ const {connectDB, disconnectDB} = require('./settings');
 
 connectDB();
 
-const filePath = './products.json';
+const filePath = '/home/ubuntu/giftzaza_ai_algo/scripts/products.json';
 
 async function main() {
     const jsonData = fs.readFileSync(filePath, 'utf8');
