@@ -32,6 +32,10 @@ const productSchema = new mongoose.Schema({
     default: 0,
   },
   tags: [String],
+  similarity: {
+    type: Number,
+    default: 0,
+  }
 });
 
 productSchema.plugin(toJSON);

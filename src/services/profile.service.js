@@ -31,6 +31,7 @@ const createProfile = async (profileBody) => {
 
   for (const product of products) {
     product.similarity = calculateSimilarity(profileBody.preferences, product.tags);
+    await product.save()
   }
 
   products.sort((a, b) => b.similarity - a.similarity);
