@@ -1,5 +1,6 @@
 const fuzz = require("fuzzball")
-const category_jsonData = require("./category.json")
+const category_data = require("./category.json")
+const { gpt_assistance, ...category_jsonData } = category_data
 
 function rulebasedTagging(product_description) {
     options = { scorer: fuzz.token_set_ratio, full_process: true, force_ascii: true, cutoff: 80 };
