@@ -2,7 +2,7 @@ const OpenAI = require("openai");
 const category_jsonData = require("./category.json")
 
 const openai = new OpenAI({
-    apiKey: "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",
+    apiKey: "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",
 });
 
 String.prototype.interpolate = function (params) {
