@@ -1,79 +1,199 @@
 const puppeteer = require('puppeteer');
 
-async function scrapeProduct(product_link) {
-    const browser = await puppeteer.launch({ headless: "new" });
-    try {
-        const page = await browser.newPage();
+const scrapeProduct = async (productlink) => {
+  if (productlink.includes('nordstrom')) {
+    const res = await NodestormScraper(productlink);
+    return res;
+  } else if (productlink.includes('bloomingdales')) {
+    const res = await bloomingdalescrapeProduct(productlink);
+    return res;
+  } else if (productlink.includes('amazon')) {
+    const res = await AmazonScraper(productlink);
+    return res;
+  } else return 'unknown source';
+};
 
-        await page.goto(product_link);
-        await new Promise(r => setTimeout(r, 2000));
+async function AmazonScraper(product_link) {
+  const browser = await puppeteer.launch({ headless: 'new' });
+  try {
+    const page = await browser.newPage();
 
-        const product_title = await page.evaluate(() => {
-            const spanElement = document.querySelector('span#productTitle')
-            return spanElement.innerText
-        })
+    await page.goto(product_link);
+    await new Promise((r) => setTimeout(r, 2000));
 
-        const product_image = await page.evaluate(() => {
-            const imgElement = document.querySelector('img#landingImage')
-            return imgElement.getAttribute("src")
-        })
+    const product_title = await page.evaluate(() => {
+      const spanElement = document.querySelector('span#productTitle');
+      return spanElement.innerText;
+    });
 
-        const product_rating = await page.evaluate(() => {
-            const spanElement = document.querySelector('span.reviewCountTextLinkedHistogram')
-            return spanElement.getAttribute("title")
-        })
+    const product_image = await page.evaluate(() => {
+      const imgElement = document.querySelector('img#landingImage');
+      return imgElement.getAttribute('src');
+    });
 
-        const product_price = await page.evaluate(() => {
-            let spanElement = document.querySelector("span.a-offscreen")
-            console.log(spanElement)
-            if (spanElement === null) {
-                spanElement = document.querySelector('span.a-price')
-                const spanPriceElement = spanElement.querySelector('span')
-                return spanPriceElement.innerText
-            }
+    const product_rating = await page.evaluate(() => {
+      const spanElement = document.querySelector('span.reviewCountTextLinkedHistogram');
+      return spanElement.getAttribute('title');
+    });
 
-            return spanElement.innerText
-        })
+    const product_price = await page.evaluate(() => {
+      let spanElement = document.querySelector('span.a-offscreen');
+      console.log(spanElement);
+      if (spanElement === null) {
+        spanElement = document.querySelector('span.a-price');
+        const spanPriceElement = spanElement.querySelector('span');
+        return spanPriceElement.innerText;
+      }
 
-        const product_description = await page.evaluate(() => {
-            const descripitonDivElement = document.querySelector('div#productDescription')
-            let featuresDivElement = document.querySelector("div#feature-bullets")
+      return spanElement.innerText;
+    });
 
-            if (featuresDivElement === null) {
-                featuresDivElement = document.querySelector("div.a-expander-content")
-            }
+    const product_description = await page.evaluate(() => {
+      const descripitonDivElement = document.querySelector('div#productDescription');
+      let featuresDivElement = document.querySelector('div#feature-bullets');
 
-            if (descripitonDivElement !== null && featuresDivElement !== null) {
-                return descripitonDivElement.innerText + " " + featuresDivElement.innerText
-            }
+      if (featuresDivElement === null) {
+        featuresDivElement = document.querySelector('div.a-expander-content');
+      }
 
-            if (featuresDivElement !== null && descripitonDivElement === null) {
-                return featuresDivElement.innerText
-            }
+      if (descripitonDivElement !== null && featuresDivElement !== null) {
+        return descripitonDivElement.innerText + ' ' + featuresDivElement.innerText;
+      }
 
-            if (featuresDivElement === null && descripitonDivElement !== null) {
-                return descripitonDivElement.innerText
-            }
+      if (featuresDivElement !== null && descripitonDivElement === null) {
+        return featuresDivElement.innerText;
+      }
 
-            if (featuresDivElement === null && descripitonDivElement === null) {
-                return null
-            }
-        })
+      if (featuresDivElement === null && descripitonDivElement !== null) {
+        return descripitonDivElement.innerText;
+      }
 
-        await browser.close();
-        
-        return {
-            title: product_title,
-            image: product_image,
-            link: product_link,
-            rating: Number(product_rating.split(" ")[0].trim()),
-            price: Number(product_price.replace("$", "").trim()) || Number(product_price.replace("US$", "").trim()),
-            description: (product_title + " " + product_description).replace(/\s+/g, ' ').replace(/[^\w\s]/g, '').replace(/\n/g, '').toLowerCase().trim()
-        }
-    } catch (error) {
-        await browser.close();
-        return null
-    }
+      if (featuresDivElement === null && descripitonDivElement === null) {
+        return null;
+      }
+    });
+
+    await browser.close();
+
+    return {
+      title: product_title,
+      image: product_image,
+      link: product_link,
+      rating: Number(product_rating.split(' ')[0].trim()),
+      price: Number(product_price.replace('$', '').trim()) || Number(product_price.replace('US$', '').trim()),
+      description: (product_title + ' ' + product_description)
+        .replace(/\s+/g, ' ')
+        .replace(/[^\w\s]/g, '')
+        .replace(/\n/g, '')
+        .toLowerCase()
+        .trim(),
+    };
+  } catch (error) {
+    await browser.close();
+    return null;
+  }
 }
 
-module.exports = scrapeProduct
+const bloomingdalescrapeProduct = async (product_link) => {
+  const browser = await puppeteer.launch({ headless: 'new' });
+  try {
+    const page = await browser.newPage();
+    await page.goto(product_link, { waitUntil: 'load', timeout: 0 });
+    const textgetter = async (tagname) => {
+      const element = await page.$(tagname);
+      return (await element?.evaluate((el) => el.textContent.trim())) ?? null;
+    };
+
+    const sourcegetter = async (tagname) => {
+      const element = await page.$(tagname);
+      return (await element?.evaluate((el) => el.src)) ?? null;
+    };
+
+    const product_title = await textgetter('.brand-name-container');
+    const product_details = await textgetter('.details-content');
+    let product_price = await textgetter('.price-lg');
+    if (!product_price) {
+      product_price = await textgetter('.final-price');
+    }
+    const product_image = await sourcegetter('picture[class="main-picture"] > img[src]');
+
+    const product_rating = await textgetter('.product-header-reviews-count');
+    await browser.close();
+    return {
+      title: product_title
+        ?.replace(/\s+/g, ' ')
+        ?.replace(/[^\w\s]/g, '')
+        ?.replace(/\n/g, '')
+        ?.trim(),
+      price: product_price,
+      image: product_image,
+      link: product_link,
+      rating: Number(product_rating.split(' ')[0].trim()),
+      description: (product_title + ' ' + product_details)
+        .replace(/\s+/g, ' ')
+        .replace(/[^\w\s]/g, '')
+        .replace(/\n/g, '')
+        .toLowerCase()
+        .trim(),
+    };
+  } catch (error) {
+    await browser.close();
+    console.log(error);
+    return null;
+  }
+};
+
+const NodestormScraper = async (product_link) => {
+  const browser = await puppeteer.launch({ headless: 'new' });
+  try {
+    console.log(product_link);
+    const page = await browser.newPage();
+
+    await page.goto(product_link, { waitUntil: 'networkidle0', timeout: 0 });
+    const textgetter = async (tagname) => {
+      const element = await page.$(tagname);
+      return (await element?.evaluate((el) => el)) ?? null;
+    };
+
+    const sourcegetter = async (tagname) => {
+      const element = await page.$(tagname);
+      return (await element?.evaluate((el) => el.src)) ?? null;
+    };
+
+    const product_title = await textgetter('.dls-t8nrr7');
+
+    const product_details = await textgetter('.dls-1n7v84y');
+    const product_care = await textgetter('.d13vj');
+    let product_price = await textgetter('.qHz0a');
+    if (!product_price) {
+      product_price = await textgetter('.final-price');
+    }
+    const product_image = await sourcegetter('img[class="LUNts qlmAV"] > img[src]');
+
+    const product_rating = await textgetter('.dls-1n7v84y');
+    await browser.close();
+    return {
+      title: product_title
+        ?.replace(/\s+/g, ' ')
+        ?.replace(/[^\w\s]/g, '')
+        ?.replace(/\n/g, '')
+        ?.trim(),
+      price: product_price,
+      image: product_image,
+      link: product_link,
+      rating: product_rating,
+      description: (product_title + ' ' + product_details)
+        ?.replace(/\s+/g, ' ')
+        ?.replace(/[^\w\s]/g, '')
+        ?.replace(/\n/g, '')
+        ?.toLowerCase()
+        ?.trim(),
+    };
+  } catch (error) {
+    await browser.close();
+    console.log(error);
+    return null;
+  }
+};
+
+module.exports = { AmazonScraper, bloomingdalescrapeProduct, NodestormScraper, scrapeProduct };

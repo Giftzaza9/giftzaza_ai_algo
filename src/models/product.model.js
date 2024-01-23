@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const { toJSON } = require('./plugins');
 const paginate = require('mongoose-paginate-v2');
+const { toJSON } = require('./plugins');
 
 const productSchema = new mongoose.Schema({
   title: {
@@ -27,6 +27,18 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  source: {
+    type: String,
+    default: null,
+  },
+  created_at: {
+    type: Date,
+    default: null,
+  },
+  updated_at: {
+    type: Date,
+    default: null,
+  },
   views: {
     type: Number,
     default: 0,
@@ -35,7 +47,7 @@ const productSchema = new mongoose.Schema({
   similarity: {
     type: Number,
     default: 0,
-  }
+  },
 });
 
 productSchema.plugin(toJSON);
