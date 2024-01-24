@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { Product } = require('../models');
 const ApiError = require('../utils/ApiError');
-const scrapeProduct = require('../lib/scrapeProduct');
+const {scrapeProduct} = require('../lib/scrapeProduct');
 const classificateProduct = require('../lib/classificateProduct');
 
 /**
@@ -25,12 +25,13 @@ const queryProducts = async (filter, options) => {
 const createProduct = async (productBody) => {
   console.log(productBody)
   const productDB = await Product.findOne({link: productBody.product_link});
-  if(productDB){
+	console.log("product_link", productBody.product_link)  
+if(productDB){
     return productDB;
   }
 
   const product_data = await scrapeProduct(productBody.product_link)
- 
+ console.log("product_data",product_data)
   if (!product_data || !product_data.description) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
