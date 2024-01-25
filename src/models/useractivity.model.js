@@ -9,7 +9,6 @@ const userActivityschema = new mongoose.Schema({
   },
   userId: {
     type: String,
-    ref: 'User',
   },
 });
 
