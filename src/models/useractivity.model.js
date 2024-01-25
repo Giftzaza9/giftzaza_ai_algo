@@ -8,7 +8,7 @@ const userActivityschema = new mongoose.Schema({
     ref: 'Product',
   },
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
   },
 });

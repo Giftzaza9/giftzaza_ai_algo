@@ -48,6 +48,8 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  rulebased_tags: [],
+  gptTagging: [],
 });
 
 productSchema.plugin(toJSON);
