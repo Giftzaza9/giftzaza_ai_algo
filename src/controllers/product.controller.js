@@ -4,10 +4,9 @@ const catchAsync = require('../utils/catchAsync');
 const { productService } = require('../services');
 
 const getProducts = catchAsync(async (req, res) => {
-  const filter = { title: new RegExp(req.query.title, 'i') }
+  const filter = { title: new RegExp(req.query.title, 'i') };
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await productService.queryProducts(filter, options);
-  console.log(result)
   res.send(result);
 });
 
@@ -22,7 +21,7 @@ const deleteProduct = catchAsync(async (req, res) => {
 });
 
 const updateProduct = catchAsync(async (req, res) => {
-  req.body.tags = JSON.parse(req.body.tags)
+  req.body.tags = JSON.parse(req.body.tags);
   const product = await productService.updateProductById(req.params.productId, req.body);
   res.send(product);
 });
@@ -31,5 +30,5 @@ module.exports = {
   getProducts,
   createProduct,
   deleteProduct,
-  updateProduct
+  updateProduct,
 };

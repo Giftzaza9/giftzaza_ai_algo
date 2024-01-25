@@ -3,7 +3,8 @@ const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
 const profileRoute = require('./profile.route');
 const productRoute = require('./product.route');
-const apiRoute = require ('./api.route')
+const apiRoute = require('./api.route');
+const userActivityRoute = require('./userActivity.route');
 const docsRoute = require('./docs.route');
 
 const router = express.Router();
@@ -32,13 +33,15 @@ const defaultRoutes = [
   {
     path: '/docs',
     route: docsRoute,
-  }
+  },
+  {
+    path: '/userActivity',
+    route: userActivityRoute,
+  },
 ];
-
 
 defaultRoutes.forEach((route) => {
   router.use(route.path, route.route);
 });
-
 
 module.exports = router;

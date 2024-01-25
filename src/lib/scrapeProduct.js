@@ -1,12 +1,12 @@
-const puppeteer = require('puppeteer-extra')
+const puppeteer = require('puppeteer-extra');
 
 // Add stealth plugin and use defaults (all tricks to hide puppeteer usage)
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
-puppeteer.use(StealthPlugin())
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
 
 // Add adblocker plugin to block all ads and trackers (saves bandwidth)
-const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker')
-puppeteer.use(AdblockerPlugin({ blockTrackers: true }))
+const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
+puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 
 const scrapeProduct = async (productlink) => {
   if (productlink.includes('nordstrom')) {
@@ -22,7 +22,7 @@ const scrapeProduct = async (productlink) => {
 };
 
 async function AmazonScraper(product_link) {
-  const browser = await puppeteer.launch({ headless: 'new',args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
 
@@ -84,7 +84,7 @@ async function AmazonScraper(product_link) {
     await browser.close();
 
     return {
-      source:"amazon" ,
+      source: 'amazon',
       title: product_title,
       image: product_image,
       link: product_link,
@@ -104,13 +104,12 @@ async function AmazonScraper(product_link) {
 }
 
 const bloomingdalescrapeProduct = async (product_link) => {
-	const browser = await puppeteer.launch({ headless: 'new',args: ['--no-sandbox'] });
-	console.log("browser started")
-try {
-    
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  console.log('browser started');
+  try {
     const page = await browser.newPage();
-   const response = await page.goto(product_link, { waitUntil: 'load', timeout: 0 }); 
-const textgetter = async (tagname) => {
+    const response = await page.goto(product_link, { waitUntil: 'load', timeout: 0 });
+    const textgetter = async (tagname) => {
       const element = await page.$(tagname);
       return (await element?.evaluate((el) => el.textContent.trim())) ?? null;
     };
@@ -128,7 +127,10 @@ const textgetter = async (tagname) => {
     }
     const product_image = await sourcegetter('picture[class="main-picture"] > img[src]');
 
-    const product_rating = await textgetter('.product-header-reviews-count');
+    let product_rating = await textgetter('.product-header-reviews-count');
+    if (!product_rating || product_rating == null) {
+      product_rating = '0.0 rating';
+    }
     await browser.close();
     console.log({
       title: product_title
@@ -147,16 +149,16 @@ const textgetter = async (tagname) => {
         .trim(),
     });
     return {
-      source: "bloomingdale",
+      source: 'bloomingdale',
       title: product_title
         ?.replace(/\s+/g, ' ')
         ?.replace(/[^\w\s]/g, '')
         ?.replace(/\n/g, '')
         ?.trim(),
-      price: parseFloat(product_price?.replace(/[^0-9.-]+/g,"")),
+      price: parseFloat(product_price?.replace(/[^0-9.-]+/g, '')),
       image: product_image,
       link: product_link,
-      rating: Number(product_rating.split(' ')[0].trim()),
+      rating: Number(product_rating?.split(' ')[0]?.trim()),
       description: (product_title + ' ' + product_details)
         .replace(/\s+/g, ' ')
         .replace(/[^\w\s]/g, '')
@@ -165,14 +167,13 @@ const textgetter = async (tagname) => {
         .trim(),
     };
   } catch (error) {
-    
     console.log(error);
     return null;
   }
 };
 
 const NodestormScraper = async (product_link) => {
-  const browser = await puppeteer.launch({ headless: 'new',args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     console.log(product_link);
     const page = await browser.newPage();
@@ -225,4 +226,3 @@ const NodestormScraper = async (product_link) => {
 };
 
 module.exports = { AmazonScraper, bloomingdalescrapeProduct, NodestormScraper, scrapeProduct };
-
