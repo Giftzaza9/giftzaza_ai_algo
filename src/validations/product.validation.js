@@ -18,7 +18,7 @@ const createProduct = {
 const userActivity = {
   body: Joi.object().keys({
     productId: Joi.string().custom(objectId),
-    userId: Joi.string().custom(objectId),
+    userId: Joi.string(),
   }),
 };
 

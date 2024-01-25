@@ -3,6 +3,8 @@ const { Product } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { scrapeProduct } = require('../lib/scrapeProduct');
 const classificateProduct = require('../lib/classificateProduct');
+const rulebasedTagging = require('../lib/rulebasedTagging');
+const GPTbasedTagging = require('../lib/GPTbasedTagging');
 
 /**
  * Query for products
@@ -34,7 +36,9 @@ const createProduct = async (productBody) => {
   if (!product_data || !product_data.description) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
-  product_data.tags = await classificateProduct(product_data.description);
+  const gptdata = await GPTbasedTagging(product_data.description);
+  product_data.tags = gptdata.preferenceData;
+  product_data.gptTagging = gptdata.JSON_response;
   const product = await Product.create(product_data);
   await product.save();
   return product;

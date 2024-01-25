@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer-extra');
-
+const amazonpuppeteer = require('puppeteer');
 // Add stealth plugin and use defaults (all tricks to hide puppeteer usage)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
@@ -22,7 +22,7 @@ const scrapeProduct = async (productlink) => {
 };
 
 async function AmazonScraper(product_link) {
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  const browser = await amazonpuppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
 
@@ -128,9 +128,15 @@ const bloomingdalescrapeProduct = async (product_link) => {
     const product_image = await sourcegetter('picture[class="main-picture"] > img[src]');
 
     let product_rating = await textgetter('.product-header-reviews-count');
+    console.log('rating', product_rating);
+    let containsNumber = /\d/.test(product_rating);
+    if (!containsNumber) {
+      product_rating = '0.0 rating';
+    }
     if (!product_rating || product_rating == null) {
       product_rating = '0.0 rating';
     }
+    console.log('rating', product_rating);
     await browser.close();
     console.log({
       title: product_title
