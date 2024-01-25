@@ -344,8 +344,6 @@ In production mode, only `info`, `warn`, and `error` logs will be printed to the
 It is up to the server (or process manager) to actually read them from the console and store them in log files.\
 This app uses pm2 in production mode, which is already configured to store the logs in log files.
 
-
-
 ## Custom Mongoose Plugins
 
 The app also contains 2 custom mongoose plugins that you can attach to any mongoose model schema. You can find the plugins in `src/models/plugins`.

@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { Product } = require('../models');
 const ApiError = require('../utils/ApiError');
-const scrapeProduct = require('../lib/scrapeProduct');
+const { scrapeProduct } = require('../lib/scrapeProduct');
 const classificateProduct = require('../lib/classificateProduct');
 
 /**
@@ -14,7 +14,7 @@ const classificateProduct = require('../lib/classificateProduct');
  * @returns {Promise<QueryResult>}
  */
 const queryProducts = async (filter, options) => {
-    return await Product.paginate(filter, options);
+  return await Product.paginate(filter, options);
 };
 
 /**
@@ -23,18 +23,18 @@ const queryProducts = async (filter, options) => {
  * @returns {Promise<Product>}
  */
 const createProduct = async (productBody) => {
-  console.log(productBody)
-  const productDB = await Product.findOne({link: productBody.product_link});
-  if(productDB){
+  console.log(productBody);
+  const productDB = await Product.findOne({ link: productBody.product_link });
+  if (productDB) {
     return productDB;
   }
 
-  const product_data = await scrapeProduct(productBody.product_link)
- 
+  const product_data = await scrapeProduct(productBody.product_link);
+
   if (!product_data || !product_data.description) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
-  product_data.tags = await classificateProduct(product_data.description)
+  product_data.tags = await classificateProduct(product_data.description);
   const product = await Product.create(product_data);
   await product.save();
   return product;
@@ -48,7 +48,7 @@ const createProduct = async (productBody) => {
  */
 const updateProductById = async (productId, updateBody) => {
   const product = await Product.findById(productId);
-  const product_data = await scrapeProduct(product.link)
+  const product_data = await scrapeProduct(product.link);
   if (!product) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   }
@@ -59,7 +59,7 @@ const updateProductById = async (productId, updateBody) => {
   product.description = product_data.description;
   product.rating = product_data.rating;
   await product.save();
-  return product
+  return product;
 };
 
 /**
@@ -73,12 +73,12 @@ const deleteProductById = async (productId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   }
   await product.remove();
-  return product
+  return product;
 };
 
 module.exports = {
   queryProducts,
   createProduct,
   deleteProductById,
-  updateProductById
+  updateProductById,
 };

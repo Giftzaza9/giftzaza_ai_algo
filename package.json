@@ -28,7 +28,7 @@
     "prepare": "npx husky install",
     "migrateProduct": "node ./scripts/migrate_products",
     "updateProducts": "node ./scripts/update-products",
-    "createAdmin" : "node ./scripts/create-admin"
+    "createAdmin": "node ./scripts/create-admin"
   },
   "keywords": [
     "node",
@@ -74,8 +74,11 @@
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "pm2": "^5.1.0",
-    "puppeteer": "^21.1.1",
-    "puppeteer-core": "^21.1.1",
+    "puppeteer": "^21.7.0",
+    "puppeteer-core": "^21.7.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-adblocker": "^2.13.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "swagger-jsdoc": "^6.0.8",
     "swagger-ui-express": "^4.1.6",
     "validator": "^13.0.0",

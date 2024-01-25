@@ -5,8 +5,8 @@ const {connectDB, disconnectDB} = require('./settings');
 
 const userBody =  {
       name: "admin",
-      email: "",
-      password: "",
+      email: "abc@gmail.com",
+      password: "Password@123",
       role: "admin",
       isEmailVerified: "yes",
 }

@@ -3,17 +3,18 @@ const validate = require('../../middlewares/validate');
 const productValidation = require('../../validations/product.validation');
 const productController = require('../../controllers/product.controller');
 const { validateApiKey } = require('../../middlewares/apiKey');
+
 const router = express.Router();
 
 router
   .route('/:productId')
   .delete(validateApiKey, validate(productValidation.deleteProduct), productController.deleteProduct)
-  .patch(validateApiKey, validate(productValidation.updateProduct), productController.updateProduct)
+  .patch(validateApiKey, validate(productValidation.updateProduct), productController.updateProduct);
 
 router
   .route('/')
   .get(validateApiKey, validate(productValidation.getProducts), productController.getProducts)
-  .post(validateApiKey, validate(productValidation.createProduct), productController.createProduct)
+  .post(validateApiKey, validate(productValidation.createProduct), productController.createProduct);
 
 module.exports = router;
 
