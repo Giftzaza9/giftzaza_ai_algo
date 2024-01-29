@@ -27,7 +27,7 @@ const createProfile = async (profileBody) => {
     price: { $gte: profileBody.min_price, $lte: profileBody.max_price },
     tags: profileBody.gender,
   });
-  console.log('products count', products.length);
+
   if (!products) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Products not found');
   }
@@ -73,7 +73,8 @@ const updateProfile = async (profile, profileBody) => {
   const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } });
 
   for (const product of products) {
-    product.similarity = calculateSimilarity(profileBody.preferences, product.tags);
+    product.similarity = await calculateSimilarity(profileBody.preferences, product.tags);
+    console.log(product.title, product.similarity);
   }
 
   products.sort((a, b) => b.similarity - a.similarity);
