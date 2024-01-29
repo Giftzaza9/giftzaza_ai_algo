@@ -22,12 +22,11 @@ const scrapeProduct = async (productlink) => {
 };
 
 async function AmazonScraper(product_link) {
-  const browser = await amazonpuppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
 
-    await page.goto(product_link);
-    await new Promise((r) => setTimeout(r, 2000));
+    const response = await page.goto(product_link, { waitUntil: 'load', timeout: 0 });
 
     const product_title = await page.evaluate(() => {
       const spanElement = document.querySelector('span#productTitle');

@@ -23,8 +23,9 @@ const getProfileById = async (profileId) => {
  */
 const createProfile = async (profileBody) => {
   const profile = await Profile.create({});
+console.log("profile tags", profileBody.preferences)
   const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } })
-
+console.log("product count", products.length)
   if(!products){
     throw new ApiError(httpStatus.NOT_FOUND, 'Products not found');
   }
@@ -68,11 +69,14 @@ const deleteProfileById = async (profileId) => {
  * @returns {Promise<Profile>}
  */
 const updateProfile = async (profile, profileBody) => {
+console.log("min price", profileBody.min_price, "max price",  profileBody.max_price)
   const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } })
-
+console.log("product count", products.length)
   for (const product of products) {
-    product.similarity = calculateSimilarity(profileBody.preferences, product.tags);
+    product.similarity = await calculateSimilarity(profileBody.preferences, product.tags);
+console.log(product.title, product.similarity)
   }
+
 
   products.sort((a, b) => b.similarity - a.similarity);
 

@@ -17,6 +17,7 @@ const createProfile = {
     preferences: Joi.string(),
     min_price: Joi.number(),
     max_price: Joi.number(),
+    gender: Joi.string(),
   }),
 };
 
@@ -26,6 +27,7 @@ const updateProfile = {
     preferences: Joi.string(),
     min_price: Joi.number(),
     max_price: Joi.number(),
+    gender: Joi.string(),
   }),
 };
 
