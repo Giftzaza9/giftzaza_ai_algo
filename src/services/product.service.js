@@ -25,7 +25,6 @@ const queryProducts = async (filter, options) => {
  * @returns {Promise<Product>}
  */
 const createProduct = async (productBody) => {
-  console.log(productBody);
   const productDB = await Product.findOne({ link: productBody.product_link });
   if (productDB) {
     return productDB;

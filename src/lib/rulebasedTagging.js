@@ -21,7 +21,6 @@ function rulebasedTagging(product_description) {
       ];
     }
   });
-  console.log('tagging', Object.fromEntries(res_each));
   return Object.fromEntries(res_each);
 }
 

@@ -74,7 +74,6 @@ const updateProfile = async (profile, profileBody) => {
 
   for (const product of products) {
     product.similarity = await calculateSimilarity(profileBody.preferences, product.tags);
-    console.log(product.title, product.similarity);
   }
 
   products.sort((a, b) => b.similarity - a.similarity);

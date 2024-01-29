@@ -22,11 +22,11 @@ const scrapeProduct = async (productlink) => {
 };
 
 async function AmazonScraper(product_link) {
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  const browser = await amazonpuppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
 
-    const response = await page.goto(product_link, { waitUntil: 'load', timeout: 0 });
+    const response = await page.goto(product_link, { waitUntil: 'domcontentloaded', timeout: 0 });
 
     const product_title = await page.evaluate(() => {
       const spanElement = document.querySelector('span#productTitle');
@@ -45,7 +45,7 @@ async function AmazonScraper(product_link) {
 
     const product_price = await page.evaluate(() => {
       let spanElement = document.querySelector('span.a-offscreen');
-    
+
       if (spanElement === null) {
         spanElement = document.querySelector('span.a-price');
         const spanPriceElement = spanElement.querySelector('span');
@@ -126,7 +126,7 @@ const bloomingdalescrapeProduct = async (product_link) => {
     const product_image = await sourcegetter('picture[class="main-picture"] > img[src]');
 
     let product_rating = await textgetter('.product-header-reviews-count');
-    console.log('rating', product_rating);
+
     let containsNumber = /\d/.test(product_rating);
     if (!containsNumber) {
       product_rating = '0.0 rating';
@@ -134,9 +134,9 @@ const bloomingdalescrapeProduct = async (product_link) => {
     if (!product_rating || product_rating == null) {
       product_rating = '0.0 rating';
     }
-    console.log('rating', product_rating);
+
     await browser.close();
- 
+
     return {
       source: 'bloomingdale',
       title: product_title
@@ -156,7 +156,6 @@ const bloomingdalescrapeProduct = async (product_link) => {
         .trim(),
     };
   } catch (error) {
-    console.log(error);
     return null;
   }
 };
@@ -164,7 +163,6 @@ const bloomingdalescrapeProduct = async (product_link) => {
 const NodestormScraper = async (product_link) => {
   const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
-    console.log(product_link);
     const page = await browser.newPage();
 
     await page.goto(product_link, { waitUntil: 'networkidle0', timeout: 0 });
@@ -209,7 +207,7 @@ const NodestormScraper = async (product_link) => {
     };
   } catch (error) {
     await browser.close();
-    console.log(error);
+
     return null;
   }
 };

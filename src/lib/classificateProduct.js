@@ -46,10 +46,7 @@ async function classificateProduct(product_description) {
         tags.push(line.replace('-', '').trim());
       }
     });
-    console.log(
-      'tagging',
-      tags.filter((tag) => all_tags.includes(tag))
-    );
+
     return tags.filter((tag) => all_tags.includes(tag));
   } catch (error) {
     return [];
