@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { Profile, Product } = require('../models');
 const ApiError = require('../utils/ApiError');
-const calculateSimilarity = require('../lib/calculateSimilarity')
+const calculateSimilarity = require('../lib/calculateSimilarity');
 
 /**
  * Get profile by id
@@ -9,11 +9,11 @@ const calculateSimilarity = require('../lib/calculateSimilarity')
  * @returns {Promise<Profile>}
  */
 const getProfileById = async (profileId) => {
-    const profile = await Profile.findById(profileId);
-    if(!profile){
-      throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
-    }
-    return profile;
+  const profile = await Profile.findById(profileId);
+  if (!profile) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
+  }
+  return profile;
 };
 
 /**
@@ -23,15 +23,18 @@ const getProfileById = async (profileId) => {
  */
 const createProfile = async (profileBody) => {
   const profile = await Profile.create({});
-  const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } })
+  const products = await Product.find({
+    price: { $gte: profileBody.min_price, $lte: profileBody.max_price },
+    tags: profileBody.gender,
+  });
 
-  if(!products){
+  if (!products) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Products not found');
   }
 
   for (const product of products) {
     product.similarity = calculateSimilarity(profileBody.preferences, product.tags);
-    await product.save()
+    await product.save();
   }
 
   products.sort((a, b) => b.similarity - a.similarity);
@@ -39,11 +42,11 @@ const createProfile = async (profileBody) => {
   if (products.length > 30) {
     profile.recommended_products = products.slice(0, 30);
   } else {
-    profile.recommended_products = products
+    profile.recommended_products = products;
   }
 
-  await profile.save()
-  return profile
+  await profile.save();
+  return profile;
 };
 
 /**
@@ -60,7 +63,6 @@ const deleteProfileById = async (profileId) => {
   return profile;
 };
 
-
 /**
  * Update a profile
  * @param {Object} profile
@@ -68,10 +70,10 @@ const deleteProfileById = async (profileId) => {
  * @returns {Promise<Profile>}
  */
 const updateProfile = async (profile, profileBody) => {
-  const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } })
+  const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } });
 
   for (const product of products) {
-    product.similarity = calculateSimilarity(profileBody.preferences, product.tags);
+    product.similarity = await calculateSimilarity(profileBody.preferences, product.tags);
   }
 
   products.sort((a, b) => b.similarity - a.similarity);
@@ -79,17 +81,16 @@ const updateProfile = async (profile, profileBody) => {
   if (products.length > 30) {
     profile.recommended_products = products.slice(0, 30);
   } else {
-    profile.recommended_products = products
+    profile.recommended_products = products;
   }
 
-  await profile.save()
-  return profile
+  await profile.save();
+  return profile;
 };
-
 
 module.exports = {
   getProfileById,
   createProfile,
   deleteProfileById,
-  updateProfile
+  updateProfile,
 };
