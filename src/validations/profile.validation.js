@@ -18,6 +18,8 @@ const createProfile = {
     min_price: Joi.number(),
     max_price: Joi.number(),
     gender: Joi.string(),
+    relationship: Joi.string(),
+    Occassion: Joi.string(),
   }),
 };
 
@@ -28,6 +30,8 @@ const updateProfile = {
     min_price: Joi.number(),
     max_price: Joi.number(),
     gender: Joi.string(),
+    relationship: Joi.string(),
+    Occassion: Joi.string(),
   }),
 };
 
