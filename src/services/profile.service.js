@@ -23,12 +23,14 @@ const getProfileById = async (profileId) => {
  */
 const createProfile = async (profileBody) => {
   const profile = await Profile.create({});
-  const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } })
+   const products = await Product.find({
+    price: { $gte: profileBody.min_price, $lte: profileBody.max_price }
+  });
 
   if(!products){
     throw new ApiError(httpStatus.NOT_FOUND, 'Products not found');
   }
-
+//let products = await productss.filter((item, index) => item.tags.includes(profileBody.gender));
   for (const product of products) {
     product.similarity = calculateSimilarity(profileBody.preferences, product.tags);
     await product.save()
