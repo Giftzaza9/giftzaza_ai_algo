@@ -15,10 +15,6 @@ function calculateSimilarity(userPrefernces, gpttags, producttags) {
 
   overallPercentage = 0.4 * occasionPercentage + 0.3 * relationshipPercentage + 0.3 * preferencePercentage;
 
-  console.log(`Relationship Percentage: ${relationshipPercentage}%`);
-  console.log(`Occasion Percentage: ${occasionPercentage}%`);
-  console.log(`Preference Percentage: ${preferencePercentage}%`);
-  console.log(`Overall Percentage: ${overallPercentage}%`);
   return overallPercentage;
 }
 

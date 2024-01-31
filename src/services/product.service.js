@@ -52,6 +52,7 @@ const createProduct = async (productBody) => {
 const updateProductById = async (productId, updateBody) => {
   const product = await Product.findById(productId);
   const product_data = await scrapeProduct(product.link);
+console.log("tags",updateBody.tags)
   if (!product) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   }
