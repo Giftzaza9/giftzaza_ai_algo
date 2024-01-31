@@ -31,7 +31,7 @@ const createProfile = async (profileBody) => {
   if (!products) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Products not found');
   }
-
+//let products = await productss.filter((item, index) => item.tags.includes(profileBody.gender));
   for (const product of products) {
     product.similarity = calculateSimilarity(profileBody, product.gptTagging, product.tags);
     await product.save();
