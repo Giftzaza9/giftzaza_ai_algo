@@ -55,7 +55,6 @@ async function GPTbasedTagging(content) {
     });
 
     JSON_response = JSON.parse(response['choices'][0]['message']['content']);
-    console.log('tagging', JSON_response, Object.values(JSON_response).flat());
     let preferenceData = Object.values(JSON_response).flat();
     return { JSON_response, preferenceData };
   } catch (err) {
