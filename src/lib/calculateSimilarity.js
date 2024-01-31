@@ -5,20 +5,23 @@ function calculateSimilarity(userPrefernces, gpttags, producttags) {
   let relationshipPercentage = gpttags[0].relationship.includes(userPrefernces.relationship) ? 100 : 0;
   let occasionPercentage = gpttags[0].occasion.includes(userPrefernces.Occassion) ? 100 : 0;
 
-  let preferencePercentage = 0;
+  
+  let interestPercentage = 0;
+  let stylePercentage = 0;
+  let 
   for (let i = 0; i < userPrefernces.preferences.length; i++) {
-    if (producttags.includes(userPrefernces.preferences[i])) {
-      preferencePercentage += 100;
+    if (gpttags[0].style.includes(userPrefernces.preferences[i])) {
+      stylePercentage += 100;
+    }else if(gpttags[0].interest.includes(userPrefernces.preferences[i])){
+      interestPercentage += 100;
     }
   }
-  preferencePercentage /= userPrefernces.preferences.length;
+  interestPercentage /= userPrefernces.preferences.length;
+  stylePercentage /= userPrefernces.preferences.length;
 
-  overallPercentage = 0.4 * occasionPercentage + 0.3 * relationshipPercentage + 0.3 * preferencePercentage;
 
-  console.log(`Relationship Percentage: ${relationshipPercentage}%`);
-  console.log(`Occasion Percentage: ${occasionPercentage}%`);
-  console.log(`Preference Percentage: ${preferencePercentage}%`);
-  console.log(`Overall Percentage: ${overallPercentage}%`);
+  let overallPercentage = 0.4 * occasionPercentage + 0.3 * relationshipPercentage + 0.2 * interestPercentage + 0.1 * stylePercentage;
+
   return overallPercentage;
 }
 

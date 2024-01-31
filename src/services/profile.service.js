@@ -33,7 +33,7 @@ const createProfile = async (profileBody) => {
   }
 
   for (const product of products) {
-    product.similarity = calculateSimilarity(profileBody.preferences, product.gptTagging, product.tags);
+    product.similarity = calculateSimilarity(profileBody, product.gptTagging, product.tags);
     await product.save();
   }
 
