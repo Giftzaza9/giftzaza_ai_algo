@@ -1,0 +1,326 @@
+{
+	"info": {
+		"_postman_id": "03ff0cf5-e835-4e72-9e10-7b369a212377",
+		"name": "Giftzaza",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31420818"
+	},
+	"item": [
+		{
+			"name": "get_similar_item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"item_id\":\"1694620672267x381920653884119800\",\r\n    \"top_n\":10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{localhost}}:8001/get_similar_item?item_id=1694620672267x381920653884119800&top_n=10",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"port": "8001",
+					"path": [
+						"get_similar_item"
+					],
+					"query": [
+						{
+							"key": "item_id",
+							"value": "1694620672267x381920653884119800"
+						},
+						{
+							"key": "top_n",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "get_similar_item",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"item_id\":\"1694620672267x381920653884119800\",\r\n    \"top_n\":10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{localhost}}:8001/get_similar_item?item_id=1694620672267x381920653884119800&top_n=10",
+							"protocol": "http",
+							"host": [
+								"{{localhost}}"
+							],
+							"port": "8001",
+							"path": [
+								"get_similar_item"
+							],
+							"query": [
+								{
+									"key": "item_id",
+									"value": "1694620672267x381920653884119800"
+								},
+								{
+									"key": "top_n",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Wed, 31 Jan 2024 13:01:21 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "830"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"item_id\": \"1695942627369x480666362334261950\",\n        \"matching_score\": 0.8444380760192871\n    },\n    {\n        \"item_id\": \"1696474674425x568997434092154900\",\n        \"matching_score\": 0.8303406238555908\n    },\n    {\n        \"item_id\": \"1694623244438x103467340935090580\",\n        \"matching_score\": 0.825411856174469\n    },\n    {\n        \"item_id\": \"1694623264336x476705621254659650\",\n        \"matching_score\": 0.8189327120780945\n    },\n    {\n        \"item_id\": \"1704802947186x274001581534347260\",\n        \"matching_score\": 0.8149353861808777\n    },\n    {\n        \"item_id\": \"1696474673451x284908406278138620\",\n        \"matching_score\": 0.8005290627479553\n    },\n    {\n        \"item_id\": \"1694623268813x560910342103818430\",\n        \"matching_score\": 0.7927406430244446\n    },\n    {\n        \"item_id\": \"1694624166818x511649925901232100\",\n        \"matching_score\": 0.7915396094322205\n    },\n    {\n        \"item_id\": \"1704448568392x478336703300610750\",\n        \"matching_score\": 0.7809992432594299\n    },\n    {\n        \"item_id\": \"1694624176810x431431098873602560\",\n        \"matching_score\": 0.7808674573898315\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "get_similar_user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\":\"unq_id-0\",\r\n    \"top_n\":10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{localhost}}:8001/get_similar_user?user_id=unq_id-0&top_n=10",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"port": "8001",
+					"path": [
+						"get_similar_user"
+					],
+					"query": [
+						{
+							"key": "user_id",
+							"value": "unq_id-0"
+						},
+						{
+							"key": "top_n",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "get_similar_user",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_id\":\"unq_id-0\",\r\n    \"top_n\":10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{localhost}}:8001/get_similar_user?user_id=unq_id-0&top_n=10",
+							"protocol": "http",
+							"host": [
+								"{{localhost}}"
+							],
+							"port": "8001",
+							"path": [
+								"get_similar_user"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "unq_id-0"
+								},
+								{
+									"key": "top_n",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Wed, 31 Jan 2024 13:02:03 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "600"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"user_id\": \"unq_id-1\",\n        \"matching_score\": 0.9022547006607056\n    },\n    {\n        \"user_id\": \"unq_id-386\",\n        \"matching_score\": 0.8497868180274963\n    },\n    {\n        \"user_id\": \"unq_id-94\",\n        \"matching_score\": 0.8477573394775391\n    },\n    {\n        \"user_id\": \"unq_id-15\",\n        \"matching_score\": 0.8371310830116272\n    },\n    {\n        \"user_id\": \"unq_id-8\",\n        \"matching_score\": 0.828147292137146\n    },\n    {\n        \"user_id\": \"unq_id-4\",\n        \"matching_score\": 0.8104090690612793\n    },\n    {\n        \"user_id\": \"unq_id-936\",\n        \"matching_score\": 0.7992979884147644\n    },\n    {\n        \"user_id\": \"unq_id-489\",\n        \"matching_score\": 0.793603777885437\n    },\n    {\n        \"user_id\": \"unq_id-14\",\n        \"matching_score\": 0.7873201370239258\n    },\n    {\n        \"user_id\": \"unq_id-209\",\n        \"matching_score\": 0.7843720316886902\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "cs_similar_item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"new_item_attriutes\" : [\"male\",\"female\"],\r\n    \"top_n\":10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{localhost}}:8001/cs_similar_item?new_item_attriutes=12 - 25,18 - 25",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"port": "8001",
+					"path": [
+						"cs_similar_item"
+					],
+					"query": [
+						{
+							"key": "new_item_attriutes",
+							"value": "12 - 25,18 - 25"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "cs_similar_item",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"new_item_attriutes\" : [\"male\",\"female\"],\r\n    \"top_n\":10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{localhost}}:8001/cs_similar_item?new_item_attriutes=12 - 25,18 - 25",
+							"protocol": "http",
+							"host": [
+								"{{localhost}}"
+							],
+							"port": "8001",
+							"path": [
+								"cs_similar_item"
+							],
+							"query": [
+								{
+									"key": "new_item_attriutes",
+									"value": "12 - 25,18 - 25"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Wed, 31 Jan 2024 13:02:32 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "827"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"item_id\": \"1694623259609x642610669416005600\",\n        \"matching_score\": 0.6014978289604187\n    },\n    {\n        \"item_id\": \"1696474690512x712111021929019000\",\n        \"matching_score\": 0.5566368699073792\n    },\n    {\n        \"item_id\": \"1696265546759x302554275626445200\",\n        \"matching_score\": 0.553095281124115\n    },\n    {\n        \"item_id\": \"1700977806289x430252729878543500\",\n        \"matching_score\": 0.5524588227272034\n    },\n    {\n        \"item_id\": \"1694623743199x933704732028886900\",\n        \"matching_score\": 0.534806489944458\n    },\n    {\n        \"item_id\": \"1694624886161x625817956109399000\",\n        \"matching_score\": 0.5318477749824524\n    },\n    {\n        \"item_id\": \"1695942606558x569238888724172800\",\n        \"matching_score\": 0.5245905518531799\n    },\n    {\n        \"item_id\": \"1695942614414x891099131138326900\",\n        \"matching_score\": 0.51912522315979\n    },\n    {\n        \"item_id\": \"1695942604548x763821546127128300\",\n        \"matching_score\": 0.5114318132400513\n    },\n    {\n        \"item_id\": \"1695942611638x877932826170158200\",\n        \"matching_score\": 0.5113054513931274\n    }\n]"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "localhost",
+			"value": "0.0.0.0",
+			"type": "string"
+		}
+	]
+}
