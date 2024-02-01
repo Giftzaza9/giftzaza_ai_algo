@@ -9,7 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from src import lightfm_model as lfm
 from server_schema import ( similar_existing_item_schema,
                            similar_existing_user_schema,
-                           cs_similar_item_schema)
+                           cs_similar_item_schema,
+                           user_item_recommendation_schema,
+                           cs_user_item_recommendation_schema)
 
 app = FastAPI()
 
@@ -37,6 +39,13 @@ def get_similar_item(body : similar_existing_item_schema):
 def cs_similar_item(body : cs_similar_item_schema):
     return lfm.cs_similar_items(new_item_attriutes=body.new_item_attriutes,N=body.top_n)
 
+@app.post("/user_item_recommendation")
+def user_item_recommendation(body : user_item_recommendation_schema):
+    return lfm.user_item_recommendation(user_id = body.user_id,N=body.top_n)
+
+@app.post("/cs_user_item_recommendation")
+def cs_user_item_recommendation(body : cs_user_item_recommendation_schema):
+    return lfm.cs_user_item_recommendation(new_user_attriutes=body.new_user_attriutes,N=body.top_n)
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host="0.0.0.0", port=8001, reload=False)

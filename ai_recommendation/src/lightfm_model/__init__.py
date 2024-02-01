@@ -11,11 +11,19 @@ def similar_users_endpoint(user_id,N=10):
     return udf.to_dict(orient='records')
 
 def similar_items_endpoint(item_id,N=10):
-    idf = LightFM_Obj.similar_existing_item(item_id,N)[['left_all_unique_id','left_score']].copy()
+    idf = LightFM_Obj.similar_existing_item(item_id,N)[['left_all_unique_id','title','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     return idf.to_dict(orient='records')
 
 def cs_similar_items(new_item_attriutes,N=10):
-    idf = LightFM_Obj.cold_start_similar_items(new_item_attriutes=new_item_attriutes,N=N)[['left_all_unique_id','left_score']].copy()
+    idf = LightFM_Obj.cold_start_similar_items(new_item_attriutes=new_item_attriutes,N=N)[['left_all_unique_id','title','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     return idf.to_dict(orient='records')
+
+def user_item_recommendation(user_id,N=10):
+    idf = LightFM_Obj.user_item_recommendation(user_id)
+    return idf.head(N).to_dict(orient='records')
+
+def cs_user_item_recommendation(new_user_attriutes,N=10):
+    idf = LightFM_Obj.cold_start_user_item_recommendation(new_user_attriutes)
+    return idf.head(N).to_dict(orient='records')

@@ -73,4 +73,21 @@ class LightFM_cls:
         idf.columns = 'left_' + idf.columns.values
         matched_item_meta = idf.merge(self.item_meta,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
+    
+    def user_item_recommendation(self,original_user_id):
+        try:
+            user_id = self.user_mapper[original_user_id]
+        except Exception as e:
+            raise KeyError("Given User Id is not present in Model")
+        scores = self.model.predict(user_id, np.arange(len(self.item_mapper)))
+        top_items = self.item_meta.iloc[np.argsort(-scores)].copy()
+        top_items.insert(0, 'ranking_score', list(-np.sort(-scores)))
+        return top_items[['all_unique_id','title','ranking_score']].rename(columns={"ranking_score":"score"})
+    
+    def cold_start_user_item_recommendation(self,new_user_attriutes):
+        new_user_features = self.dataset.build_user_features([("unq_id-0",new_user_attriutes)])
+        scores_new_user = self.model.predict(user_ids = 0,item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
+        top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
+        top_items_new.insert(0, 'ranking_score', list(-np.sort(-scores_new_user)))
+        return top_items_new[['all_unique_id','title','ranking_score']].rename(columns={"ranking_score":"score"})
 
