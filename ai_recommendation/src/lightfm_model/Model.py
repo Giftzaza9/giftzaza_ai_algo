@@ -3,9 +3,11 @@ import pandas as pd
 import pickle
 import os
 import numpy as np
-# from lightfm import LightFM
+from lightfm import LightFM
+from lightfm.cross_validation import random_train_test_split
 from lightfm.data import Dataset
 import numpy as numpy
+from recommenders.utils.timer import Timer
 from recommenders.models.lightfm.lightfm_utils import (
     similar_users,
     similar_items,
@@ -91,3 +93,40 @@ class LightFM_cls:
         top_items_new.insert(0, 'ranking_score', list(-np.sort(-scores_new_user)))
         return top_items_new[['all_unique_id','title','ranking_score']].rename(columns={"ranking_score":"score"})
 
+    def Add_Product_and_Train():
+        dataset = Dataset()
+        all_user_unq_list=["unq_id-x1","unq_id-x2"]
+        all_item_unq_list=['1234567','2345678']
+        user_feature_list = [["attr1","attr2"],["attr2","attr3"]]
+        item_feature_list = [["attr1","attr2"],["attr2","attr3"]]
+        all_user_feature_list = ["attr1","attr2","attr3"]
+        all_item_feature_list = ["attr1","attr2","attr3"]
+        list_interaction_user_id = ['unq_id-x1']
+        list_interaction_item_id = ['1234567']
+        dataset.fit(users=all_user_unq_list, ## new 
+            items=all_item_unq_list,
+            item_features=all_item_feature_list,
+            user_features=all_user_feature_list)
+        item_features = dataset.build_item_features([(x,y) for x,y in zip(all_item_unq_list,item_feature_list)]) ## new
+        user_features = dataset.build_user_features([(x,y) for x,y in zip(all_user_unq_list,user_feature_list)]) ## new
+        (interactions, weights) = dataset.build_interactions((x, y) for x,y in zip(list_interaction_user_id,list_interaction_item_id))
+
+        train, test = random_train_test_split(interactions,test_percentage=0.12, random_state=779)
+        train_w, test_w = random_train_test_split(weights, test_percentage=0.12, random_state=779)
+        n_components = 30
+        loss = 'warp'
+        epoch = 30
+        num_thread = 4
+        with Timer() as Train_timer:
+            model = LightFM(no_components= n_components, loss=loss, random_state = 1616)
+            model.fit(train,  user_features= user_features, item_features= item_features, epochs=epoch,num_threads = num_thread, sample_weight = train_w)
+        print(f"Took {Train_timer.interval:.1f} seconds for Training the Model.") 
+        
+        with open('model.pkl', 'wb') as fle:
+            pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open('user_features.pkl', 'wb') as fle:
+            pickle.dump(user_features, fle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open('item_features.pkl', 'wb') as fle:
+            pickle.dump(item_features, fle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open('dataset_builder.pkl', 'wb') as fle:
+            pickle.dump(dataset, fle, protocol=pickle.HIGHEST_PROTOCOL)

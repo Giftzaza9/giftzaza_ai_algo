@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"item_id\":\"1694620672267x381920653884119800\",\r\n    \"top_n\":10\r\n}",
+					"raw": "{\r\n    \"item_id\":\"1696474674425x568997434092154900\",\r\n    \"top_n\":10\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -292,6 +292,164 @@
 					],
 					"cookie": [],
 					"body": "[\n    {\n        \"item_id\": \"1694623259609x642610669416005600\",\n        \"matching_score\": 0.6014978289604187\n    },\n    {\n        \"item_id\": \"1696474690512x712111021929019000\",\n        \"matching_score\": 0.5566368699073792\n    },\n    {\n        \"item_id\": \"1696265546759x302554275626445200\",\n        \"matching_score\": 0.553095281124115\n    },\n    {\n        \"item_id\": \"1700977806289x430252729878543500\",\n        \"matching_score\": 0.5524588227272034\n    },\n    {\n        \"item_id\": \"1694623743199x933704732028886900\",\n        \"matching_score\": 0.534806489944458\n    },\n    {\n        \"item_id\": \"1694624886161x625817956109399000\",\n        \"matching_score\": 0.5318477749824524\n    },\n    {\n        \"item_id\": \"1695942606558x569238888724172800\",\n        \"matching_score\": 0.5245905518531799\n    },\n    {\n        \"item_id\": \"1695942614414x891099131138326900\",\n        \"matching_score\": 0.51912522315979\n    },\n    {\n        \"item_id\": \"1695942604548x763821546127128300\",\n        \"matching_score\": 0.5114318132400513\n    },\n    {\n        \"item_id\": \"1695942611638x877932826170158200\",\n        \"matching_score\": 0.5113054513931274\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "user_item_recommendation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\":\"unq_id-0\",\r\n    \"top_n\":10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{localhost}}:8001/user_item_recommendation",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"port": "8001",
+					"path": [
+						"user_item_recommendation"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "user_item_recommendation",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_id\":\"unq_id-0\",\r\n    \"top_n\":10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{localhost}}:8001/user_item_recommendation",
+							"protocol": "http",
+							"host": [
+								"{{localhost}}"
+							],
+							"port": "8001",
+							"path": [
+								"user_item_recommendation"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Thu, 01 Feb 2024 09:24:48 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "2080"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"all_unique_id\": \"1696265568959x799696197241046800\",\n        \"title\": \"HP OfficeJet Pro 8025e Wireless Color All-in-One Printer with Bonus 6 Free Months Instant Ink (1K7K3A) (Renewed Premium),Grey\",\n        \"score\": 0.3742271065711975\n    },\n    {\n        \"all_unique_id\": \"1695836031337x217863097764540600\",\n        \"title\": \"2023 - American Silver Eagle .999 Fine Silver in Direct Fit Air Tite with our Certificate of Authenticity Dollar US Mint Uncirculated\",\n        \"score\": 0.37014511227607727\n    },\n    {\n        \"all_unique_id\": \"1695942610434x580175664502505100\",\n        \"title\": \"Apple AirPods (2nd Generation) Wireless Earbuds with Lightning Charging Case Included. Over 24 Hours of Battery Life, Effortless Setup. Bluetooth Headphones for iPhone\",\n        \"score\": 0.35138848423957825\n    },\n    {\n        \"all_unique_id\": \"1696265546759x302554275626445200\",\n        \"title\": \"Apple iPhone XR, 64GB, Black - Unlocked (Renewed)\",\n        \"score\": 0.34964677691459656\n    },\n    {\n        \"all_unique_id\": \"1696778066056x156823528466174080\",\n        \"title\": \"Aeitto Nugget Ice Maker Countertop, 55 lbs/Day, Chewable Ice Maker, Rapid Ice Release in 5 Mins, Auto Water Refill, Self-Cleaning, Stainless Steel Housing Ice Machine\",\n        \"score\": 0.34857064485549927\n    },\n    {\n        \"all_unique_id\": \"1695831199012x679712269232390000\",\n        \"title\": \"Stanley Quencher H2.0 FlowState Stainless Steel Vacuum Insulated Tumbler with Lid and Straw for Water, Iced Tea or Coffee, Smoothie and More\",\n        \"score\": 0.34159085154533386\n    },\n    {\n        \"all_unique_id\": \"1694624157909x286171674076893380\",\n        \"title\": \"Kindle Paperwhite (8 GB) – Now with a 6.8\\\" display and adjustable warm light – Black\",\n        \"score\": 0.33000561594963074\n    },\n    {\n        \"all_unique_id\": \"1695942606558x569238888724172800\",\n        \"title\": \"ToyerBee Telescope for Adults & Kids, 70mm Aperture Astronomical Refractor Telescopes for Astronomy Beginners (15X-150X), 300mm Portable Telescope with an Phone Adapter & A Wireless Remote\",\n        \"score\": 0.3206518888473511\n    },\n    {\n        \"all_unique_id\": \"1696778065187x934733550931766000\",\n        \"title\": \"Apple iPhone 12, 64GB, Blue - Fully Unlocked (Renewed)\",\n        \"score\": 0.3139112591743469\n    },\n    {\n        \"all_unique_id\": \"1695942601474x177590380869441200\",\n        \"title\": \"Apple AirPods 2 with Charging Case - White (Renewed)\",\n        \"score\": 0.3022773861885071\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "cs_user_item_recommendation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"new_user_attriutes\" : [\"male\",\"female\"],\r\n    \"top_n\":10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{localhost}}:8001/cs_user_item_recommendation",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"port": "8001",
+					"path": [
+						"cs_user_item_recommendation"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "cs_user_item_recommendation",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"new_user_attriutes\" : [\"male\",\"female\"],\r\n    \"top_n\":10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{localhost}}:8001/cs_user_item_recommendation",
+							"protocol": "http",
+							"host": [
+								"{{localhost}}"
+							],
+							"port": "8001",
+							"path": [
+								"cs_user_item_recommendation"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Thu, 01 Feb 2024 09:28:09 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "2090"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"all_unique_id\": \"1696265568959x799696197241046800\",\n        \"title\": \"HP OfficeJet Pro 8025e Wireless Color All-in-One Printer with Bonus 6 Free Months Instant Ink (1K7K3A) (Renewed Premium),Grey\",\n        \"score\": -0.34806400537490845\n    },\n    {\n        \"all_unique_id\": \"1695836031337x217863097764540600\",\n        \"title\": \"2023 - American Silver Eagle .999 Fine Silver in Direct Fit Air Tite with our Certificate of Authenticity Dollar US Mint Uncirculated\",\n        \"score\": -0.35233065485954285\n    },\n    {\n        \"all_unique_id\": \"1695942610434x580175664502505100\",\n        \"title\": \"Apple AirPods (2nd Generation) Wireless Earbuds with Lightning Charging Case Included. Over 24 Hours of Battery Life, Effortless Setup. Bluetooth Headphones for iPhone\",\n        \"score\": -0.37043529748916626\n    },\n    {\n        \"all_unique_id\": \"1696265546759x302554275626445200\",\n        \"title\": \"Apple iPhone XR, 64GB, Black - Unlocked (Renewed)\",\n        \"score\": -0.3723696768283844\n    },\n    {\n        \"all_unique_id\": \"1696778066056x156823528466174080\",\n        \"title\": \"Aeitto Nugget Ice Maker Countertop, 55 lbs/Day, Chewable Ice Maker, Rapid Ice Release in 5 Mins, Auto Water Refill, Self-Cleaning, Stainless Steel Housing Ice Machine\",\n        \"score\": -0.3737497925758362\n    },\n    {\n        \"all_unique_id\": \"1695831199012x679712269232390000\",\n        \"title\": \"Stanley Quencher H2.0 FlowState Stainless Steel Vacuum Insulated Tumbler with Lid and Straw for Water, Iced Tea or Coffee, Smoothie and More\",\n        \"score\": -0.38047564029693604\n    },\n    {\n        \"all_unique_id\": \"1694624157909x286171674076893380\",\n        \"title\": \"Kindle Paperwhite (8 GB) – Now with a 6.8\\\" display and adjustable warm light – Black\",\n        \"score\": -0.3924189507961273\n    },\n    {\n        \"all_unique_id\": \"1695942606558x569238888724172800\",\n        \"title\": \"ToyerBee Telescope for Adults & Kids, 70mm Aperture Astronomical Refractor Telescopes for Astronomy Beginners (15X-150X), 300mm Portable Telescope with an Phone Adapter & A Wireless Remote\",\n        \"score\": -0.40193167328834534\n    },\n    {\n        \"all_unique_id\": \"1696778065187x934733550931766000\",\n        \"title\": \"Apple iPhone 12, 64GB, Blue - Fully Unlocked (Renewed)\",\n        \"score\": -0.40859758853912354\n    },\n    {\n        \"all_unique_id\": \"1695942601474x177590380869441200\",\n        \"title\": \"Apple AirPods 2 with Charging Case - White (Renewed)\",\n        \"score\": -0.4199993312358856\n    }\n]"
 				}
 			]
 		}
