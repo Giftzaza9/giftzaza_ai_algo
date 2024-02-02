@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"item_id\":\"1696474674425x568997434092154900\",\r\n    \"top_n\":10\r\n}",
+					"raw": "{\r\n    \"item_id\":\"65b25d95c77fb76fc87fd9b9\",\r\n    \"top_n\":10\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -21,7 +21,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{localhost}}:8001/get_similar_item?item_id=1694620672267x381920653884119800&top_n=10",
+					"raw": "http://{{localhost}}:8001/get_similar_item",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
@@ -29,16 +29,6 @@
 					"port": "8001",
 					"path": [
 						"get_similar_item"
-					],
-					"query": [
-						{
-							"key": "item_id",
-							"value": "1694620672267x381920653884119800"
-						},
-						{
-							"key": "top_n",
-							"value": "10"
-						}
 					]
 				}
 			},
@@ -50,7 +40,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"item_id\":\"1694620672267x381920653884119800\",\r\n    \"top_n\":10\r\n}",
+							"raw": "{\r\n    \"item_id\":\"65b25d95c77fb76fc87fd9b9\",\r\n    \"top_n\":10\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -58,7 +48,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{localhost}}:8001/get_similar_item?item_id=1694620672267x381920653884119800&top_n=10",
+							"raw": "http://{{localhost}}:8001/get_similar_item",
 							"protocol": "http",
 							"host": [
 								"{{localhost}}"
@@ -66,16 +56,6 @@
 							"port": "8001",
 							"path": [
 								"get_similar_item"
-							],
-							"query": [
-								{
-									"key": "item_id",
-									"value": "1694620672267x381920653884119800"
-								},
-								{
-									"key": "top_n",
-									"value": "10"
-								}
 							]
 						}
 					},
@@ -85,7 +65,7 @@
 					"header": [
 						{
 							"key": "date",
-							"value": "Wed, 31 Jan 2024 13:01:21 GMT"
+							"value": "Fri, 02 Feb 2024 12:42:31 GMT"
 						},
 						{
 							"key": "server",
@@ -93,7 +73,7 @@
 						},
 						{
 							"key": "content-length",
-							"value": "830"
+							"value": "4978"
 						},
 						{
 							"key": "content-type",
@@ -101,7 +81,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "[\n    {\n        \"item_id\": \"1695942627369x480666362334261950\",\n        \"matching_score\": 0.8444380760192871\n    },\n    {\n        \"item_id\": \"1696474674425x568997434092154900\",\n        \"matching_score\": 0.8303406238555908\n    },\n    {\n        \"item_id\": \"1694623244438x103467340935090580\",\n        \"matching_score\": 0.825411856174469\n    },\n    {\n        \"item_id\": \"1694623264336x476705621254659650\",\n        \"matching_score\": 0.8189327120780945\n    },\n    {\n        \"item_id\": \"1704802947186x274001581534347260\",\n        \"matching_score\": 0.8149353861808777\n    },\n    {\n        \"item_id\": \"1696474673451x284908406278138620\",\n        \"matching_score\": 0.8005290627479553\n    },\n    {\n        \"item_id\": \"1694623268813x560910342103818430\",\n        \"matching_score\": 0.7927406430244446\n    },\n    {\n        \"item_id\": \"1694624166818x511649925901232100\",\n        \"matching_score\": 0.7915396094322205\n    },\n    {\n        \"item_id\": \"1704448568392x478336703300610750\",\n        \"matching_score\": 0.7809992432594299\n    },\n    {\n        \"item_id\": \"1694624176810x431431098873602560\",\n        \"matching_score\": 0.7808674573898315\n    }\n]"
+					"body": "[\n    {\n        \"item_id\": \"65b7954e0154fd0c1818c765\",\n        \"title\": \"Xloverise Vintage hand-drawn Jewelry Box Wood, 5-Layer Wooden Jewelry Organizer Boxes with 4 Drawers,Valentine's Day gift, Multi-functional Jewelry Storage Case for Wowen (Brown)\",\n        \"tags\": \"['Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Fashion and Accessories', 'Home and Decor', 'Art and Culture', 'Birthdays', 'Anniversaries', \\\"Valentine's Day\\\", 'Appreciation', 'Thank You Gifts', 'Spouse or Significant Other', 'Girlfriend', 'Parent', 'Friend', 'Classic and Timeless', 'Minimalistic', 'Classic and timeless', 'Beauty and Self-Care', 'Weddings']\",\n        \"matching_score\": 0.9105479717254639\n    },\n    {\n        \"item_id\": \"65b36e196932958a4f56f4fd\",\n        \"title\": \"Eliza J Sequin Fringe Long Sleeve Cocktail Dress\",\n        \"tags\": \"['Female', '18 - 25', '25 - 45', '45 - 65', 'Fashion and Accessories', 'Birthdays', 'Anniversaries', 'Holidays', 'Weddings', 'Appreciation', 'Spouse or Significant Other', 'Girlfriend', 'Friend', 'Parent', 'Classic and Timeless', 'Bougie', \\\"Valentine's Day\\\"]\",\n        \"matching_score\": 0.8932570219039917\n    },\n    {\n        \"item_id\": \"65b36e916932958a4f56f505\",\n        \"title\": \"Zoe Lev 14K Yellow Gold Initial Diamond Ring\",\n        \"tags\": \"['Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Fashion and Accessories', 'Jewelry and Watches', 'Birthdays', 'Anniversaries', 'Holidays', \\\"Valentine's Day\\\", 'Appreciation', 'Spouse or Significant Other', 'Girlfriend', 'Parent', 'Friend', 'Classic and Timeless', 'Minimalistic', 'Weddings']\",\n        \"matching_score\": 0.8548346757888794\n    },\n    {\n        \"item_id\": \"65b3595d6932958a4f56f483\",\n        \"title\": \"Bloomingdales Diamond Double Row Heart Ring in 14K White Gold 115 ct tw  100 Exclusive\",\n        \"tags\": \"['Female', '25 - 45', '45 - 65', '65 +', 'Fashion and Accessories', 'Jewelry and Luxury', 'Anniversaries', 'Holidays', \\\"Valentine's Day\\\", 'Appreciation', 'Spouse or Significant Other', 'Girlfriend', 'Parent', 'Grand Parent', 'Friend', 'Classic and Timeless', 'Premium Brands', 'Classic and timeless', 'Premium brands', 'Weddings']\",\n        \"matching_score\": 0.8242578506469727\n    },\n    {\n        \"item_id\": \"65b797460154fd0c1818c778\",\n        \"title\": \"uweeuwee 11x7x3.5inches Valentines Day Gifts for Her Unique,Love Gifts for Her Anniversary,Handmade Birthday Gifts for Wife Gifts Romantic\",\n        \"tags\": \"['Female', '25 - 45', '45 - 65', '65 +', 'Art and Culture', 'Fashion and Accessories', 'Anniversaries', 'Birthdays', \\\"Valentine's Day\\\", 'Appreciation', 'Spouse or Significant Other', 'Girlfriend', 'Classic and Timeless', 'Practical', 'Classic and timeless', 'Weddings']\",\n        \"matching_score\": 0.8134360909461975\n    },\n    {\n        \"item_id\": \"65b7d81371d8394e325feedf\",\n        \"title\": \"Bloomingdales Scent Edit Valentines Day Gift Set  100 Exclusive\",\n        \"tags\": \"['Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Beauty and Self-Care', 'Fashion and Accessories', \\\"Valentine's Day\\\", 'Birthdays', 'Anniversaries', 'Appreciation', 'Spouse or Significant Other', 'Girlfriend', 'Friend', 'Parent', 'Classic and Timeless', 'Premium Brands', 'Practical']\",\n        \"matching_score\": 0.8069906830787659\n    },\n    {\n        \"item_id\": \"65b2621334b6f91abc1259a8\",\n        \"title\": \"AQUA Cire Wonder Short Puffer Jacket\",\n        \"tags\": \"['Female', '18 - 25', '25 - 45', '45 - 65', 'Fashion and Accessories', 'Outdoor and Nature', 'Travel and Adventure', 'Birthdays', 'Anniversaries', 'Holidays', 'Appreciation', 'Thank You Gifts', 'Spouse or Significant Other', 'Girlfriend', 'Friend', 'Parent', 'Classic and Timeless', 'Comfortable Yet Stylish', 'Practical']\",\n        \"matching_score\": 0.7936744689941406\n    },\n    {\n        \"item_id\": \"65b353cf6932958a4f56f449\",\n        \"title\": \"Versace Unisex Logo Silk Twill Slippers\",\n        \"tags\": \"['Male', 'Female', '25 - 45', '45 - 65', '65 +', 'Fashion and Accessories', 'Luxury and Premium Brands', 'Art and Culture', 'Birthdays', 'Anniversaries', 'Holidays', 'Appreciation', 'Spouse or Significant Other', 'Parent', 'Grand Parent', 'Friend', 'Premium Brands', 'Classic and Timeless', 'Bougie', 'Classic and timeless', 'Comfortable yet stylish', 'Premium brands', 'Minimalistic', 'Weddings', \\\"Valentine's Day\\\", 'Girlfriend']\",\n        \"matching_score\": 0.790313184261322\n    },\n    {\n        \"item_id\": \"65b93f8c82c661c2f563269d\",\n        \"title\": \"36 Pack Scarf Pashmina Shawls and Wraps Bulk with Thank You for Coming Wedding Bridesmaid Party Favors Gifts for Guests\",\n        \"tags\": \"['Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Fashion and Accessories', 'Beauty and Self-Care', 'Art and Culture', 'Weddings', 'Anniversaries', 'Holidays', 'Appreciation', 'Thank You Gifts', 'Friend', 'Parent', 'Grand Parent', 'Classic and Timeless', 'Comfortable Yet Stylish']\",\n        \"matching_score\": 0.7803264260292053\n    },\n    {\n        \"item_id\": \"65b369606932958a4f56f4d2\",\n        \"title\": \"Jimmy Choo Womens Diamond Tilda Slingback Heeled Loafers\",\n        \"tags\": \"['Female', '25 - 45', '45 - 65', '65 +', 'Fashion and Accessories', 'Luxury and Premium Brands', 'Birthdays', 'Anniversaries', 'Holidays', 'Appreciation', 'Spouse or Significant Other', 'Girlfriend', 'Parent', 'Friend', 'Premium Brands', 'Classic and Timeless', 'Premium brands', 'Comfortable yet stylish', \\\"Valentine's Day\\\", 'Promotions and Achievements']\",\n        \"matching_score\": 0.7721778750419617\n    }\n]"
 				}
 			]
 		},
@@ -112,7 +92,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"user_id\":\"unq_id-0\",\r\n    \"top_n\":10\r\n}",
+					"raw": "{\r\n    \"user_id\":\"test_profile_id1\",\r\n    \"top_n\":0\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -120,7 +100,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{localhost}}:8001/get_similar_user?user_id=unq_id-0&top_n=10",
+					"raw": "http://{{localhost}}:8001/get_similar_user",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
@@ -128,16 +108,6 @@
 					"port": "8001",
 					"path": [
 						"get_similar_user"
-					],
-					"query": [
-						{
-							"key": "user_id",
-							"value": "unq_id-0"
-						},
-						{
-							"key": "top_n",
-							"value": "10"
-						}
 					]
 				}
 			},
@@ -149,7 +119,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_id\":\"unq_id-0\",\r\n    \"top_n\":10\r\n}",
+							"raw": "{\r\n    \"user_id\":\"test_profile_id1\",\r\n    \"top_n\":0\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -157,7 +127,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{localhost}}:8001/get_similar_user?user_id=unq_id-0&top_n=10",
+							"raw": "http://{{localhost}}:8001/get_similar_user",
 							"protocol": "http",
 							"host": [
 								"{{localhost}}"
@@ -165,16 +135,6 @@
 							"port": "8001",
 							"path": [
 								"get_similar_user"
-							],
-							"query": [
-								{
-									"key": "user_id",
-									"value": "unq_id-0"
-								},
-								{
-									"key": "top_n",
-									"value": "10"
-								}
 							]
 						}
 					},
@@ -184,7 +144,7 @@
 					"header": [
 						{
 							"key": "date",
-							"value": "Wed, 31 Jan 2024 13:02:03 GMT"
+							"value": "Fri, 02 Feb 2024 12:43:42 GMT"
 						},
 						{
 							"key": "server",
@@ -192,7 +152,7 @@
 						},
 						{
 							"key": "content-length",
-							"value": "600"
+							"value": "2"
 						},
 						{
 							"key": "content-type",
@@ -200,7 +160,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "[\n    {\n        \"user_id\": \"unq_id-1\",\n        \"matching_score\": 0.9022547006607056\n    },\n    {\n        \"user_id\": \"unq_id-386\",\n        \"matching_score\": 0.8497868180274963\n    },\n    {\n        \"user_id\": \"unq_id-94\",\n        \"matching_score\": 0.8477573394775391\n    },\n    {\n        \"user_id\": \"unq_id-15\",\n        \"matching_score\": 0.8371310830116272\n    },\n    {\n        \"user_id\": \"unq_id-8\",\n        \"matching_score\": 0.828147292137146\n    },\n    {\n        \"user_id\": \"unq_id-4\",\n        \"matching_score\": 0.8104090690612793\n    },\n    {\n        \"user_id\": \"unq_id-936\",\n        \"matching_score\": 0.7992979884147644\n    },\n    {\n        \"user_id\": \"unq_id-489\",\n        \"matching_score\": 0.793603777885437\n    },\n    {\n        \"user_id\": \"unq_id-14\",\n        \"matching_score\": 0.7873201370239258\n    },\n    {\n        \"user_id\": \"unq_id-209\",\n        \"matching_score\": 0.7843720316886902\n    }\n]"
+					"body": "[]"
 				}
 			]
 		},
@@ -211,7 +171,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"new_item_attriutes\" : [\"male\",\"female\"],\r\n    \"top_n\":10\r\n}",
+					"raw": "{\r\n    \"new_item_attriutes\" : [\"female\", \"under 12\", \"12 - 18\", \"18 - 25\", \"25 - 45\", \"45 - 65\", \"65 +\", \"parent\", \"birthdays\", \"holidays\", \"housewarmings\", \"grand parent\", \"friend\",\"valentine's day\", \"practical\", \"home and decor\", \"male\", \"newborns\", \"child\"],\r\n    \"top_n\":10\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -219,7 +179,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{localhost}}:8001/cs_similar_item?new_item_attriutes=12 - 25,18 - 25",
+					"raw": "http://{{localhost}}:8001/cs_similar_item",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
@@ -227,12 +187,6 @@
 					"port": "8001",
 					"path": [
 						"cs_similar_item"
-					],
-					"query": [
-						{
-							"key": "new_item_attriutes",
-							"value": "12 - 25,18 - 25"
-						}
 					]
 				}
 			},
@@ -244,7 +198,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"new_item_attriutes\" : [\"male\",\"female\"],\r\n    \"top_n\":10\r\n}",
+							"raw": "{\r\n    \"new_item_attriutes\" : [\"female\", \"under 12\", \"12 - 18\", \"18 - 25\", \"25 - 45\", \"45 - 65\", \"65 +\", \"parent\", \"birthdays\", \"holidays\", \"housewarmings\", \"grand parent\", \"friend\",\"valentine's day\", \"practical\", \"home and decor\", \"male\", \"newborns\", \"child\"],\r\n    \"top_n\":10\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -252,7 +206,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{localhost}}:8001/cs_similar_item?new_item_attriutes=12 - 25,18 - 25",
+							"raw": "http://{{localhost}}:8001/cs_similar_item",
 							"protocol": "http",
 							"host": [
 								"{{localhost}}"
@@ -260,12 +214,6 @@
 							"port": "8001",
 							"path": [
 								"cs_similar_item"
-							],
-							"query": [
-								{
-									"key": "new_item_attriutes",
-									"value": "12 - 25,18 - 25"
-								}
 							]
 						}
 					},
@@ -275,7 +223,7 @@
 					"header": [
 						{
 							"key": "date",
-							"value": "Wed, 31 Jan 2024 13:02:32 GMT"
+							"value": "Fri, 02 Feb 2024 12:47:42 GMT"
 						},
 						{
 							"key": "server",
@@ -283,7 +231,7 @@
 						},
 						{
 							"key": "content-length",
-							"value": "827"
+							"value": "5613"
 						},
 						{
 							"key": "content-type",
@@ -291,7 +239,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "[\n    {\n        \"item_id\": \"1694623259609x642610669416005600\",\n        \"matching_score\": 0.6014978289604187\n    },\n    {\n        \"item_id\": \"1696474690512x712111021929019000\",\n        \"matching_score\": 0.5566368699073792\n    },\n    {\n        \"item_id\": \"1696265546759x302554275626445200\",\n        \"matching_score\": 0.553095281124115\n    },\n    {\n        \"item_id\": \"1700977806289x430252729878543500\",\n        \"matching_score\": 0.5524588227272034\n    },\n    {\n        \"item_id\": \"1694623743199x933704732028886900\",\n        \"matching_score\": 0.534806489944458\n    },\n    {\n        \"item_id\": \"1694624886161x625817956109399000\",\n        \"matching_score\": 0.5318477749824524\n    },\n    {\n        \"item_id\": \"1695942606558x569238888724172800\",\n        \"matching_score\": 0.5245905518531799\n    },\n    {\n        \"item_id\": \"1695942614414x891099131138326900\",\n        \"matching_score\": 0.51912522315979\n    },\n    {\n        \"item_id\": \"1695942604548x763821546127128300\",\n        \"matching_score\": 0.5114318132400513\n    },\n    {\n        \"item_id\": \"1695942611638x877932826170158200\",\n        \"matching_score\": 0.5113054513931274\n    }\n]"
+					"body": "[\n    {\n        \"item_id\": \"65b357206932958a4f56f46b\",\n        \"title\": \"MaxiCosi Minla 6in1 Adjustable High Chair\",\n        \"tags\": \"['Female', 'Under 12', '12 - 18', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Parent', 'Birthdays', 'Holidays', 'Baby Showers', 'Housewarmings', 'Grand Parent', 'Friend', 'Practical', 'Home and Decor', 'Male', 'Newborns', 'Child']\",\n        \"matching_score\": 0.9391655325889587\n    },\n    {\n        \"item_id\": \"65b3623a6932958a4f56f4ca\",\n        \"title\": \"HP Sprocket Studio Plus WiFi Photo Printer\",\n        \"tags\": \"['Male', 'Female', '12 - 18', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Tech and Gadgets', 'Home and Decor', 'Birthdays', 'Holidays', 'Graduations', 'Appreciation', 'Thank You Gifts', 'Friend', 'Parent', 'Grand Parent', 'Colleague', 'Practical', 'Chill', 'Minimalistic', 'Travel and Adventure', 'Arts and Crafts', 'Promotions and Achievements', 'Housewarmings', 'Thank you gifts', 'Spouse or Significant Other', 'Child']\",\n        \"matching_score\": 0.774914562702179\n    },\n    {\n        \"item_id\": \"65b7424d037292b0449f4d18\",\n        \"title\": \"Hydro Flask All Around Travel Tumbler with Handle Stainless Steel Double-Wall Vacuum Insulated\",\n        \"tags\": \"['Male', 'Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Travel and Adventure', 'Outdoor and Nature', 'Fitness and Wellness', 'Food and Cooking', 'Home and Decor', 'Birthdays', 'Holidays', 'Housewarmings', 'Appreciation', 'Thank You Gifts', 'Friend', 'Parent', 'Grand Parent', 'Colleague', 'Practical', 'Classic and Timeless', 'Comfortable Yet Stylish']\",\n        \"matching_score\": 0.737140417098999\n    },\n    {\n        \"item_id\": \"65b3563e6932958a4f56f463\",\n        \"title\": \"Gund My First Teddy 15  Ages 0\",\n        \"tags\": \"['Female', 'Under 12', '12 - 18', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Pets and Animal Lovers', 'Art and Culture', 'Birthdays', 'Newborns', 'Housewarmings', 'Graduations', 'Appreciation', 'Thank You Gifts', 'Child', 'Parent', 'Grand Parent', 'Friend', 'Chill', 'Sports and Hobbies', 'Male', \\\"Valentine's Day\\\", 'Girlfriend']\",\n        \"matching_score\": 0.7295373678207397\n    },\n    {\n        \"item_id\": \"65b377986932958a4f56f529\",\n        \"title\": \"MaxiCosi Mico Luxe Infant Car Seat\",\n        \"tags\": \"['Female', 'Under 12', '25 - 45', '45 - 65', '65 +', 'Travel and Adventure', 'Family and Parenting', 'Safety and Security', 'Baby Showers', 'Birthdays', 'Holidays', 'Newborns', 'Housewarmings', 'Parent', 'Grand Parent', 'Friend', 'Classic and Timeless', 'Comfortable Yet Stylish', 'Practical', 'Male', 'Spouse or Significant Other', 'Colleague', 'Child']\",\n        \"matching_score\": 0.6893643736839294\n    },\n    {\n        \"item_id\": \"65b77b730154fd0c1818c74b\",\n        \"title\": \"Celestron – SkyMaster 20X80 Binocular – Outdoor and Astronomy Binocular – Large Aperture for Long Distance Viewing – Multi-Coated Optics – Carrying Case Included – Ultra Sharp\",\n        \"tags\": \"['Male', 'Female', '25 - 45', '45 - 65', '65 +', 'Outdoor and Nature', 'Travel and Adventure', 'Science and Learning', 'Birthdays', 'Anniversaries', 'Retirements', 'Graduations', 'Appreciation', 'Parent', 'Grand Parent', 'Friend', 'Practical', 'Holidays', 'Grandparent', 'Child']\",\n        \"matching_score\": 0.6848117709159851\n    },\n    {\n        \"item_id\": \"65b7515ca69deb0aa1e59e3e\",\n        \"title\": \"Efomao Fabric Office Chair, Big and Tall Office Chair 400 lb Weight Capacity, High Back Executive Office Chair with Foot Rest, Ergonomic Office Chair for Back Pain Relief, Beige\",\n        \"tags\": \"['Male', 'Female', '25 - 45', '45 - 65', '65 +', 'Home and Decor', 'Office and Work', 'Comfort and Relaxation', 'Birthdays', 'Anniversaries', 'Housewarmings', 'Retirements', 'Appreciation', 'Thank You Gifts', 'Colleague', 'Friend', 'Parent', 'Grand Parent', 'Comfortable Yet Stylish', 'Practical']\",\n        \"matching_score\": 0.6832876801490784\n    },\n    {\n        \"item_id\": \"65b9372182c661c2f56325f5\",\n        \"title\": \"TOAUTO WMF-8L Large Wax Melter for Candle Making, Electric Wax Melting Container Holds 8L Melted Wax with Heating Core Spout & Bottom Design for Commercial Candle Business\",\n        \"tags\": \"['Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Arts and Crafts', 'Home and Decor', 'Birthdays', 'Holidays', 'Housewarmings', 'Appreciation', 'Friend', 'Parent', 'Grand Parent', 'Practical', 'Chill', 'Art and Culture', 'Male', 'Anniversaries', 'Thank you gifts', 'Retirements', 'Graduations', 'Spouse or Significant Other', 'Girlfriend', 'Colleague', 'Grandparent']\",\n        \"matching_score\": 0.6727438569068909\n    },\n    {\n        \"item_id\": \"65b932c482c661c2f56325c7\",\n        \"title\": \"KODAK PIXPRO AZ255-RD 16MP Digital Camera 25X Optical Zoom 24mm Wide Angle Lens Optical Image Stabilization 1080P Full HD Video 3\\\" LCD Vlogging Camera (Red)\",\n        \"tags\": \"['Male', 'Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Tech and Gadgets', 'Photography', 'Travel and Adventure', 'Birthdays', 'Holidays', 'Graduations', 'Appreciation', 'Thank You Gifts', 'Friend', 'Parent', 'Grand Parent', 'Classic and timeless', 'Practical', 'Chill', 'Promotions and Achievements', 'Weddings', 'Newborns', \\\"Valentine's Day\\\", 'Retirements', 'Anniversaries', 'Spouse or Significant Other', 'Child', 'Colleague', 'Grandparent', 'Girlfriend']\",\n        \"matching_score\": 0.6667492389678955\n    },\n    {\n        \"item_id\": \"65b361366932958a4f56f4ba\",\n        \"title\": \"Bowers  Wilkins Px8 Premium Wireless Over Ear Headphones with Active Noise Cancellation\",\n        \"tags\": \"['Male', 'Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Tech and Gadgets', 'Music and Entertainment', 'Travel and Adventure', 'Fashion and Accessories', 'Birthdays', 'Anniversaries', 'Holidays', 'Promotions and Achievements', 'Retirements', 'Graduations', 'Appreciation', 'Spouse or Significant Other', 'Parent', 'Friend', 'Colleague', 'Premium Brands', 'Classic and Timeless', 'Comfortable Yet Stylish', 'Comfortable yet stylish', 'Minimalistic', 'Practical', \\\"Valentine's Day\\\", 'Thank you gifts', 'Girlfriend', 'Grandparent']\",\n        \"matching_score\": 0.6550849080085754\n    }\n]"
 				}
 			]
 		},
@@ -302,7 +250,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"user_id\":\"unq_id-0\",\r\n    \"top_n\":10\r\n}",
+					"raw": "{\r\n    \"user_id\":\"test_profile_id1\",\r\n    \"top_n\":10\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -329,7 +277,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user_id\":\"unq_id-0\",\r\n    \"top_n\":10\r\n}",
+							"raw": "{\r\n    \"user_id\":\"test_profile_id1\",\r\n    \"top_n\":10\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -354,7 +302,7 @@
 					"header": [
 						{
 							"key": "date",
-							"value": "Thu, 01 Feb 2024 09:24:48 GMT"
+							"value": "Fri, 02 Feb 2024 12:48:25 GMT"
 						},
 						{
 							"key": "server",
@@ -362,7 +310,7 @@
 						},
 						{
 							"key": "content-length",
-							"value": "2080"
+							"value": "1721"
 						},
 						{
 							"key": "content-type",
@@ -370,7 +318,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "[\n    {\n        \"all_unique_id\": \"1696265568959x799696197241046800\",\n        \"title\": \"HP OfficeJet Pro 8025e Wireless Color All-in-One Printer with Bonus 6 Free Months Instant Ink (1K7K3A) (Renewed Premium),Grey\",\n        \"score\": 0.3742271065711975\n    },\n    {\n        \"all_unique_id\": \"1695836031337x217863097764540600\",\n        \"title\": \"2023 - American Silver Eagle .999 Fine Silver in Direct Fit Air Tite with our Certificate of Authenticity Dollar US Mint Uncirculated\",\n        \"score\": 0.37014511227607727\n    },\n    {\n        \"all_unique_id\": \"1695942610434x580175664502505100\",\n        \"title\": \"Apple AirPods (2nd Generation) Wireless Earbuds with Lightning Charging Case Included. Over 24 Hours of Battery Life, Effortless Setup. Bluetooth Headphones for iPhone\",\n        \"score\": 0.35138848423957825\n    },\n    {\n        \"all_unique_id\": \"1696265546759x302554275626445200\",\n        \"title\": \"Apple iPhone XR, 64GB, Black - Unlocked (Renewed)\",\n        \"score\": 0.34964677691459656\n    },\n    {\n        \"all_unique_id\": \"1696778066056x156823528466174080\",\n        \"title\": \"Aeitto Nugget Ice Maker Countertop, 55 lbs/Day, Chewable Ice Maker, Rapid Ice Release in 5 Mins, Auto Water Refill, Self-Cleaning, Stainless Steel Housing Ice Machine\",\n        \"score\": 0.34857064485549927\n    },\n    {\n        \"all_unique_id\": \"1695831199012x679712269232390000\",\n        \"title\": \"Stanley Quencher H2.0 FlowState Stainless Steel Vacuum Insulated Tumbler with Lid and Straw for Water, Iced Tea or Coffee, Smoothie and More\",\n        \"score\": 0.34159085154533386\n    },\n    {\n        \"all_unique_id\": \"1694624157909x286171674076893380\",\n        \"title\": \"Kindle Paperwhite (8 GB) – Now with a 6.8\\\" display and adjustable warm light – Black\",\n        \"score\": 0.33000561594963074\n    },\n    {\n        \"all_unique_id\": \"1695942606558x569238888724172800\",\n        \"title\": \"ToyerBee Telescope for Adults & Kids, 70mm Aperture Astronomical Refractor Telescopes for Astronomy Beginners (15X-150X), 300mm Portable Telescope with an Phone Adapter & A Wireless Remote\",\n        \"score\": 0.3206518888473511\n    },\n    {\n        \"all_unique_id\": \"1696778065187x934733550931766000\",\n        \"title\": \"Apple iPhone 12, 64GB, Blue - Fully Unlocked (Renewed)\",\n        \"score\": 0.3139112591743469\n    },\n    {\n        \"all_unique_id\": \"1695942601474x177590380869441200\",\n        \"title\": \"Apple AirPods 2 with Charging Case - White (Renewed)\",\n        \"score\": 0.3022773861885071\n    }\n]"
+					"body": "[\n    {\n        \"all_unique_id\": \"65b369606932958a4f56f4d2\",\n        \"title\": \"Jimmy Choo Womens Diamond Tilda Slingback Heeled Loafers\",\n        \"score\": -0.08968306332826614\n    },\n    {\n        \"all_unique_id\": \"65b3549f6932958a4f56f453\",\n        \"title\": \"Versace Versace Butterfly Garden Service Plate\",\n        \"score\": -0.35774359107017517\n    },\n    {\n        \"all_unique_id\": \"65bc2d944b4e8017fe41c6f9\",\n        \"title\": \"Ferragamo Womens Vara Leather Pumps\",\n        \"score\": -0.3577452003955841\n    },\n    {\n        \"all_unique_id\": \"65b36e916932958a4f56f505\",\n        \"title\": \"Zoe Lev 14K Yellow Gold Initial Diamond Ring\",\n        \"score\": -0.35785871744155884\n    },\n    {\n        \"all_unique_id\": \"65b9372182c661c2f56325f5\",\n        \"title\": \"TOAUTO WMF-8L Large Wax Melter for Candle Making, Electric Wax Melting Container Holds 8L Melted Wax with Heating Core Spout & Bottom Design for Commercial Candle Business\",\n        \"score\": -0.3579390048980713\n    },\n    {\n        \"all_unique_id\": \"65b93a1b82c661c2f5632636\",\n        \"title\": \"Grand Indulgence Gourmet Gift Basket: Experience the Finest with Lindor Truffles, Sea Salt Caramels, Sea Salt Dark Chocolate, Caramels, Dolcetto Rosemary Crackers, Jalepeno Cheddar, Three Little Pigs Saucisso Sec & More!\",\n        \"score\": -0.3582734763622284\n    },\n    {\n        \"all_unique_id\": \"65b377986932958a4f56f529\",\n        \"title\": \"MaxiCosi Mico Luxe Infant Car Seat\",\n        \"score\": -0.3582782745361328\n    },\n    {\n        \"all_unique_id\": \"65b2641a6932958a4f56f430\",\n        \"title\": \"Voluspa Rose Otto 5 Wick Hearth Candle 114 oz\",\n        \"score\": -0.3582879602909088\n    },\n    {\n        \"all_unique_id\": \"65b352ea6932958a4f56f43b\",\n        \"title\": \"Versace I Heart Baroque Bath Robe\",\n        \"score\": -0.3582894802093506\n    },\n    {\n        \"all_unique_id\": \"65b93fcd82c661c2f56326a4\",\n        \"title\": \"Anniversary Romantic Gift for Her, Birthday Gifts for Wife from Husband, Moissanite Diamond Pendant Necklaces for Women, Best Jewelry Present to Girlfriend Mom Daughter for Christmas Valentines\",\n        \"score\": -0.3583067059516907\n    }\n]"
 				}
 			]
 		},
@@ -381,7 +329,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"new_user_attriutes\" : [\"male\",\"female\"],\r\n    \"top_n\":10\r\n}",
+					"raw": "{\r\n    \"new_user_attriutes\" : [\"female\", \"under 12\", \"12 - 18\", \"18 - 25\", \"25 - 45\", \"45 - 65\", \"65 +\", \"parent\", \"birthdays\", \"holidays\", \"housewarmings\", \"grand parent\", \"friend\",\"valentine's day\", \"practical\", \"home and decor\", \"male\", \"newborns\", \"child\"],\r\n    \"top_n\":10\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -408,7 +356,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"new_user_attriutes\" : [\"male\",\"female\"],\r\n    \"top_n\":10\r\n}",
+							"raw": "{\r\n    \"new_user_attriutes\" : [\"female\", \"under 12\", \"12 - 18\", \"18 - 25\", \"25 - 45\", \"45 - 65\", \"65 +\", \"parent\", \"birthdays\", \"holidays\", \"housewarmings\", \"grand parent\", \"friend\",\"valentine's day\", \"practical\", \"home and decor\", \"male\", \"newborns\", \"child\"],\r\n    \"top_n\":10\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -433,7 +381,7 @@
 					"header": [
 						{
 							"key": "date",
-							"value": "Thu, 01 Feb 2024 09:28:09 GMT"
+							"value": "Fri, 02 Feb 2024 12:49:17 GMT"
 						},
 						{
 							"key": "server",
@@ -441,7 +389,7 @@
 						},
 						{
 							"key": "content-length",
-							"value": "2090"
+							"value": "5698"
 						},
 						{
 							"key": "content-type",
@@ -449,7 +397,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "[\n    {\n        \"all_unique_id\": \"1696265568959x799696197241046800\",\n        \"title\": \"HP OfficeJet Pro 8025e Wireless Color All-in-One Printer with Bonus 6 Free Months Instant Ink (1K7K3A) (Renewed Premium),Grey\",\n        \"score\": -0.34806400537490845\n    },\n    {\n        \"all_unique_id\": \"1695836031337x217863097764540600\",\n        \"title\": \"2023 - American Silver Eagle .999 Fine Silver in Direct Fit Air Tite with our Certificate of Authenticity Dollar US Mint Uncirculated\",\n        \"score\": -0.35233065485954285\n    },\n    {\n        \"all_unique_id\": \"1695942610434x580175664502505100\",\n        \"title\": \"Apple AirPods (2nd Generation) Wireless Earbuds with Lightning Charging Case Included. Over 24 Hours of Battery Life, Effortless Setup. Bluetooth Headphones for iPhone\",\n        \"score\": -0.37043529748916626\n    },\n    {\n        \"all_unique_id\": \"1696265546759x302554275626445200\",\n        \"title\": \"Apple iPhone XR, 64GB, Black - Unlocked (Renewed)\",\n        \"score\": -0.3723696768283844\n    },\n    {\n        \"all_unique_id\": \"1696778066056x156823528466174080\",\n        \"title\": \"Aeitto Nugget Ice Maker Countertop, 55 lbs/Day, Chewable Ice Maker, Rapid Ice Release in 5 Mins, Auto Water Refill, Self-Cleaning, Stainless Steel Housing Ice Machine\",\n        \"score\": -0.3737497925758362\n    },\n    {\n        \"all_unique_id\": \"1695831199012x679712269232390000\",\n        \"title\": \"Stanley Quencher H2.0 FlowState Stainless Steel Vacuum Insulated Tumbler with Lid and Straw for Water, Iced Tea or Coffee, Smoothie and More\",\n        \"score\": -0.38047564029693604\n    },\n    {\n        \"all_unique_id\": \"1694624157909x286171674076893380\",\n        \"title\": \"Kindle Paperwhite (8 GB) – Now with a 6.8\\\" display and adjustable warm light – Black\",\n        \"score\": -0.3924189507961273\n    },\n    {\n        \"all_unique_id\": \"1695942606558x569238888724172800\",\n        \"title\": \"ToyerBee Telescope for Adults & Kids, 70mm Aperture Astronomical Refractor Telescopes for Astronomy Beginners (15X-150X), 300mm Portable Telescope with an Phone Adapter & A Wireless Remote\",\n        \"score\": -0.40193167328834534\n    },\n    {\n        \"all_unique_id\": \"1696778065187x934733550931766000\",\n        \"title\": \"Apple iPhone 12, 64GB, Blue - Fully Unlocked (Renewed)\",\n        \"score\": -0.40859758853912354\n    },\n    {\n        \"all_unique_id\": \"1695942601474x177590380869441200\",\n        \"title\": \"Apple AirPods 2 with Charging Case - White (Renewed)\",\n        \"score\": -0.4199993312358856\n    }\n]"
+					"body": "[\n    {\n        \"all_unique_id\": \"65b369606932958a4f56f4d2\",\n        \"title\": \"Jimmy Choo Womens Diamond Tilda Slingback Heeled Loafers\",\n        \"tags\": \"['Female', '25 - 45', '45 - 65', '65 +', 'Fashion and Accessories', 'Luxury and Premium Brands', 'Birthdays', 'Anniversaries', 'Holidays', 'Appreciation', 'Spouse or Significant Other', 'Girlfriend', 'Parent', 'Friend', 'Premium Brands', 'Classic and Timeless', 'Premium brands', 'Comfortable yet stylish', \\\"Valentine's Day\\\", 'Promotions and Achievements']\",\n        \"score\": 0.21483105421066284\n    },\n    {\n        \"all_unique_id\": \"65b3549f6932958a4f56f453\",\n        \"title\": \"Versace Versace Butterfly Garden Service Plate\",\n        \"tags\": \"['Home and Decor', 'Art and Culture', 'Weddings', 'Housewarmings', 'Appreciation', 'Parent', 'Friend', 'Colleague', 'Premium Brands', 'Classic and Timeless', 'Premium brands', 'Classic and timeless', 'Bougie', 'Comfortable yet stylish', 'Male', 'Anniversaries', 'Birthdays', 'Promotions and Achievements', \\\"Valentine's Day\\\", 'Thank you gifts', 'Spouse or Significant Other', 'Girlfriend']\",\n        \"score\": -0.053540170192718506\n    },\n    {\n        \"all_unique_id\": \"65b9372182c661c2f56325f5\",\n        \"title\": \"TOAUTO WMF-8L Large Wax Melter for Candle Making, Electric Wax Melting Container Holds 8L Melted Wax with Heating Core Spout & Bottom Design for Commercial Candle Business\",\n        \"tags\": \"['Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Arts and Crafts', 'Home and Decor', 'Birthdays', 'Holidays', 'Housewarmings', 'Appreciation', 'Friend', 'Parent', 'Grand Parent', 'Practical', 'Chill', 'Art and Culture', 'Male', 'Anniversaries', 'Thank you gifts', 'Retirements', 'Graduations', 'Spouse or Significant Other', 'Girlfriend', 'Colleague', 'Grandparent']\",\n        \"score\": -0.05354510620236397\n    },\n    {\n        \"all_unique_id\": \"65b93fcd82c661c2f56326a4\",\n        \"title\": \"Anniversary Romantic Gift for Her, Birthday Gifts for Wife from Husband, Moissanite Diamond Pendant Necklaces for Women, Best Jewelry Present to Girlfriend Mom Daughter for Christmas Valentines\",\n        \"tags\": \"['Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Fashion and Accessories', 'Anniversaries', 'Birthdays', \\\"Valentine's Day\\\", 'Christmas', 'Spouse or Significant Other', 'Girlfriend', 'Parent', 'Classic and Timeless', 'Premium Brands', 'Minimalistic']\",\n        \"score\": -0.05359944328665733\n    },\n    {\n        \"all_unique_id\": \"65b74b4ea69deb0aa1e59e0e\",\n        \"title\": \"Philips 3200 Series Fully Automatic Espresso Machine w/ LatteGo, Black, EP3241/54\",\n        \"tags\": \"['Male', 'Female', '25 - 45', '45 - 65', '65 +', 'Food and Cooking', 'Home and Decor', 'Tech and Gadgets', 'Birthdays', 'Anniversaries', 'Housewarmings', 'Retirements', 'Appreciation', 'Thank You Gifts', 'Spouse or Significant Other', 'Parent', 'Grand Parent', 'Friend', 'Practical', 'Classic and Timeless', 'Promotions and Achievements', 'Weddings', 'Graduations', 'Thank you gifts', 'Grandparent', 'Colleague']\",\n        \"score\": -0.05362434685230255\n    },\n    {\n        \"all_unique_id\": \"65b74f77a69deb0aa1e59e2a\",\n        \"title\": \"Xbox Series S Fortnite and Rocket League Bundle - Includes Xbox Wireless Controller - Includes Fortnite & Rocket League Downloads - 10GB RAM 512GB SSD - Up to 120 frames per second - Experience hi\",\n        \"tags\": \"['Male', 'Female', '12 - 18', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Tech and Gadgets', 'Gaming', 'Entertainment', 'Birthdays', 'Holidays', 'Graduations', 'Appreciation', 'Child', 'Friend', 'Spouse or Significant Other', 'Practical', 'Music and Entertainment', 'Sports and Hobbies', 'Promotions and Achievements', \\\"Valentine's Day\\\", 'Housewarmings']\",\n        \"score\": -0.053652722388505936\n    },\n    {\n        \"all_unique_id\": \"65b93bc482c661c2f563265f\",\n        \"title\": \"KONELCARE Wood Liquor Dispenser-Solid Base Real Brass, Leakproof,Smooth Pouring Dispenser for Home Bar- Fathers Day Alcohol Gifts for Men\",\n        \"tags\": \"['Male', '25 - 45', '45 - 65', '65 +', 'Food and Cooking', 'Home and Decor', 'Birthdays', 'Anniversaries', 'Holidays', 'Retirements', 'Housewarmings', 'Appreciation', 'Spouse or Significant Other', 'Parent', 'Friend', 'Classic and Timeless', 'Chill']\",\n        \"score\": -0.05365986004471779\n    },\n    {\n        \"all_unique_id\": \"65b7424d037292b0449f4d18\",\n        \"title\": \"Hydro Flask All Around Travel Tumbler with Handle Stainless Steel Double-Wall Vacuum Insulated\",\n        \"tags\": \"['Male', 'Female', '18 - 25', '25 - 45', '45 - 65', '65 +', 'Travel and Adventure', 'Outdoor and Nature', 'Fitness and Wellness', 'Food and Cooking', 'Home and Decor', 'Birthdays', 'Holidays', 'Housewarmings', 'Appreciation', 'Thank You Gifts', 'Friend', 'Parent', 'Grand Parent', 'Colleague', 'Practical', 'Classic and Timeless', 'Comfortable Yet Stylish']\",\n        \"score\": -0.053682662546634674\n    },\n    {\n        \"all_unique_id\": \"65b93ea382c661c2f563268d\",\n        \"title\": \"NEEDONE Cigar Humidor 48L with Heating and Cooling Temperature Control System, Quiet Thermostatic Electric Cooler Cabinet for 350 Counts with Digital Hygrometer, Spanish Cedar Wood, Gift for Men\",\n        \"tags\": \"['Male', '25 - 45', '45 - 65', '65 +', 'Home and Decor', 'Food and Cooking', 'Art and Culture', 'Birthdays', 'Anniversaries', 'Housewarmings', 'Retirements', 'Spouse or Significant Other', 'Parent', 'Grand Parent', 'Friend', 'Classic and Timeless', 'Chill', 'Weddings', 'Promotions and Achievements', 'Colleague']\",\n        \"score\": -0.05369235947728157\n    },\n    {\n        \"all_unique_id\": \"65b2641a6932958a4f56f430\",\n        \"title\": \"Voluspa Rose Otto 5 Wick Hearth Candle 114 oz\",\n        \"tags\": \"['Female', '25 - 45', '45 - 65', '65 +', 'Home and Decor', 'Beauty and Self-Care', 'Art and Culture', 'Birthdays', 'Anniversaries', 'Holidays', 'Housewarmings', 'Appreciation', 'Thank You Gifts', 'Spouse or Significant Other', 'Parent', 'Friend', 'Classic and Timeless', 'Chill', 'Premium brands', 'Arts and Crafts', 'Weddings', \\\"Valentine's Day\\\", 'Thank you gifts', 'Retirements', 'Promotions and Achievements', 'Get well soon', 'Girlfriend', 'Colleague', 'Grandparent']\",\n        \"score\": -0.05370712652802467\n    }\n]"
 				}
 			]
 		}

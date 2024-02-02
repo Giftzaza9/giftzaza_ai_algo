@@ -1,9 +1,27 @@
 import os
 import sys
-from src.lightfm_model.Model import LightFM_cls
+from pathlib import Path
+from src.lightfm_model.model import LightFM_cls
+from src.mongodb.mongodb import Mongodb_cls
 import json
+import pandas as pd
+import numpy as np
 
 LightFM_Obj = LightFM_cls()
+Mongodb_Obj = Mongodb_cls()
+
+BASE_PATH = os.path.dirname(__file__)
+
+with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "category.json"),'r') as fr:
+    cat_odata = json.load(fr)
+    cat_odata.pop("gpt_assistance")
+    attr_list= []
+    for i in cat_odata:
+        if cat_odata[i].get('keyword_search',None):
+            attr_list.extend(list(cat_odata[i]['category'].keys()))
+        else:
+            attr_list.extend(cat_odata[i]['category'])
+    attr_list = list(map(lambda x: x.strip().lower(), attr_list))
 
 def similar_users_endpoint(user_id,N=10):
     udf = LightFM_Obj.similar_existing_user(user_id,N)[['left_all_unique_id','left_score']].copy()
@@ -11,12 +29,12 @@ def similar_users_endpoint(user_id,N=10):
     return udf.to_dict(orient='records')
 
 def similar_items_endpoint(item_id,N=10):
-    idf = LightFM_Obj.similar_existing_item(item_id,N)[['left_all_unique_id','title','left_score']].copy()
+    idf = LightFM_Obj.similar_existing_item(item_id,N)[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     return idf.to_dict(orient='records')
 
 def cs_similar_items(new_item_attriutes,N=10):
-    idf = LightFM_Obj.cold_start_similar_items(new_item_attriutes=new_item_attriutes,N=N)[['left_all_unique_id','title','left_score']].copy()
+    idf = LightFM_Obj.cold_start_similar_items(new_item_attriutes=new_item_attriutes,N=N)[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     return idf.to_dict(orient='records')
 
@@ -27,3 +45,43 @@ def user_item_recommendation(user_id,N=10):
 def cs_user_item_recommendation(new_user_attriutes,N=10):
     idf = LightFM_Obj.cold_start_user_item_recommendation(new_user_attriutes)
     return idf.head(N).to_dict(orient='records')
+
+def train_with_mongodb():
+    Mongodb_Obj.connect()
+    df_items = Mongodb_Obj.get_collection_as_dataframe("test","products")
+    # df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
+    df_users = pd.DataFrame(data = [['test_profile_id1',[],np.random.randint(10),list(np.random.choice(attr_list,10))]],
+                           columns = ['_id', 'recommended_products', '__v','tags'])
+    # df_interactions = Mongodb_Obj.get_collection_as_dataframe("test","useractivities")
+    df_interactions = pd.DataFrame(data = [["test_activity_id1",'65b369606932958a4f56f4d2',"test_user_id1",np.random.randint(10),'test_profile_id1']],
+                                   columns = ['_id', 'productId', 'userId', '__v', 'profileId'] )
+    
+    
+    rdf_interactions = df_interactions[['profileId','productId']].copy()
+    rdf_interactions = rdf_interactions.astype(str)
+
+    rdf_items = df_items[['_id','tags']].copy()
+    rdf_items['_id'] = rdf_items['_id'].astype(str)
+    rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(), eachList)) )
+    rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(set(eachList) & set(attr_list)))
+
+    rdf_users = df_users[['_id','tags']].copy()
+    rdf_users['_id'] = rdf_users['_id'].astype(str)
+    rdf_users['tags'] = rdf_users['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(), eachList)) )
+    rdf_users['tags'] = rdf_users['tags'].apply(lambda eachList : list(set(eachList) & set(attr_list)))
+
+    df_users['all_unique_id'] = df_users['_id'].copy()
+    df_items['all_unique_id'] = df_items['_id'].copy()
+
+    LightFM_Obj.Re_Train(rdf_users.rename(columns={"_id":"userID","tags":"user_attr_list"}).to_dict(orient='list'),
+            rdf_items.rename(columns={"_id":"itemID","tags":"item_attr_list"}).to_dict(orient='list'),
+            rdf_interactions.rename(columns={"profileId":"userID","productId":"itemID"}).to_dict(orient='list'),
+            attr_list,
+            df_users,
+            df_items
+            )
+    return True
+    
+    
+
+

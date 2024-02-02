@@ -1,0 +1,175 @@
+{
+    "gender": {
+        "gpt_template": "1. Identify gender(s) for whom the product can be gifted from ${list}.return atleast one from the list. Limit responses to values exclusively within the specified list of gender and sort your response from most likely to least likely.",
+        "category": [
+            "Male",
+            "Female"
+        ]
+    },
+    "age_category": {
+        "gpt_template": "2. Identify appropriate age group(s) from ${list} for gifting.return atleast one from the list. Limit responses to values exclusively within the specified list of age category and sort your response from most likely to least likely.",
+        "category": [
+            "Under 12",
+            "12 - 18",
+            "18 - 25",
+            "25 - 45",
+            "45 - 65",
+            "65 +"
+        ]
+    },
+    "interest": {
+        "keyword_search": true,
+        "gpt_template": "3. Determine category(ies) of interest from ${list} for the product.return atleast one from the list. Limit responses to values exclusively within the specified list of interest and sort your response from most likely to least likely.",
+        "category": {
+            "Fitness and Wellness": [
+                "wellness",
+                "fitness"
+            ],
+            "Tech and Gadgets": [
+                "tech",
+                "gadgets"
+            ],
+            "Fashion and Accessories": [
+                "fashion",
+                "accessories"
+            ],
+            "Books and Learning": [
+                "books",
+                "learning"
+            ],
+            "Travel and Adventure": [
+                "travel",
+                "adventure"
+            ],
+            "Food and Cooking": [
+                "food",
+                "cooking"
+            ],
+            "Arts and Crafts": [
+                "arts",
+                "crafts"
+            ],
+            "Music and Entertainment": [
+                "music",
+                "entertainment"
+            ],
+            "Outdoor and Nature": [
+                "outdoor",
+                "nature"
+            ],
+            "Beauty and Self-Care": [
+                "beauty",
+                "self-care"
+            ],
+            "Home and Decor": [
+                "home",
+                "decor"
+            ],
+            "Sports and Hobbies": [
+                "sports",
+                "hobbies"
+            ],
+            "Pets and Animal Lovers": [
+                "pets",
+                "animal"
+            ],
+            "Art and Culture": [
+                "art",
+                "culture"
+            ],
+            "Social Impact and Charity": [
+                "social impact",
+                "charity"
+            ],
+            "Spirituality": [
+                "spirituality"
+            ]
+        }
+    },
+    "occasion": {
+        "gpt_template": "4. Identify ideal occasion(s) for gifting from ${list}.return atleast one from the list. Limit responses to values exclusively within the specified list of occasions and sort your response from most likely to least likely.",
+        "category": [
+            "Birthdays",
+            "Anniversaries",
+            "Holidays",
+            "Promotions and Achievements",
+            "Weddings",
+            "Newborns",
+            "Retirements",
+            "Housewarmings",
+            "Graduations",
+            "Valentine's Day",
+            "Appreciation",
+            "Get Well Soon",
+            "Thank You Gifts",
+            "Apologies"
+        ]
+    },
+    "relationship": {
+        "gpt_template": "5. Identify ideal relationship(s) for gifting from ${list}.return atleast one from the list. Limit responses to values exclusively within the specified list of relationship and sort your response from most likely to least likely.",
+        "category": [
+            "Spouse or Significant Other",
+            "Girlfriend",
+            "Child",
+            "Parent",
+            "Grand Parent",
+            "Friend",
+            "Colleague"
+        ]
+    },
+    "style": {
+        "gpt_template": "6. Determine fitting style(s) for gifting from ${list}. return empty list if style is not applicable for the product. Limit responses to values exclusively within the specified list of style and sort your response from most likely to least likely.",
+        "category": [
+            "Classic and Timeless",
+            "Comfortable Yet Stylish",
+            "Premium Brands",
+            "Minimalistic",
+            "Practical",
+            "Chill",
+            "Bougie"
+        ]
+    },
+    "gpt_assistance": [
+        {
+            "role": "user",
+            "content": "Fire-Boltt Phoenix Pro 1.39' Bluetooth Calling Smartwatch, AI Voice Assistant, Metal Body with 120+ Sports Modes, SpO2, Heart Rate Monitoring (Black)1.39' Bigger Round Display- Comes with a 1.39' TFT Color Full Touch Screen and a 240*240 Pixel High Resolution this watch is covered to flaunt the sleek looks with a 280 NITS peak brightness The watch will work on a single charge for about 7 days (without Bluetooth calling) and about 4 Days with Bluetooth calling.Charging Specs - The watch needs to be charged for 3 hours to reach 100%. The charger should be a 3.7V to 5V adapter or any laptop output. For a bare minimum of 20% charge the watch needs to be charged for about 30-40 mins You cannot store Music in the watch, you can only control the music. 120+ Sports Modes- Track each activity effectively with this smartwatch & activity tracker. Track your calories, steps and much more while you are on your fitness journey. This fitness tracker has it all There is no volume control, however when connected to bt calling you can control the volume of the call. Metal Body- Fire-Boltt Phoenix Pro possess a metal body that is durable and long lasting, The watch gives a sleek look and gloss finish with shiny and is anti-corrosive Supported Applications - Notifcations from all social media channels (Instagram, Whatsapp, Facebook), Call Notifications, Health Tracking (SpO2, Heart Rate, Sleep), Sports Tracking & many more (This is not a medical device) AI Voice Assistant- The smartwatch comes with a AI Voice assistant that can with one tap wake up Siri/Google on your phone and you can give the commands to get your work accomplished Smartphone Notifications- Get all your mobile phone notifications on this 1.39' Round Display Full touch smartwatch and never be late for a meeting, party or date. Gaming On Wrist- Enjoy playing games on the wrist itself as you are on the go.Breathe Function- Ensure your breathing exercise is fit and healthy with the breathing function Package Contains - 1 Smartwatch, 1 Charging Cable, 1 Manual, 1 Warranty Card"
+        },
+        {
+            "role": "assistant",
+            "content": {
+                "gender": [
+                    "Male",
+                    "Female"
+                ],
+                "age_category": [
+                    "12 - 18",
+                    "18 - 25",
+                    "25 - 45",
+                    "45 - 65",
+                    "65 +"
+                ],
+                "interest": [
+                    "Tech and Gadgets",
+                    "Fitness and Wellness",
+                    "Sports and Hobbies"
+                ],
+                "occasion": [
+                    "Birthdays",
+                    "Anniversaries",
+                    "Promotions and Achievements",
+                    "Graduations",
+                    "Valentine's Day",
+                    "Appreciation",
+                    "Get Well Soon",
+                    "Thank You Gifts"
+                ],
+                "relationship": [
+                    "Colleague",
+                    "Friend",
+                    "Girlfriend"
+                ],
+                "style": []
+            }
+        }
+    ]
+}
