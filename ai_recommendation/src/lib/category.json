@@ -1,6 +1,7 @@
 {
     "gender": {
         "gpt_template": "1. Identify gender(s) for whom the product can be gifted from ${list}.return atleast one from the list. Limit responses to values exclusively within the specified list of gender and sort your response from most likely to least likely.",
+        "manual_weights": 1,
         "category": [
             "Male",
             "Female"
@@ -8,6 +9,7 @@
     },
     "age_category": {
         "gpt_template": "2. Identify appropriate age group(s) from ${list} for gifting.return atleast one from the list. Limit responses to values exclusively within the specified list of age category and sort your response from most likely to least likely.",
+        "manual_weights": 1,
         "category": [
             "Under 12",
             "12 - 18",
@@ -20,6 +22,7 @@
     "interest": {
         "keyword_search": true,
         "gpt_template": "3. Determine category(ies) of interest from ${list} for the product.return atleast one from the list. Limit responses to values exclusively within the specified list of interest and sort your response from most likely to least likely.",
+        "manual_weights": 0.2,
         "category": {
             "Fitness and Wellness": [
                 "wellness",
@@ -88,6 +91,7 @@
     },
     "occasion": {
         "gpt_template": "4. Identify ideal occasion(s) for gifting from ${list}.return atleast one from the list. Limit responses to values exclusively within the specified list of occasions and sort your response from most likely to least likely.",
+        "manual_weights": 0.4,
         "category": [
             "Birthdays",
             "Anniversaries",
@@ -107,6 +111,7 @@
     },
     "relationship": {
         "gpt_template": "5. Identify ideal relationship(s) for gifting from ${list}.return atleast one from the list. Limit responses to values exclusively within the specified list of relationship and sort your response from most likely to least likely.",
+        "manual_weights": 0.3,
         "category": [
             "Spouse or Significant Other",
             "Girlfriend",
@@ -119,6 +124,7 @@
     },
     "style": {
         "gpt_template": "6. Determine fitting style(s) for gifting from ${list}. return empty list if style is not applicable for the product. Limit responses to values exclusively within the specified list of style and sort your response from most likely to least likely.",
+        "manual_weights": 0.1,
         "category": [
             "Classic and Timeless",
             "Comfortable Yet Stylish",

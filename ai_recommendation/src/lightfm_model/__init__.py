@@ -16,12 +16,18 @@ with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "category.json"
     cat_odata = json.load(fr)
     cat_odata.pop("gpt_assistance")
     attr_list= []
+    attr_weights = {}
+    preprocess_str = lambda x: x.strip().lower()
     for i in cat_odata:
-        if cat_odata[i].get('keyword_search',None):
-            attr_list.extend(list(cat_odata[i]['category'].keys()))
-        else:
-            attr_list.extend(cat_odata[i]['category'])
-    attr_list = list(map(lambda x: x.strip().lower(), attr_list))
+        if i not in ["gender","age_category"]: ### Hard Filters removed from the model parameters
+            if cat_odata[i].get('keyword_search',None):
+                keys=list(map(preprocess_str,list(cat_odata[i]['category'].keys())))
+                attr_list.extend(keys)
+                attr_weights.update(dict(zip(keys,[cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
+            else:
+                keys=list(map(preprocess_str,cat_odata[i]['category']))
+                attr_list.extend(keys)
+                attr_weights.update(dict(zip(keys,[cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
 
 def similar_users_endpoint(user_id,N=10):
     udf = LightFM_Obj.similar_existing_user(user_id,N)[['left_all_unique_id','left_score']].copy()
@@ -64,6 +70,8 @@ def train_with_mongodb():
     rdf_items['_id'] = rdf_items['_id'].astype(str)
     rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(), eachList)) )
     rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(set(eachList) & set(attr_list)))
+    ### with weights assigned for model.
+    # rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : {key: attr_weights[key] for key in attr_weights.keys() & set(eachList)})
 
     rdf_users = df_users[['_id','tags']].copy()
     rdf_users['_id'] = rdf_users['_id'].astype(str)

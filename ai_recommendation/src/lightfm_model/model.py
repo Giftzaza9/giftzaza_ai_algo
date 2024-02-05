@@ -5,6 +5,8 @@ import os
 import shutil
 import datetime
 import numpy as np
+import json
+from pathlib import Path
 from lightfm import LightFM
 from lightfm.cross_validation import random_train_test_split
 from lightfm.data import Dataset
@@ -18,6 +20,23 @@ from recommenders.models.lightfm.lightfm_utils import (
 BASE_PATH = os.path.dirname(__file__)
 Read_DIR = "lib"
 Backup_DIR = "lib_backup"
+
+with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "category.json"),'r') as fr:
+    cat_odata = json.load(fr)
+    cat_odata.pop("gpt_assistance")
+    attr_list= []
+    attr_weights = {}
+    preprocess_str = lambda x: x.strip().lower()
+    for i in cat_odata:
+        if i not in ["gender","age_category"]: ### Hard Filters removed from the model parameters
+            if cat_odata[i].get('keyword_search',None):
+                keys=list(map(preprocess_str,list(cat_odata[i]['category'].keys())))
+                attr_list.extend(keys)
+                attr_weights.update(dict(zip(keys,[cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
+            else:
+                keys=list(map(preprocess_str,cat_odata[i]['category']))
+                attr_list.extend(keys)
+                attr_weights.update(dict(zip(keys,[cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
 
 class LightFM_cls:
     def __init__(self) -> None:
@@ -65,8 +84,9 @@ class LightFM_cls:
         feat_idxs = [self.item_fmapper.get(key) for key in new_item_attriutes]
         i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
         summation = 0
-        for idx in feat_idxs:
-            summation += (self.model.item_embeddings[idx] )
+        for idx in range(len(feat_idxs)):
+            # summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
+            summation += (self.model.item_embeddings[feat_idxs[idx]] ) * attr_weights[new_item_attriutes[idx]]
         scores = item_representations.dot(summation)
         item_norms = np.linalg.norm(item_representations, axis=1)
         item_vec_norm = np.linalg.norm(summation)
@@ -104,8 +124,8 @@ class LightFM_cls:
             item_features=attr_list,
             user_features=attr_list)
 
-        item_features = dataset.build_item_features([(x,y) for x,y in zip(new_item_meta['itemID'],new_item_meta['item_attr_list'])])
-        user_features = dataset.build_user_features([(x,y) for x,y in zip(new_user_meta['userID'],new_user_meta['user_attr_list'])])
+        item_features = dataset.build_item_features([(x,y) for x,y in zip(new_item_meta['itemID'],new_item_meta['item_attr_list'])], normalize=True)
+        user_features = dataset.build_user_features([(x,y) for x,y in zip(new_user_meta['userID'],new_user_meta['user_attr_list'])], normalize=True)
         (interactions, weights) = dataset.build_interactions((x, y) for x,y in zip(new_user_item_interactions['userID'],new_user_item_interactions['itemID']))
         n_components = 30
         loss = 'warp'
