@@ -108,14 +108,14 @@ class LightFM_cls:
         scores = self.model.predict(user_id, np.arange(len(self.item_mapper)))
         top_items = self.item_meta.iloc[np.argsort(-scores)].copy()
         top_items.insert(0, 'ranking_score', list(-np.sort(-scores)))
-        return top_items[['all_unique_id','title','ranking_score']].rename(columns={"ranking_score":"score"})
+        return top_items
     
     def cold_start_user_item_recommendation(self,new_user_attriutes):
         new_user_features = self.dataset.build_user_features([("test_profile_id1",new_user_attriutes)])
         scores_new_user = self.model.predict(user_ids = 0,item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
         top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
         top_items_new.insert(0, 'ranking_score', list(-np.sort(-scores_new_user)))
-        return top_items_new[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"score"})
+        return top_items_new
 
     def Re_Train(self,new_user_meta,new_item_meta,new_user_item_interactions,attr_list,df_users,df_items):
         dataset = Dataset()
