@@ -46,18 +46,18 @@ def similar_items_endpoint(item_id,N=10):
 
 def cs_similar_items(new_item_attriutes,N=10):
     filter_dict = {}
-    all_filter_values = []
+    hard_filter_attrs = []
     for i in hard_filters:
         common_list = list(set(cat_dict[i]) & set(new_item_attriutes))
-        all_filter_values.extend(common_list)
+        hard_filter_attrs.extend(common_list)
         filter_dict.update({i: common_list})
-    filter_item_attriutes = list(set(new_item_attriutes).difference(set(all_filter_values)))
+    soft_filter_attrs = list(set(new_item_attriutes).difference(set(hard_filter_attrs)))
 
-    idf = LightFM_Obj.cold_start_similar_items(new_item_attriutes=filter_item_attriutes,N=N)[['left_all_unique_id','title','tags','left_score']].copy()
+    idf = LightFM_Obj.cold_start_similar_items(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,N=N)
+    idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
-    idf['tags'] = idf['tags'].apply(lambda eachList : list(map(preprocess_str,ast.literal_eval(eachList))))
     
-    return idf[idf['tags'].apply(lambda eachList : set(all_filter_values).issubset(set(eachList)))].to_dict(orient='records')
+    return idf.to_dict(orient='records')
 
 def user_item_recommendation(user_id,N=10):
     idf = LightFM_Obj.user_item_recommendation(user_id)[['all_unique_id','title','ranking_score']].rename(columns={"ranking_score":"score"})
@@ -76,6 +76,7 @@ def cs_user_item_recommendation(new_user_attriutes,N=10):
     idf['tags'] = idf['tags'].apply(lambda eachList : list(map(preprocess_str,ast.literal_eval(eachList))))
 
     return idf[idf['tags'].apply(lambda eachList : set(all_filter_values).issubset(set(eachList)))].head(N).to_dict(orient='records')
+    # return idf.to_dict(orient='records')
 
 def train_with_mongodb():
     Mongodb_Obj.connect()

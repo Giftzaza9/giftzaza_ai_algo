@@ -51,6 +51,7 @@ class LightFM_cls:
         self.ritem_fmapper = dict([(v,k) for k,v in self.item_fmapper.items()])
         self.user_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR,"user_meta.csv"))
         self.item_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR, "item_meta.csv"))
+        self.item_meta['tags'] = self.item_meta['tags'].apply(lambda eachList : list(map(preprocess_str,ast.literal_eval(eachList))))
 
     def similar_existing_user(self,original_user_id,N=10):
         try:
@@ -80,24 +81,30 @@ class LightFM_cls:
         matched_item_meta = idf.merge(self.item_meta,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
-    def cold_start_similar_items(self,new_item_attriutes, N=10):
-        feat_idxs = [self.item_fmapper.get(key) for key in new_item_attriutes]
+    def cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs, N=10):
+        filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        filter_idf.reset_index(drop=True,inplace=True)
+        feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
         i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
         summation = 0
         for idx in range(len(feat_idxs)):
-            # summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
-            summation += (self.model.item_embeddings[feat_idxs[idx]] ) * attr_weights[new_item_attriutes[idx]]
-        scores = item_representations.dot(summation)
-        item_norms = np.linalg.norm(item_representations, axis=1)
+            summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
+            # summation += (self.model.item_embeddings[feat_idxs[idx]] ) * attr_weights[new_item_attriutes[idx]]
+        filter_item_embeddings = []
+        for idx in filter_idf['all_unique_id'].tolist():
+            filter_item_embeddings.append(item_representations[self.item_fmapper[idx]])
+        filter_item_embeddings = np.array(filter_item_embeddings)
+        scores = filter_item_embeddings.dot(summation)
+        item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
         item_vec_norm = np.linalg.norm(summation)
         scores = np.squeeze(scores / item_norms / item_vec_norm)
 
         best = np.argsort(-scores)[0 : N]
         idf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
         idf = pd.DataFrame(idf,columns=['itemID','score'])
-        idf['all_unique_id'] = idf['itemID'].map(self.ritem_mapper)
+        idf['all_unique_id'] = idf['itemID'].map(filter_idf['all_unique_id'].to_dict())
         idf.columns = 'left_' + idf.columns.values
-        matched_item_meta = idf.merge(self.item_meta,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
+        matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
     def user_item_recommendation(self,original_user_id):
