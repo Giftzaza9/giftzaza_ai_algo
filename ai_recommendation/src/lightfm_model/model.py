@@ -21,23 +21,6 @@ BASE_PATH = os.path.dirname(__file__)
 Read_DIR = "lib"
 Backup_DIR = "lib_backup"
 
-with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "category.json"),'r') as fr:
-    cat_odata = json.load(fr)
-    cat_odata.pop("gpt_assistance")
-    attr_list= []
-    attr_weights = {}
-    preprocess_str = lambda x: x.strip().lower()
-    for i in cat_odata:
-        if i not in ["gender","age_category"]: ### Hard Filters removed from the model parameters
-            if cat_odata[i].get('keyword_search',None):
-                keys=list(map(preprocess_str,list(cat_odata[i]['category'].keys())))
-                attr_list.extend(keys)
-                attr_weights.update(dict(zip(keys,[cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
-            else:
-                keys=list(map(preprocess_str,cat_odata[i]['category']))
-                attr_list.extend(keys)
-                attr_weights.update(dict(zip(keys,[cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
-
 class LightFM_cls:
     def __init__(self) -> None:
         self.model = pickle.load(open(os.path.join(BASE_PATH, Read_DIR, "model.pkl"), 'rb'))
@@ -51,7 +34,7 @@ class LightFM_cls:
         self.ritem_fmapper = dict([(v,k) for k,v in self.item_fmapper.items()])
         self.user_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR,"user_meta.csv"))
         self.item_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR, "item_meta.csv"))
-        self.item_meta['tags'] = self.item_meta['tags'].apply(lambda eachList : list(map(preprocess_str,ast.literal_eval(eachList))))
+        self.item_meta['tags'] = self.item_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),ast.literal_eval(eachList))))
 
     def similar_existing_user(self,original_user_id,N=10):
         try:
@@ -81,15 +64,27 @@ class LightFM_cls:
         matched_item_meta = idf.merge(self.item_meta,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
-    def cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs, N=10):
+    def cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10):
         filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
         filter_idf.reset_index(drop=True,inplace=True)
         feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
         i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
+        
+        soft_filter_dict = {}
+        weight_assigner = {}
+        total = 0
+        for i in Global_Obj.soft_filters:
+            common_list = list(set(Global_Obj.cat_dict[i]) & set(soft_filter_attrs))
+            soft_filter_dict.update({i: common_list})
+            if len(common_list)!=0:
+                total += Global_Obj.cat_odata[i]['manual_weights']
+                weight_assigner.update(dict(zip(common_list,[Global_Obj.cat_odata[i]['manual_weights']/len(common_list) for _ in range(len(common_list))])))
+        weight_assigner = {k: v / total for k, v in weight_assigner.items()}
+        
         summation = 0
         for idx in range(len(feat_idxs)):
             summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
-            # summation += (self.model.item_embeddings[feat_idxs[idx]] ) * attr_weights[new_item_attriutes[idx]]
+            # summation += (self.model.item_embeddings[feat_idxs[idx]] ) * weight_assigner[self.ritem_fmapper[feat_idxs[idx]]]
         filter_item_embeddings = []
         for idx in filter_idf['all_unique_id'].tolist():
             filter_item_embeddings.append(item_representations[self.item_fmapper[idx]])
