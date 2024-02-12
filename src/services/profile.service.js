@@ -33,17 +33,18 @@ const createProfile = async (profileBody) => {
   }
 //let products = await productss.filter((item, index) => item.tags.includes(profileBody.gender));
   for (const product of products) {
-    product.similarity = calculateSimilarity(profileBody, product.gptTagging, product.tags);
-    await product.save();
+    product.similarity =await  calculateSimilarity(profileBody, product.gptTagging, product.tags);
+    await product.save()    
   }
 
   products.sort((a, b) => b.similarity - a.similarity);
-
-  if (products.length > 30) {
-    profile.recommended_products = products.slice(0, 30);
+let finalProducts =  products.filter((item)=> item.similarity !==0)	
+  if (finalProducts > 30) {
+    profile.recommended_products = finalProducts.slice(0, 30);
   } else {
-    profile.recommended_products = products;
+    profile.recommended_products = finalProducts;
   }
+
 
   await profile.save();
   return profile;
