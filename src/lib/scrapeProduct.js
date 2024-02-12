@@ -8,20 +8,20 @@ puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
 
-const scrapeProduct = async (productlink) => {
+const scrapeProduct = async (productlink, userId) => {
   if (productlink.includes('nordstrom')) {
     const res = await NodestormScraper(productlink);
     return res;
   } else if (productlink.includes('bloomingdales')) {
-    const res = await bloomingdalescrapeProduct(productlink);
+    const res = await bloomingdalescrapeProduct(productlink, userId);
     return res;
   } else if (productlink.includes('amazon')) {
-    const res = await AmazonScraper(productlink);
+    const res = await AmazonScraper(productlink, userId);
     return res;
   } else return 'unknown source';
 };
 
-async function AmazonScraper(product_link) {
+async function AmazonScraper(product_link, userId) {
   const browser = await amazonpuppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
@@ -42,7 +42,7 @@ async function AmazonScraper(product_link) {
       const spanElement = document.querySelector('span.reviewCountTextLinkedHistogram');
       return spanElement.getAttribute('title');
     });
-
+    let product_price_currency = await textgetter('#attach-currency-of-preference');
     const product_price = await page.evaluate(() => {
       let spanElement = document.querySelector('span.a-offscreen');
 
@@ -95,6 +95,9 @@ async function AmazonScraper(product_link) {
         .replace(/\n/g, '')
         .toLowerCase()
         .trim(),
+      price_currency: product_price_currency,
+      curated: true,
+      added_by: userId,
     };
   } catch (error) {
     await browser.close();
@@ -102,7 +105,7 @@ async function AmazonScraper(product_link) {
   }
 }
 
-const bloomingdalescrapeProduct = async (product_link) => {
+const bloomingdalescrapeProduct = async (product_link, userId) => {
   const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
@@ -120,6 +123,7 @@ const bloomingdalescrapeProduct = async (product_link) => {
     const product_title = await textgetter('.brand-name-container');
     const product_details = await textgetter('.details-content');
     let product_price = await textgetter('.price-lg');
+    let product_price_currency = await textgetter('.links-rail-currency');
     if (!product_price) {
       product_price = await textgetter('.final-price');
     }
@@ -154,6 +158,9 @@ const bloomingdalescrapeProduct = async (product_link) => {
         .replace(/\n/g, '')
         .toLowerCase()
         .trim(),
+      price_currency: product_price_currency,
+      curated: true,
+      added_by: userId,
     };
   } catch (error) {
     return null;

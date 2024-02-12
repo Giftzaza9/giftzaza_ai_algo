@@ -22,21 +22,19 @@ const getProfileById = async (profileId) => {
  * @returns {Promise<Profile>}
  */
 const createProfile = async (profileBody) => {
-  const profile = await Profile.create({});
-  const products = await Product.find({
+    const profile = await Profile.create({});
+    const products = await Product.find({
     price: { $gte: profileBody.min_price, $lte: profileBody.max_price },
     tags: profileBody.gender,
   });
 
-  if (!products) {
+    if (!products) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Products not found');
   }
-//let products = await productss.filter((item, index) => item.tags.includes(profileBody.gender));
+  //let products = await productss.filter((item, index) => item.tags.includes(profileBody.gender));
   for (const product of products) {
     product.similarity =await  calculateSimilarity(profileBody, product.gptTagging, product.tags);
-    await product.save()    
-  }
-
+    await product.save()      }
   products.sort((a, b) => b.similarity - a.similarity);
 let finalProducts =  products.filter((item)=> item.similarity !==0)	
   if (finalProducts > 30) {
@@ -44,6 +42,10 @@ let finalProducts =  products.filter((item)=> item.similarity !==0)
   } else {
     profile.recommended_products = finalProducts;
   }
+  profile.profile_preferences = profileBody.preferences;
+  profile.user_id = profileBody.userId;
+  profile.occasion = profileBody.Occassion;
+  profile.occasion_date = profileBody.occasion_date;
 
 
   await profile.save();
