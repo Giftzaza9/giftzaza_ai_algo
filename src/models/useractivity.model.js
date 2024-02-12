@@ -7,9 +7,22 @@ const userActivityschema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
   },
-  userId: {
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  activity_type: {
     type: String,
   },
+  activity_time: {
+    "type": Date, 
+    "default": Date.now 
+  },
+  profile_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile',
+  },
+
 });
 
 userActivityschema.plugin(toJSON);

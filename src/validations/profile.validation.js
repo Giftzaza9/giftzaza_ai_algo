@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { objectId } = require('./custom.validation');
 
 const getProfile = {
   params: Joi.object().keys({
@@ -20,6 +21,8 @@ const createProfile = {
     gender: Joi.string(),
     relationship: Joi.string(),
     Occassion: Joi.string(),
+    occasion_date: Joi.date(),
+    userId: Joi.string().custom(objectId),
   }),
 };
 

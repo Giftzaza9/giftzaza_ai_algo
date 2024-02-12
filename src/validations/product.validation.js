@@ -13,12 +13,16 @@ const getProducts = {
 const createProduct = {
   body: Joi.object().keys({
     product_link: Joi.string(),
+    userId: Joi.string().custom(objectId),
   }),
 };
 const userActivity = {
   body: Joi.object().keys({
     productId: Joi.string().custom(objectId),
-    userId: Joi.string(),
+    userId: Joi.string().custom(objectId),
+    activity_type: Joi.string(),
+    activity_time: Joi.date(),
+    profile_id: Joi.string().custom(objectId),
   }),
 };
 

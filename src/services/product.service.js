@@ -30,7 +30,7 @@ const createProduct = async (productBody) => {
     return productDB;
   }
 
-  const product_data = await scrapeProduct(productBody.product_link);
+  const product_data = await scrapeProduct(productBody.product_link, productBody.userId);
 
   if (!product_data || !product_data.description) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
@@ -40,7 +40,7 @@ const createProduct = async (productBody) => {
   product_data.gptTagging = gptdata.JSON_response;
   const product = await Product.create(product_data);
   await product.save();
-  return product;
+    return product;
 };
 
 /**
