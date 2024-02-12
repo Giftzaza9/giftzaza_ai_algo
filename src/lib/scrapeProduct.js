@@ -96,7 +96,6 @@ async function AmazonScraper(product_link, userId) {
         .toLowerCase()
         .trim(),
       price_currency: product_price_currency,
-      curated: true,
       added_by: userId,
     };
   } catch (error) {
@@ -159,7 +158,6 @@ const bloomingdalescrapeProduct = async (product_link, userId) => {
         .toLowerCase()
         .trim(),
       price_currency: product_price_currency,
-      curated: true,
       added_by: userId,
     };
   } catch (error) {

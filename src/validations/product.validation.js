@@ -38,6 +38,7 @@ const updateProduct = {
   }),
   body: Joi.object().keys({
     tags: Joi.string(),
+    curated: Joi.string(),
   }),
 };
 
