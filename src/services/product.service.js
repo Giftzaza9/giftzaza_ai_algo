@@ -38,6 +38,7 @@ const createProduct = async (productBody) => {
   const gptdata = await GPTbasedTagging(product_data.description);
   product_data.tags = gptdata.preferenceData;
   product_data.gptTagging = gptdata.JSON_response;
+  product_data.curated = false;
   const product = await Product.create(product_data);
   await product.save();
     return product;
@@ -59,6 +60,7 @@ const updateProductById = async (productId, updateBody) => {
   product.title = product_data.title;
   product.price = product_data.price;
   product.image = product_data.image;
+  product.curated = updateBody.curated ? true : false;
   product.description = product_data.description;
   product.rating = product_data.rating;
   await product.save();
