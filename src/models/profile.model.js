@@ -9,9 +9,9 @@ const profileSchema = new mongoose.Schema(
         ref: 'Product',
       },
     ],
-    profile_preferences: {
-      type: String,
-    },
+    profile_preferences: [{
+        type: String,
+  }],
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

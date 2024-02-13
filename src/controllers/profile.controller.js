@@ -12,8 +12,8 @@ const getProfile = catchAsync(async (req, res) => {
 });
 
 const createProfile = catchAsync(async (req, res) => {
-	console.log("profile preference", req.body.preferences)
- req.body.preferences = JSON.parse(req.body.preferences);
+	// console.log("profile preference", req.body.preferences);
+//  req.body.preferences = JSON.parse(req.body.preferences);
   const profile = await profileService.createProfile(req.body);
   res.status(httpStatus.CREATED).send(profile);
 });
