@@ -6,7 +6,6 @@ const baseURL = process.env.REACT_APP_BASE_URL;
 export const loginWithGoogle = async (payload: any) => {
     try {
         const response = await axios.post(`${baseURL}/googleLogin/`, payload);
-        console.log({response})
         if (response.data) {
           const token = response?.data?.tokens?.access?.token;
 			    localStorage.setItem('__giftzaza__', JSON.stringify(token));
@@ -22,7 +21,6 @@ export const loginWithGoogle = async (payload: any) => {
 export const loginWithFacebook = async (payload: any) => {
     try {
         const response = await axios.post(`${baseURL}/facebookLogin/`, payload);
-        console.log({response})
         if (response.data) {
           const token = response?.data?.tokens?.access?.token;
 			    localStorage.setItem('__giftzaza__', JSON.stringify(token));

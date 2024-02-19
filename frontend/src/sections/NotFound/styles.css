@@ -1,0 +1,44 @@
+
+
+.section{
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-family: sans-serif;
+  /* background-color: #E7FFFF; */
+}
+
+.section .error{
+  font-size: 150px;
+  color: #dfc9ea;
+  text-shadow: 
+    1px 1px 1px #a266c0,    
+    2px 2px 1px #a266c0,
+    3px 3px 1px #a266c0,
+    4px 4px 1px #a266c0,
+    5px 5px 1px #a266c0,
+    6px 6px 1px #a266c0,
+    7px 7px 1px #a266c0,
+    8px 8px 1px #a266c0,
+    25px 25px 8px rgba(0,0,0, 0.2);
+}
+
+.page{
+  margin: 2rem 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #444;
+}
+
+.back-home{
+  display: inline-block;
+  color: #222;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0.75rem 1rem 0.6rem;
+  transition: all 0.2s linear;
+  box-shadow: 0 3px 8px rgba(0,0,0, 0.3);
+}
+.back-home:hover{
+  background: #dfc9ea;
+}
