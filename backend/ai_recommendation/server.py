@@ -11,7 +11,8 @@ from server_schema import ( similar_existing_item_schema,
                            similar_existing_user_schema,
                            cs_similar_item_schema,
                            user_item_recommendation_schema,
-                           cs_user_item_recommendation_schema)
+                           cs_user_item_recommendation_schema,
+                           get_metrics_schema)
 
 app = FastAPI()
 
@@ -46,6 +47,15 @@ def user_item_recommendation(body : user_item_recommendation_schema):
 @app.post("/cs_user_item_recommendation")
 def cs_user_item_recommendation(body : cs_user_item_recommendation_schema):
     return lfm.cs_user_item_recommendation(new_user_attriutes=body.new_user_attriutes,N=body.top_n)
+
+@app.post("/model_retrain")
+def model_retrain():
+    return lfm.train_with_mongodb()
+
+@app.post("/get_metrics")
+def get_metrics(body : get_metrics_schema):
+    return lfm.test_with_sample(N=body.at_k)
+
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host="0.0.0.0", port=8001, reload=False)

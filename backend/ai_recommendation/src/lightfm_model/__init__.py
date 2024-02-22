@@ -82,42 +82,50 @@ def cs_user_item_recommendation(new_user_attriutes,N=10):
     # return idf.to_dict(orient='records')
 
 def train_with_mongodb():
-    Mongodb_Obj.connect()
-    df_items = Mongodb_Obj.get_collection_as_dataframe("test","products")
-    # df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
-    df_users = pd.DataFrame(data = [['test_profile_id1',[],np.random.randint(10),list(np.random.choice(Global_Obj.attr_list,10))]],
-                           columns = ['_id', 'recommended_products', '__v','tags'])
-    # df_interactions = Mongodb_Obj.get_collection_as_dataframe("test","useractivities")
-    df_interactions = pd.DataFrame(data = [["test_activity_id1",'65b369606932958a4f56f4d2',"test_user_id1",np.random.randint(10),'test_profile_id1']],
-                                   columns = ['_id', 'productId', 'userId', '__v', 'profileId'] )
-    
-    
-    rdf_interactions = df_interactions[['profileId','productId']].copy()
-    rdf_interactions = rdf_interactions.astype(str)
+    try:
+        try:
+            Mongodb_Obj.connect()
+            df_items = Mongodb_Obj.get_collection_as_dataframe("test","products")
+            # df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
+            df_users = pd.DataFrame(data = [['test_profile_id1',[],np.random.randint(10),list(np.random.choice(Global_Obj.attr_list,10))]],
+                                columns = ['_id', 'recommended_products', '__v','tags'])
+            # df_interactions = Mongodb_Obj.get_collection_as_dataframe("test","useractivities")
+            df_interactions = pd.DataFrame(data = [["test_activity_id1",'65b369606932958a4f56f4d2',"test_user_id1",np.random.randint(10),'test_profile_id1']],
+                                        columns = ['_id', 'productId', 'userId', '__v', 'profileId'] )
+        except Exception as e:
+            raise Exception(f"Error in Connection to Mongodb : {e}")
+        
+        rdf_interactions = df_interactions[['profileId','productId']].copy()
+        rdf_interactions = rdf_interactions.astype(str)
 
-    rdf_items = df_items[['_id','tags']].copy()
-    rdf_items['_id'] = rdf_items['_id'].astype(str)
-    rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(), eachList)) )
-    rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(set(eachList) & set(Global_Obj.attr_list)))
-    ### with weights assigned
-    # rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : {key: attr_weights[key] for key in attr_weights.keys() & set(eachList)})
+        rdf_items = df_items[['_id','tags']].copy()
+        rdf_items['_id'] = rdf_items['_id'].astype(str)
+        rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(), eachList)) )
+        rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(set(eachList) & set(Global_Obj.attr_list)))
+        ### with weights assigned
+        # rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : {key: attr_weights[key] for key in attr_weights.keys() & set(eachList)})
 
-    rdf_users = df_users[['_id','tags']].copy()
-    rdf_users['_id'] = rdf_users['_id'].astype(str)
-    rdf_users['tags'] = rdf_users['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(), eachList)) )
-    rdf_users['tags'] = rdf_users['tags'].apply(lambda eachList : list(set(eachList) & set(Global_Obj.attr_list)))
+        rdf_users = df_users[['_id','tags']].copy()
+        rdf_users['_id'] = rdf_users['_id'].astype(str)
+        rdf_users['tags'] = rdf_users['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(), eachList)) )
+        rdf_users['tags'] = rdf_users['tags'].apply(lambda eachList : list(set(eachList) & set(Global_Obj.attr_list)))
 
-    df_users['all_unique_id'] = df_users['_id'].copy()
-    df_items['all_unique_id'] = df_items['_id'].copy()
+        df_users['all_unique_id'] = df_users['_id'].copy()
+        df_items['all_unique_id'] = df_items['_id'].copy()
 
-    LightFM_Obj.Re_Train(rdf_users.rename(columns={"_id":"userID","tags":"user_attr_list"}).to_dict(orient='list'),
-            rdf_items.rename(columns={"_id":"itemID","tags":"item_attr_list"}).to_dict(orient='list'),
-            rdf_interactions.rename(columns={"profileId":"userID","productId":"itemID"}).to_dict(orient='list'),
-            Global_Obj.attr_list,
-            df_users,
-            df_items
-            )
-    return True
+        LightFM_Obj.Re_Train(rdf_users.rename(columns={"_id":"userID","tags":"user_attr_list"}).to_dict(orient='list'),
+                rdf_items.rename(columns={"_id":"itemID","tags":"item_attr_list"}).to_dict(orient='list'),
+                rdf_interactions.rename(columns={"profileId":"userID","productId":"itemID"}).to_dict(orient='list'),
+                Global_Obj.attr_list,
+                df_users,
+                df_items
+                )
+    except Exception as e:
+        return {"status":False,
+                "message" : f"Error in re-train :{e}"}
+        
+    return {"status":True,
+            "message": "model re-train succesful and loaded with new weights"}
 
 def test_with_sample(N):
     ts_df = pd.read_csv(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "Giftzaza_Test Case.csv"))
@@ -129,7 +137,8 @@ def test_with_sample(N):
     ts_df['recall_at_k'] = ts_df.apply(lambda row: len(row['matched_result'])/len(row['TOP 4 products (actual)']),axis =1)
     print(f"Precision_at_{N} :",ts_df['precision_at_k'].agg("mean"))
     print(f"recall_at_{N} :",ts_df['recall_at_k'].agg("mean"))
-    return ts_df['precision_at_k'].agg("mean"),ts_df['recall_at_k'].agg("mean")
+    return {f"Precision_at_{N}":ts_df['precision_at_k'].agg("mean"),
+            f"recall_at_{N}":ts_df['recall_at_k'].agg("mean")}
     
 
 
