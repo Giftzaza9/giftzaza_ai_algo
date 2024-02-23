@@ -3,18 +3,24 @@ const validate = require('../../middlewares/validate');
 const productValidation = require('../../validations/product.validation');
 const productController = require('../../controllers/product.controller');
 const { validateApiKey } = require('../../middlewares/apiKey');
+const auth = require('../../middlewares/auth');
+const { rightsEnum } = require('../../config/roles');
 
 const router = express.Router();
 
 router
   .route('/:productId')
-  .delete(validateApiKey, validate(productValidation.deleteProduct), productController.deleteProduct)
-  .patch(validateApiKey, validate(productValidation.updateProduct), productController.updateProduct);
+  .delete(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.deleteProduct), productController.deleteProduct)
+  .patch(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.updateProduct), productController.updateProduct);
+
+router
+  .route('/scrape')
+  .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.scrapeProduct), productController.scrapeProduct);
 
 router
   .route('/')
-  .get(validateApiKey, validate(productValidation.getProducts), productController.getProducts)
-  .post(validateApiKey, validate(productValidation.createProduct), productController.createProduct);
+  .get(validate(productValidation.getProducts), productController.getProducts)
+  .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.createProduct), productController.createProduct);
 
 module.exports = router;
 
