@@ -42,7 +42,7 @@ const scrapeAndAddProduct = async (productBody) => {
   product_data.curated = false;
   product_data.hil = false;
   const product = productDB
-    ? await Product.findByIdAndUpdate(productDB?._id, product_data)
+    ? await Product.findByIdAndUpdate(productDB?._id, product_data, { new: true, useFindAndModify: false })
     : await Product.create(product_data);
   return product;
 };
