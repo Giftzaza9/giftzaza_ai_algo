@@ -1,4 +1,4 @@
-import { decodeToken } from "./DecodeToken";
+import { decodeToken } from "./decodeToken";
 
 export const errorMessage = (error: any) => {
   if (error?.response?.data?.message) {

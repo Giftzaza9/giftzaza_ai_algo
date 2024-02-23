@@ -1,5 +1,5 @@
 import axios from "axios";
-import { errorMessage } from "../utils/shared/Common";
+import { errorMessage } from "../utils/helperFunctions";
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
