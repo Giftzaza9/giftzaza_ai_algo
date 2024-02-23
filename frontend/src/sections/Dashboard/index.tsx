@@ -1,6 +1,6 @@
 import { userStore } from "../../store/UserStore"
 import { observer } from 'mobx-react';
-import Layout from "../Layout";
+import {Layout} from "../../components/shared/Layout";
 
 export const Dashboard = observer(() => {
 
