@@ -22,6 +22,11 @@ router
   .get(validate(productValidation.getProducts), productController.getProducts)
   .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.createProduct), productController.createProduct);
 
+router
+  .route('/analysis')
+  .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.createAnalysisProduct), productController.createAnalysisProduct);
+  // .get(validate(productValidation.getProducts), productController.getAnalysisProducts)
+
 module.exports = router;
 
 /**

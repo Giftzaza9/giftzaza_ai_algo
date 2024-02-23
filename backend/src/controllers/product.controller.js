@@ -33,10 +33,17 @@ const updateProduct = catchAsync(async (req, res) => {
   res.send(product);
 });
 
+const createAnalysisProduct = catchAsync(async (req, res) => {
+  req.body.userId = req.user._id;
+  const product = await productService.createAnalysisProduct(req.body);
+  res.status(httpStatus.CREATED).send(product);
+});
+
 module.exports = {
   getProducts,
   scrapeProduct,
   createProduct,
   deleteProduct,
   updateProduct,
+  createAnalysisProduct,
 };
