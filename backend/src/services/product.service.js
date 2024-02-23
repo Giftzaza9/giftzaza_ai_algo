@@ -5,6 +5,7 @@ const { scrapeProduct } = require('../lib/scrapeProduct');
 const classificateProduct = require('../lib/classificateProduct');
 const rulebasedTagging = require('../lib/rulebasedTagging');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
+const amazonUrlCleaner = require('../utils/amazonUrlCleaner');
 
 /**
  * Query for products
@@ -20,28 +21,54 @@ const queryProducts = async (filter, options) => {
 };
 
 /**
+ * Scrape the product from link, and saves to the database
+ * @param {Object} productBody
+ * @returns {Promise<Product>}
+ */
+const scrapeAndAddProduct = async (productBody) => {
+  let { product_link, user_id } = productBody;
+
+  if (product_link.includes('amazon')) product_link = amazonUrlCleaner(product_link) || product_link;
+  const productDB = await Product.findOne({ link: product_link });
+  const product_data = await scrapeProduct(product_link, user_id);
+
+  if (!product_data || !product_data.description) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
+  }
+
+  const gptData = await GPTbasedTagging(product_data.description);
+  product_data.tags = gptData.preferenceData;
+  product_data.gptTagging = gptData.JSON_response;
+  product_data.curated = false;
+  product_data.hil = false;
+  const product = productDB
+    ? await Product.findByIdAndUpdate(productDB?._id, product_data)
+    : await Product.create(product_data);
+  return product;
+};
+
+/**
  * Create a product
  * @param {Object} productBody
  * @returns {Promise<Product>}
  */
 const createProduct = async (productBody) => {
-  const productDB = await Product.findOne({ link: productBody.product_link });
-  if (productDB) {
-    return productDB;
-  }
+  const { product_id, tags, curated } = productBody;
 
-  const product_data = await scrapeProduct(productBody.product_link, productBody.userId);
+  let product = await Product.findById(product_id);
+  if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found !');
 
-  if (!product_data || !product_data.description) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
-  }
-  const gptdata = await GPTbasedTagging(product_data.description);
-  product_data.tags = gptdata.preferenceData;
-  product_data.gptTagging = gptdata.JSON_response;
-  product_data.curated = false;
-  const product = await Product.create(product_data);
-  await product.save();
-    return product;
+  product = await Product.findByIdAndUpdate(
+    product_id,
+    {
+      tags: tags,
+      curated: !!curated,
+      hil: true,
+    },
+    { new: true, useFindAndModify: false }
+  );
+
+  return product;
 };
 
 /**
@@ -51,16 +78,17 @@ const createProduct = async (productBody) => {
  * @returns {Promise<Product>}
  */
 const updateProductById = async (productId, updateBody) => {
+
+  const { tags, curated } = updateBody;
   const product = await Product.findById(productId);
   const product_data = await scrapeProduct(product.link);
-  if (!product) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-  }
-  product.tags = updateBody.tags;
+  if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
+  
+  product.tags = tags;
   product.title = product_data.title;
   product.price = product_data.price;
   product.image = product_data.image;
-  product.curated = updateBody.curated ? true : false;
+  if (curated !== undefined) product.curated = !!curated;
   product.description = product_data.description;
   product.rating = product_data.rating;
   await product.save();
@@ -73,16 +101,14 @@ const updateProductById = async (productId, updateBody) => {
  * @returns {Promise<Product>}
  */
 const deleteProductById = async (productId) => {
-  const product = await Product.findById(productId);
-  if (!product) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-  }
-  await product.remove();
+  const product = await Product.findByIdAndDelete(productId);
+  if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   return product;
 };
 
 module.exports = {
   queryProducts,
+  scrapeAndAddProduct,
   createProduct,
   deleteProductById,
   updateProductById,

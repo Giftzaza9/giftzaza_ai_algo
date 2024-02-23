@@ -10,7 +10,15 @@ const getProducts = catchAsync(async (req, res) => {
   res.send(result);
 });
 
+const scrapeProduct = catchAsync(async (req, res) => {
+  req.body.user_id = req.user._id;
+  const product = await productService.scrapeAndAddProduct(req.body);
+  res.status(httpStatus.CREATED).send(product);
+});
+
+
 const createProduct = catchAsync(async (req, res) => {
+  req.body.user_id = req.user._id;
   const product = await productService.createProduct(req.body);
   res.status(httpStatus.CREATED).send(product);
 });
@@ -21,13 +29,13 @@ const deleteProduct = catchAsync(async (req, res) => {
 });
 
 const updateProduct = catchAsync(async (req, res) => {
-  req.body.tags = JSON.parse(req.body.tags);
   const product = await productService.updateProductById(req.params.productId, req.body);
   res.send(product);
 });
 
 module.exports = {
   getProducts,
+  scrapeProduct,
   createProduct,
   deleteProduct,
   updateProduct,

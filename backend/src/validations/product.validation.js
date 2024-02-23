@@ -10,12 +10,20 @@ const getProducts = {
   }),
 };
 
-const createProduct = {
+const scrapeProduct = {
   body: Joi.object().keys({
     product_link: Joi.string(),
-    userId: Joi.string().custom(objectId),
   }),
 };
+
+const createProduct = {
+  body: Joi.object().keys({
+    product_id: Joi.string().custom(objectId).required(),
+    tags: Joi.array().required(),
+    curated: Joi.boolean().default(false),
+  }),
+};
+
 const userActivity = {
   body: Joi.object().keys({
     productId: Joi.string().custom(objectId),
@@ -37,13 +45,14 @@ const updateProduct = {
     productId: Joi.required().custom(objectId),
   }),
   body: Joi.object().keys({
-    tags: Joi.string(),
+    tags: Joi.array(),
     curated: Joi.string(),
   }),
 };
 
 module.exports = {
   getProducts,
+  scrapeProduct,
   createProduct,
   deleteProduct,
   updateProduct,
