@@ -56,7 +56,6 @@ export function Layout({ children }: React.PropsWithChildren) {
       <AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex', color: "black" }, mr: 1 }} /> */}
 
             {/* WEB-LOGO */}
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>

@@ -10,7 +10,7 @@ const iconStyle = {
 };
 
 export const navbarLinks = [
-    { name: 'Profiles', link: '/', icon: <PersonOutlineIcon sx={iconStyle} />, access: [roleEnum.ADMIN, roleEnum.USER] },
+    { name: 'Profiles', link: '/profiles', icon: <PersonOutlineIcon sx={iconStyle} />, access: [roleEnum.ADMIN, roleEnum.USER] },
     { name: 'Administration', link: '/admin', icon: <DescriptionOutlinedIcon sx={iconStyle} />,  access: [roleEnum.ADMIN] },
     { name: 'Loved', link: '/loved', icon: <FavoriteBorderIcon sx={iconStyle} />,  access: [roleEnum.ADMIN, roleEnum.USER] },
   ];
