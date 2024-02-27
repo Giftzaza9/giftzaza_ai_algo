@@ -1,2 +1,2 @@
-,_id,recommended_products,__v,tags,all_unique_id
-0,test_profile_id1,[],4,"['sports and hobbies', 'thank you gifts', 'child', 'holidays', 'apologies', 'spirituality', 'classic and timeless', 'fitness and wellness', 'minimalistic', 'food and cooking']",test_profile_id1
+,_id,recommended_products,__v,tags,userId,all_unique_id
+0,test_profile_id1,[],9,"['graduations', 'art and culture', 'weddings', 'child', 'appreciation', 'sports and hobbies', 'sports and hobbies', 'thank you gifts', 'parent', 'retirements']",test_user_id1,test_profile_id1

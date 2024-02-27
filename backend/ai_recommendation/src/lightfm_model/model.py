@@ -91,7 +91,7 @@ class LightFM_cls:
         best = np.argsort(-scores)[0 : N]
         udf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
         udf = pd.DataFrame(udf,columns=['userID','score'])
-        udf['all_unique_id'] = udf['itemID'].map(filter_udf['all_unique_id'].to_dict())
+        udf['all_unique_id'] = udf['userID'].map(filter_udf['all_unique_id'].to_dict())
         udf.columns = 'left_' + udf.columns.values
         matched_user_meta = udf.merge(filter_udf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_user_meta
@@ -144,7 +144,7 @@ class LightFM_cls:
         top_items.insert(0, 'ranking_score', list(-np.sort(-scores)))
         return top_items
     
-    def cold_start_user_item_recommendation(self,new_user_attriutes,similar_user_id="test_profile_id1"):
+    def cold_start_user_item_recommendation(self,new_user_attriutes,similar_user_id):
         new_user_features = self.dataset.build_user_features([(similar_user_id,new_user_attriutes)])
         scores_new_user = self.model.predict(user_ids = 0,item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
         top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
@@ -243,6 +243,9 @@ class LightFM_cls:
         
         self.__init__()  #### Re-Initialize the Model Variables
         return True
+    
+    def get_userid_of_profile(self,profile_id):
+        return self.user_meta[self.user_meta['all_unique_id']==profile_id]['userId'].to_list()
 
     def Example_Train(self,new_user_meta,new_item_meta,new_user_item_interactions,attr_list):
         """

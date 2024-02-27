@@ -57,8 +57,8 @@ def cs_similar_user(new_user_attriutes,N=10):
     soft_filter_attrs = list(set(new_user_attriutes).difference(set(hard_filter_attrs)))
 
     udf = LightFM_Obj.cold_start_similar_user(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N)
-    udf = udf[['left_all_unique_id','title','tags','left_score']].copy()
-    udf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
+    udf = udf[['left_all_unique_id','left_score']].copy()
+    udf.rename(columns={'left_all_unique_id':'user_id','left_score':'matching_score'},inplace=True)
     
     return udf.to_dict(orient='records')
 
@@ -81,7 +81,7 @@ def user_item_recommendation(user_id,N=10):
     idf = LightFM_Obj.user_item_recommendation(user_id)[['all_unique_id','title','ranking_score']].rename(columns={"ranking_score":"score"})
     return idf.head(N).to_dict(orient='records')
 
-def cs_user_item_recommendation(new_user_attriutes,N=10):
+def cs_user_item_recommendation(new_user_attriutes,similar_user_id = "test_profile_id1",N=10):
     filter_dict = {}
     all_filter_values = []
     for i in Global_Obj.hard_filters:
@@ -90,7 +90,7 @@ def cs_user_item_recommendation(new_user_attriutes,N=10):
         filter_dict.update({i: common_list})
     filter_user_attriutes = list(set(new_user_attriutes).difference(set(all_filter_values)))
 
-    idf = LightFM_Obj.cold_start_user_item_recommendation(filter_user_attriutes)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"score"})
+    idf = LightFM_Obj.cold_start_user_item_recommendation(filter_user_attriutes,similar_user_id)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"score"})
     idf['tags'] = idf['tags'].apply(lambda eachList : list(map(Global_Obj.preprocess_str,ast.literal_eval(eachList))))
 
     return idf[idf['tags'].apply(lambda eachList : set(all_filter_values).issubset(set(eachList)))].head(N).to_dict(orient='records')
@@ -117,14 +117,14 @@ def train_with_mongodb():
             Mongodb_Obj.connect()
             df_items = Mongodb_Obj.get_collection_as_dataframe("test","products")
             # df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
-            df_users = pd.DataFrame(data = [['test_profile_id1',[],np.random.randint(10),list(np.random.choice(Global_Obj.attr_list,10))]],
-                                columns = ['_id', 'recommended_products', '__v','tags'])
+            df_users = pd.DataFrame(data = [['test_profile_id1',[],np.random.randint(10),list(np.random.choice(Global_Obj.attr_list,10)),'test_user_id1']],
+                                columns = ['_id', 'recommended_products', '__v','tags',"userId"])
             # df_interactions = Mongodb_Obj.get_collection_as_dataframe("test","useractivities")
             df_interactions = pd.DataFrame(data = [["test_activity_id1",'65b369606932958a4f56f4d2',"test_user_id1",np.random.randint(10),'test_profile_id1']],
                                         columns = ['_id', 'productId', 'userId', '__v', 'profileId'] )
         except Exception as e:
             raise Exception(f"Error in Connection to Mongodb : {e}")
-        
+
         rdf_interactions = df_interactions[['profileId','productId']].copy()
         rdf_interactions = rdf_interactions.astype(str)
 
@@ -169,6 +169,33 @@ def test_with_sample(N):
     print(f"recall_at_{N} :",ts_df['recall_at_k'].agg("mean"))
     return {f"Precision_at_{N}":ts_df['precision_at_k'].agg("mean"),
             f"recall_at_{N}":ts_df['recall_at_k'].agg("mean")}
-    
+
+
+def create_recommendation(user_id,new_attributes,content_attr=None,N=20):
+    df_similar_profile = pd.DataFrame(cs_similar_user(new_attributes,N=10))
+    similar_profile_cutoff = df_similar_profile[df_similar_profile['matching_score']>0.7][:5]
+    similar_profile_of_current_user_flag = False
+    if similar_profile_cutoff.shape[0] > 0: ### No similar Profile
+        for profile_id in similar_profile_cutoff['user_id'].to_list():
+            profile_user_id = LightFM_Obj.get_userid_of_profile(profile_id)
+            if profile_user_id:
+                if user_id == profile_user_id[0]:
+                    similar_profile_of_current_user_flag = True
+                    break
+        if similar_profile_of_current_user_flag:
+            return cs_user_item_recommendation(new_user_attriutes=new_attributes,similar_user_id=profile_user_id,N=N)
+        else:
+            for profile_id in similar_profile_cutoff['user_id'].to_list():
+                popular_recommdendations = []
+                try:
+                    popular_recommdendations.extend(cs_user_item_recommendation(new_user_attriutes=new_attributes,similar_user_id=profile_id))
+                except Exception as e:
+                    raise Exception(f"Error in Getting Similar Profile recommdendation : {e}")
+            popular_recommdendations = pd.DataFrame(popular_recommdendations).sort_values(by='matching_score',ascending=False).to_dict(orient='records')
+            return popular_recommdendations[:N]
+    else:
+        if content_attr:
+            return cs_similar_items_with_text_sim(new_item_attriutes=new_attributes,content_attr=content_attr,N=N)
+        return cs_similar_items(new_item_attriutes=new_attributes,N=N)
 
 
