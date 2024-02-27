@@ -32,7 +32,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
     return <>{commonRoutes}</>;
   } else {
     // Default to a fallback route for unknown roles
-    return <Navigate to="/" />;
+    return <Route path="/" element={<Dashboard />} />;
   }
 };
 
