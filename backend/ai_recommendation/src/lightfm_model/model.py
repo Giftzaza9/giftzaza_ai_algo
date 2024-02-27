@@ -16,6 +16,7 @@ from recommenders.models.lightfm.lightfm_utils import (
     similar_users,
     similar_items,
 )
+from sentence_transformers import SentenceTransformer
 
 BASE_PATH = os.path.dirname(__file__)
 Read_DIR = "lib"
@@ -35,6 +36,11 @@ class LightFM_cls:
         self.user_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR,"user_meta.csv"))
         self.item_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR, "item_meta.csv"))
         self.item_meta['tags'] = self.item_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),ast.literal_eval(eachList))))
+        self.text_encoder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
+    def encode_textual_data(self, textual_data):
+        """Encode textual data using the sentence transformer model."""
+        return self.text_encoder.encode(textual_data, convert_to_tensor=True)
 
     def similar_existing_user(self,original_user_id,N=10):
         try:
@@ -63,6 +69,32 @@ class LightFM_cls:
         idf.columns = 'left_' + idf.columns.values
         matched_item_meta = idf.merge(self.item_meta,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
+    
+    def cold_start_similar_user(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10):
+        filter_udf = self.user_meta[self.user_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        filter_udf.reset_index(drop=True,inplace=True)
+        feat_idxs = [self.user_fmapper.get(key) for key in soft_filter_attrs]
+        u_biases, user_representations = self.model.get_user_representations(features=self.user_features)
+
+        summation = 0
+        for idx in range(len(feat_idxs)):
+            summation += (self.model.user_embeddings[feat_idxs[idx]] )
+        filter_user_embeddings = []
+        for idx in filter_udf['all_unique_id'].tolist():
+            filter_user_embeddings.append(user_representations[self.user_fmapper[idx]])
+        filter_user_embeddings = np.array(filter_user_embeddings)
+        scores = filter_user_embeddings.dot(summation)
+        user_norms = np.linalg.norm(filter_user_embeddings, axis=1)
+        user_vec_norm = np.linalg.norm(summation)
+        scores = np.squeeze(scores / user_norms / user_vec_norm)
+
+        best = np.argsort(-scores)[0 : N]
+        udf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
+        udf = pd.DataFrame(udf,columns=['userID','score'])
+        udf['all_unique_id'] = udf['itemID'].map(filter_udf['all_unique_id'].to_dict())
+        udf.columns = 'left_' + udf.columns.values
+        matched_user_meta = udf.merge(filter_udf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
+        return matched_user_meta
     
     def cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10):
         filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
@@ -112,12 +144,69 @@ class LightFM_cls:
         top_items.insert(0, 'ranking_score', list(-np.sort(-scores)))
         return top_items
     
-    def cold_start_user_item_recommendation(self,new_user_attriutes):
-        new_user_features = self.dataset.build_user_features([("test_profile_id1",new_user_attriutes)])
+    def cold_start_user_item_recommendation(self,new_user_attriutes,similar_user_id="test_profile_id1"):
+        new_user_features = self.dataset.build_user_features([(similar_user_id,new_user_attriutes)])
         scores_new_user = self.model.predict(user_ids = 0,item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
         top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
         top_items_new.insert(0, 'ranking_score', list(-np.sort(-scores_new_user)))
         return top_items_new
+    
+    def cold_start_similar_items_with_text_sim(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,content_attr=None):
+        filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        filter_idf.reset_index(drop=True,inplace=True)
+        feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
+        i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
+        
+        soft_filter_dict = {}
+        weight_assigner = {}
+        total = 0
+        for i in Global_Obj.soft_filters:
+            common_list = list(set(Global_Obj.cat_dict[i]) & set(soft_filter_attrs))
+            soft_filter_dict.update({i: common_list})
+            if len(common_list)!=0:
+                total += Global_Obj.cat_odata[i]['manual_weights']
+                weight_assigner.update(dict(zip(common_list,[Global_Obj.cat_odata[i]['manual_weights']/len(common_list) for _ in range(len(common_list))])))
+        weight_assigner = {k: v / total for k, v in weight_assigner.items()}
+        
+        summation = 0
+        for idx in range(len(feat_idxs)):
+            summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
+            # summation += (self.model.item_embeddings[feat_idxs[idx]] ) * weight_assigner[self.ritem_fmapper[feat_idxs[idx]]]
+        filter_item_embeddings = []
+        for idx in filter_idf['all_unique_id'].tolist():
+            filter_item_embeddings.append(item_representations[self.item_fmapper[idx]])
+        filter_item_embeddings = np.array(filter_item_embeddings)
+        scores = filter_item_embeddings.dot(summation)
+        item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
+        item_vec_norm = np.linalg.norm(summation)
+        scores = np.squeeze(scores / item_norms / item_vec_norm)
+
+        if content_attr:
+            new_item_attr_vec = content_attr
+        else:
+            new_item_attr_vec = self.encode_textual_data(" ".join([*soft_filter_attrs,*hard_filter_attrs]))
+        text_similarity_scores = [
+            np.dot(new_item_attr_vec, self.encode_textual_data(desc).T).squeeze()
+            for desc in filter_idf.description
+        ]
+        text_similarity_scores = np.array(text_similarity_scores)
+
+        # Normalize text similarity scores
+        text_similarity_norm = np.linalg.norm(new_item_attr_vec)
+        text_similarity_scores = (
+            text_similarity_scores / item_norms / text_similarity_norm
+        )
+
+        # Combining scores
+        scores = 0.6 * scores + 0.4 * text_similarity_scores
+
+        best = np.argsort(-scores)[0 : N]
+        idf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
+        idf = pd.DataFrame(idf,columns=['itemID','score'])
+        idf['all_unique_id'] = idf['itemID'].map(filter_idf['all_unique_id'].to_dict())
+        idf.columns = 'left_' + idf.columns.values
+        matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
+        return matched_item_meta
 
     def Re_Train(self,new_user_meta,new_item_meta,new_user_item_interactions,attr_list,df_users,df_items):
         dataset = Dataset()

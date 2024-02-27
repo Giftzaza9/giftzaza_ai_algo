@@ -8,3 +8,4 @@ pymongo==4.6.1
 recommenders==1.1.1
 lightfm==1.17
 uvicorn[standard]
+sentence-transformers

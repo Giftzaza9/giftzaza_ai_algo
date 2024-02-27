@@ -47,6 +47,21 @@ def similar_items_endpoint(item_id,N=10):
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     return idf.to_dict(orient='records')
 
+def cs_similar_user(new_user_attriutes,N=10):
+    filter_dict = {}
+    hard_filter_attrs = []
+    for i in Global_Obj.hard_filters:
+        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_user_attriutes))
+        hard_filter_attrs.extend(common_list)
+        filter_dict.update({i: common_list})
+    soft_filter_attrs = list(set(new_user_attriutes).difference(set(hard_filter_attrs)))
+
+    udf = LightFM_Obj.cold_start_similar_user(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N)
+    udf = udf[['left_all_unique_id','title','tags','left_score']].copy()
+    udf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
+    
+    return udf.to_dict(orient='records')
+
 def cs_similar_items(new_item_attriutes,N=10):
     filter_dict = {}
     hard_filter_attrs = []
@@ -80,6 +95,21 @@ def cs_user_item_recommendation(new_user_attriutes,N=10):
 
     return idf[idf['tags'].apply(lambda eachList : set(all_filter_values).issubset(set(eachList)))].head(N).to_dict(orient='records')
     # return idf.to_dict(orient='records')
+
+def cs_similar_items_with_text_sim(new_item_attriutes,content_attr=None,N=10):
+    filter_dict = {}
+    hard_filter_attrs = []
+    for i in Global_Obj.hard_filters:
+        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_item_attriutes))
+        hard_filter_attrs.extend(common_list)
+        filter_dict.update({i: common_list})
+    soft_filter_attrs = list(set(new_item_attriutes).difference(set(hard_filter_attrs)))
+
+    idf = LightFM_Obj.cold_start_similar_items_with_text_sim(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr)
+    idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
+    idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
+    
+    return idf.to_dict(orient='records')
 
 def train_with_mongodb():
     try:

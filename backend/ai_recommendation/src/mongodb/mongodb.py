@@ -24,5 +24,9 @@ class Mongodb_cls:
     def get_collection_as_dataframe(self,database_name,collection_name):
         db = self.client[database_name]
         return pd.DataFrame((db[collection_name].find()))
+    
+    def get_count(self,database_name,collection_name,query_condition : dict):
+        db = self.client[database_name]
+        return db[collection_name].count_documents(query_condition)
         
 
