@@ -1,12 +1,14 @@
+import { isAxiosError } from "axios";
+import { ApiResponse } from "../constants/types";
 import { decodeToken } from "./decodeToken";
 
-export const errorMessage = (error: any) => {
-  if (error?.response?.data?.message) {
-    return { data: null, error: error?.response?.data?.message };
-  } else if (error?.message) {
-    return { data: null, error: error?.message };
+export const generateErrorMessage = (error: Error | unknown): ApiResponse => {
+  if (isAxiosError(error) && error?.response?.data?.message) {
+    return { data: null, error: error?.response?.data?.message, status: error?.response?.status};
+  } else if ((error as Error)?.message) {
+    return { data: null, error: (error as Error)?.message, status: 500 };
   } else {
-    return { data: null, error: "Something went wrong!" };
+    return { data: null, error: "Something went wrong!", status: 500 };
   }
 };
 
@@ -15,7 +17,7 @@ export const logOut = () => {
     localStorage.removeItem("__giftzaza__");
   } catch (error) {
     console.log(error, "err");
-    return errorMessage(error);
+    return generateErrorMessage(error);
   }
 };
 
