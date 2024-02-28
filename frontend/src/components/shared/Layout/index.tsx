@@ -54,7 +54,7 @@ export function Layout({ children }: React.PropsWithChildren) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, }}>
       <AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
-        <Container maxWidth="xl">
+        <Container maxWidth="lg">
           <Toolbar disableGutters>
 
             {/* WEB-LOGO */}
@@ -194,7 +194,7 @@ export function Layout({ children }: React.PropsWithChildren) {
           flexDirection: 'column',
         }}
       >
-        <Container maxWidth="xl">{children}</Container>
+        <Container maxWidth="xl" >{children}</Container>
       </Box>
     </Box>
   );

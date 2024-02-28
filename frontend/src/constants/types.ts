@@ -10,3 +10,9 @@ export interface User {
   profile_picture: string;
   role: roleEnum;
 }
+
+export interface ApiResponse {
+  data: any;
+  error: any;
+  status: number;
+}

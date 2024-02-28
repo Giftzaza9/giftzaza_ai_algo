@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { useGoogleLogin } from '@react-oauth/google';
-import { loginWithFacebook, loginWithGoogle } from '../../services/Auth';
+import { loginWithFacebook, loginWithGoogle } from '../../services/auth';
 import { toast } from 'react-toastify';
 // import FacebookLogin from 'react-facebook-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
@@ -38,7 +38,7 @@ export const Auth = () => {
       navigate('/');
     } else {
       console.log('ERROR ', error);
-      toast.error(error);
+      toast.error(error?.message as string);
     }
   };
 
@@ -53,7 +53,7 @@ export const Auth = () => {
     if (data) console.log('Logged in ', data);
     else {
       console.log('ERROR ', error);
-      toast.error(error);
+      toast.error(error?.message as string);
     }
   };
 
