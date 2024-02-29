@@ -35,6 +35,7 @@ class LightFM_cls:
         self.ritem_fmapper = dict([(v,k) for k,v in self.item_fmapper.items()])
         self.user_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR,"user_meta.csv"))
         self.item_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR, "item_meta.csv"))
+        self.interaction_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR, "interaction_meta.csv"))
         self.user_meta['tags'] = self.user_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),ast.literal_eval(eachList))))
         self.item_meta['tags'] = self.item_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),ast.literal_eval(eachList))))
         self.text_encoder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
@@ -209,7 +210,7 @@ class LightFM_cls:
         matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
 
-    def Re_Train(self,new_user_meta,new_item_meta,new_user_item_interactions,attr_list,df_users,df_items):
+    def Re_Train(self,new_user_meta,new_item_meta,new_user_item_interactions,attr_list,df_users,df_items,df_interactions):
         dataset = Dataset()
         dataset.fit(users=new_user_meta['userID'], ## new 
             items=new_item_meta['itemID'],
@@ -241,12 +242,17 @@ class LightFM_cls:
 
         df_users.to_csv(os.path.join(BASE_PATH, Read_DIR, "user_meta.csv"))
         df_items.to_csv(os.path.join(BASE_PATH, Read_DIR, "item_meta.csv"))
+        df_interactions.to_csv(os.path.join(BASE_PATH, Read_DIR, "interaction_meta.csv"))
         
         self.__init__()  #### Re-Initialize the Model Variables
         return True
     
-    def get_userid_of_profile(self,profile_id):
-        return self.user_meta[self.user_meta['all_unique_id']==profile_id]['userId'].to_list()
+    def get_userid_of_profile(self,profile_df,current_user_id):
+        df_profile_user = pd.merge(profile_df,self.user_meta,left_on="user_id",right_on="all_unique_id")
+        return df_profile_user[['userId'] == current_user_id]['all_unique_id'].to_list()
+    
+    def check_profile_interaction(self,profile_id):
+        return profile_id in self.interaction_meta['profileId'].to_list()
 
     def Example_Train(self,new_user_meta,new_item_meta,new_user_item_interactions,attr_list):
         """

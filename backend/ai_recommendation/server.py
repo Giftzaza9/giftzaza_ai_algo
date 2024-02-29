@@ -13,6 +13,7 @@ from server_schema import ( similar_existing_item_schema,
                            cs_similar_item_schema,
                            user_item_recommendation_schema,
                            cs_user_item_recommendation_schema,
+                           create_recommendation_schema,
                            get_metrics_schema)
 
 app = FastAPI()
@@ -52,6 +53,10 @@ def user_item_recommendation(body : user_item_recommendation_schema):
 @app.post("/cs_user_item_recommendation")
 def cs_user_item_recommendation(body : cs_user_item_recommendation_schema):
     return lfm.cs_user_item_recommendation(new_user_attriutes=body.new_user_attriutes,N=body.top_n)
+
+@app.post("/create_recommendation")
+def create_recommendation(body : create_recommendation_schema):
+    return lfm.create_recommendation(user_id=body.user_id,new_attributes=body.new_attributes,content_attr=body.content_attribute,N=body.top_n)
 
 @app.post("/model_retrain")
 def model_retrain():

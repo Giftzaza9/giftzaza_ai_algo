@@ -159,7 +159,8 @@ def train_with_mongodb():
                 rdf_interactions.rename(columns={"profileId":"userID","productId":"itemID"}).to_dict(orient='list'),
                 Global_Obj.attr_list,
                 df_users,
-                df_items
+                df_items,
+                df_interactions
                 )
     except Exception as e:
         return {"status":False,
@@ -187,26 +188,25 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20):
     similar_profile_cutoff = df_similar_profile[df_similar_profile['matching_score']>0.7][:5]
     similar_profile_of_current_user_flag = False
     if similar_profile_cutoff.shape[0] > 0: ### No similar Profile
+        profile_user_id = LightFM_Obj.get_userid_of_profile(similar_profile_cutoff,user_id) ### similar profile from same user
+        if profile_user_id:
+            for profile_id in profile_user_id:
+                if LightFM_Obj.check_profile_interaction(profile_id=profile_id):
+                    return cs_user_item_recommendation(new_user_attriutes=new_attributes,similar_user_id=profile_user_id,N=N)
+        ####  If No Similar profile from same user - Popular recommendation from all profile
+        popular_recommdendations = []
         for profile_id in similar_profile_cutoff['user_id'].to_list():
-            profile_user_id = LightFM_Obj.get_userid_of_profile(profile_id)
-            if profile_user_id:
-                if user_id == profile_user_id[0]:
-                    similar_profile_of_current_user_flag = True
-                    break
-        if similar_profile_of_current_user_flag:
-            return cs_user_item_recommendation(new_user_attriutes=new_attributes,similar_user_id=profile_user_id,N=N)
-        else:
-            for profile_id in similar_profile_cutoff['user_id'].to_list():
-                popular_recommdendations = []
-                try:
+            try:
+                if LightFM_Obj.check_profile_interaction(profile_id=profile_id):
                     popular_recommdendations.extend(cs_user_item_recommendation(new_user_attriutes=new_attributes,similar_user_id=profile_id))
-                except Exception as e:
-                    raise Exception(f"Error in Getting Similar Profile recommdendation : {e}")
+            except Exception as e:
+                raise Exception(f"Error in Getting Similar Profile recommdendation : {e}")
+        if popular_recommdendations:
             popular_recommdendations = pd.DataFrame(popular_recommdendations).sort_values(by='matching_score',ascending=False).to_dict(orient='records')
             return popular_recommdendations[:N]
-    else:
-        if content_attr:
-            return cs_similar_items_with_text_sim(new_item_attriutes=new_attributes,content_attr=content_attr,N=N)
-        return cs_similar_items(new_item_attriutes=new_attributes,N=N)
+    #### if No interaction for any of the profiles
+    if content_attr:
+        return cs_similar_items_with_text_sim(new_item_attriutes=new_attributes,content_attr=content_attr,N=N)
+    return cs_similar_items(new_item_attriutes=new_attributes,N=N)
 
 
