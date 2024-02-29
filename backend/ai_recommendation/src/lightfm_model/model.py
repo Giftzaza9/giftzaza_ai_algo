@@ -184,7 +184,7 @@ class LightFM_cls:
         scores = np.squeeze(scores / item_norms / item_vec_norm)
 
         if content_attr:
-            new_item_attr_vec = content_attr
+            new_item_attr_vec = self.encode_textual_data(content_attr)
         else:
             new_item_attr_vec = self.encode_textual_data(" ".join([*soft_filter_attrs,*hard_filter_attrs]))
         text_similarity_scores = [
@@ -196,9 +196,8 @@ class LightFM_cls:
         # Normalize text similarity scores
         text_similarity_norm = np.linalg.norm(new_item_attr_vec)
         text_similarity_scores = (
-            text_similarity_scores / item_norms / text_similarity_norm
+            text_similarity_scores / text_similarity_norm
         )
-
         # Combining scores
         scores = 0.6 * scores + 0.4 * text_similarity_scores
 
