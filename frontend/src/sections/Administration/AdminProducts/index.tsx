@@ -1,10 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Layout } from '../../../components/shared/Layout';
-import { Button, Card, Grid, InputAdornment, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Button, Grid, InputAdornment, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Add, Search } from '@mui/icons-material';
 import { FilterSelector } from '../../../components/product/FilterSelector';
 import { sortOptions } from '../../../constants/constants';
 import { debounce } from 'lodash';
+import { ProductCard } from '../../../components/product/ProductCard';
+import { getProducts } from '../../../services/product';
+import { Product } from '../../../constants/types';
 
 export const AdminProducts = () => {
   const [filters, setFilters] = useState<string[]>([]);
@@ -12,6 +15,7 @@ export const AdminProducts = () => {
   const [searchDebounced, setSearchDebounced] = useState<string>('');
   const [searchRaw, setSearchRaw] = useState<string>('');
   const [queryString, setQueryString] = useState<string>('');
+  const [products, setProducts] = useState<Product[]>([]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
@@ -20,6 +24,14 @@ export const AdminProducts = () => {
     }, 400),
     []
   );
+
+  const fetchProducts = useCallback(async (qString?: string) => {
+    const {data} = await getProducts(qString);
+    if (data?.docs?.length > 0) {
+      setProducts(prev => [...prev, ...data.docs])
+    }
+    console.log('🚀 ~ fetchProducts ~ products:', data)
+  },[]);
 
   useEffect(() => {
     const queryParams: string[] = [];
@@ -31,6 +43,8 @@ export const AdminProducts = () => {
 
   useEffect(() => {
     console.log({ queryString });
+    fetchProducts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryString]);
 
   return (
@@ -101,34 +115,13 @@ export const AdminProducts = () => {
             </Grid>
           </Grid>
 
+          {products?.map(product => (
           <Grid item xs={12} md={6} lg={4}>
-            <Card
-              sx={{ minHeight: '480px', border: '1px solid rgba(233, 218, 241, 1)', borderRadius: '16px', padding: '12px' }}
-            >
-              1
-            </Card>
+            <ProductCard product={product} isAdminView />
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
-            <Card
-              sx={{ minHeight: '480px', border: '1px solid rgba(233, 218, 241, 1)', borderRadius: '16px', padding: '12px' }}
-            >
-              2
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={6} lg={4}>
-            <Card
-              sx={{ minHeight: '480px', border: '1px solid rgba(233, 218, 241, 1)', borderRadius: '16px', padding: '12px' }}
-            >
-              3
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={6} lg={4}>
-            <Card
-              sx={{ minHeight: '480px', border: '1px solid rgba(233, 218, 241, 1)', borderRadius: '16px', padding: '12px' }}
-            >
-              4
-            </Card>
-          </Grid>
+
+          ))}
+
         </Grid>
       </Grid>
     </Layout>
