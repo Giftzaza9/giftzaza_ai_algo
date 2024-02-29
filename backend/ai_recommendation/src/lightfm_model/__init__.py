@@ -115,10 +115,21 @@ def train_with_mongodb():
     try:
         try:
             Mongodb_Obj.connect()
+            
+            def get_random_profile():
+                preference_dict = {}
+                for i in Global_Obj.cat_dict:
+                    if i in ['gender','age_category','relationship','occasion']:
+                        preference_dict[i] = list(np.random.choice(Global_Obj.cat_dict[i],1))
+                    else:
+                        preference_dict[i] = list(np.random.choice(Global_Obj.cat_dict[i],np.random.randint(1, 4),replace=False))
+                return preference_dict
+
             df_items = Mongodb_Obj.get_collection_as_dataframe("test","products")
             # df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
-            df_users = pd.DataFrame(data = [['test_profile_id1',[],np.random.randint(10),list(np.random.choice(Global_Obj.attr_list,10)),'test_user_id1']],
-                                columns = ['_id', 'recommended_products', '__v','tags',"userId"])
+            df_users = pd.DataFrame(data = [['test_profile_id'+str(i),[],np.random.randint(10),get_random_profile(),'test_user_id'+str(i%50)] for i in range(100)],
+                                    columns = ['_id', 'recommended_products', '__v','profile_preferences','userId'])
+            df_users['tags'] = df_users['profile_preferences'].apply(lambda preferences : list(itertools.chain(*list(preferences.values()))))
             # df_interactions = Mongodb_Obj.get_collection_as_dataframe("test","useractivities")
             df_interactions = pd.DataFrame(data = [["test_activity_id1",'65b369606932958a4f56f4d2',"test_user_id1",np.random.randint(10),'test_profile_id1']],
                                         columns = ['_id', 'productId', 'userId', '__v', 'profileId'] )

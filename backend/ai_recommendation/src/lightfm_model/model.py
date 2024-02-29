@@ -35,6 +35,7 @@ class LightFM_cls:
         self.ritem_fmapper = dict([(v,k) for k,v in self.item_fmapper.items()])
         self.user_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR,"user_meta.csv"))
         self.item_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR, "item_meta.csv"))
+        self.user_meta['tags'] = self.user_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),ast.literal_eval(eachList))))
         self.item_meta['tags'] = self.item_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),ast.literal_eval(eachList))))
         self.text_encoder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 

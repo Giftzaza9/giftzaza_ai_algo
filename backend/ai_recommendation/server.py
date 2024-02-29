@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src import lightfm_model as lfm
 from server_schema import ( similar_existing_item_schema,
                            similar_existing_user_schema,
+                           cs_similar_user_schema,
                            cs_similar_item_schema,
                            user_item_recommendation_schema,
                            cs_user_item_recommendation_schema,
@@ -35,6 +36,10 @@ def get_similar_user(body : similar_existing_user_schema):
 @app.post("/get_similar_item")
 def get_similar_item(body : similar_existing_item_schema):
     return lfm.similar_items_endpoint(item_id=body.item_id,N=body.top_n)
+
+@app.post("/cs_similar_user")
+def cs_similar_user(body : cs_similar_user_schema):
+    return lfm.cs_similar_user(new_user_attriutes=body.new_user_attriutes,N=body.top_n)
 
 @app.post("/cs_similar_item")
 def cs_similar_item(body : cs_similar_item_schema):
