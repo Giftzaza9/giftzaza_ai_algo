@@ -65,7 +65,7 @@ export const FilterSelector: FC<Props> = ({ filters, setFilters }) => {
                     {val?.map((el) => (
                       <FormControlLabel
                         value={el?.value}
-                        control={<Checkbox checked={filters?.includes(el?.value)} />}
+                        control={<Checkbox />}
                         label={el?.label}
                         labelPlacement="end"
                         onChange={(e, checked) => {

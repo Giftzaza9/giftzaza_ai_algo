@@ -1,11 +1,12 @@
 import axios from "axios";
 import { generateErrorMessage } from "../utils/helperFunctions";
+import { baseURL } from "../constants/vars";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const authBaseUrl = `${baseURL}/auth`
 
 export const loginWithGoogle = async (payload: any) => {
     try {
-        const response = await axios.post(`${baseURL}/googleLogin/`, payload);
+        const response = await axios.post(`${authBaseUrl}/googleLogin/`, payload);
         if (response.data) {
           const token = response?.data?.tokens?.access?.token;
 			    localStorage.setItem('__giftzaza__', JSON.stringify(token));
@@ -20,7 +21,7 @@ export const loginWithGoogle = async (payload: any) => {
 
 export const loginWithFacebook = async (payload: any) => {
     try {
-        const response = await axios.post(`${baseURL}/facebookLogin/`, payload);
+        const response = await axios.post(`${authBaseUrl}/facebookLogin/`, payload);
         if (response.data) {
           const token = response?.data?.tokens?.access?.token;
 			    localStorage.setItem('__giftzaza__', JSON.stringify(token));
