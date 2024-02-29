@@ -5,7 +5,7 @@ const { scrapeProduct } = require('../lib/scrapeProduct');
 const classificateProduct = require('../lib/classificateProduct');
 const rulebasedTagging = require('../lib/rulebasedTagging');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
-const amazonUrlCleaner = require('../utils/amazonUrlCleaner');
+const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleaners');
 
 /**
  * Query for products
@@ -29,6 +29,8 @@ const scrapeAndAddProduct = async (productBody) => {
   let { product_link, user_id } = productBody;
 
   if (product_link.includes('amazon')) product_link = amazonUrlCleaner(product_link) || product_link;
+  if (product_link.includes('bloomingdale')) product_link = bloomingdaleUrlCleaner(product_link) || product_link;
+  
   const productDB = await Product.findOne({ link: product_link });
   const product_data = await scrapeProduct(product_link, user_id);
 
