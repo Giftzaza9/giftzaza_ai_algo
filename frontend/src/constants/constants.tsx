@@ -97,3 +97,5 @@ export const filterObject = {
     { label: 'Bougie', value: 'bougie' },
   ],
 };
+
+export const productPerPageAdmin = 12;
