@@ -9,6 +9,8 @@ import { ProductCard } from '../../../components/product/ProductCard';
 import { getProducts } from '../../../services/product';
 import { Product } from '../../../constants/types';
 import { ProductSkeletonCard } from '../../../components/skeletons/ProductSkeletonCard';
+import { Waypoint } from 'react-waypoint';
+import { AddNewProductModal } from '../../../components/product/AddNewProductModal';
 
 export const AdminProducts = () => {
   const [page, setPage] = useState<number>(1);
@@ -19,6 +21,9 @@ export const AdminProducts = () => {
   const [queryString, setQueryString] = useState<string>(`page=1&limit=${productPerPageAdmin}`);
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState<boolean>(false);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+
+  const [addNewModalOpen, setAddNewModalOpen] = useState<boolean>(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
@@ -35,6 +40,7 @@ export const AdminProducts = () => {
       if (data?.docs?.length > 0) {
         setProducts((prev) => [...prev, ...data.docs]);
       }
+      setHasNextPage(data?.hasNextPage);
       setProductsLoading(false);
     } catch (error) {
       setProductsLoading(false);
@@ -46,8 +52,9 @@ export const AdminProducts = () => {
     if (filters.length > 0) queryParams.push(`filter=${filters.join(',')}`);
     queryParams.push(`sort=${sort}`);
     if (searchDebounced.trim()) queryParams.push(`search=${searchDebounced}`);
-    setQueryString(queryParams.join('&'));
     setProducts([]);
+    setPage(1);
+    setQueryString(queryParams.join('&'));
   }, [filters, sort, searchDebounced]);
 
   useEffect(() => {
@@ -78,8 +85,17 @@ export const AdminProducts = () => {
           </Typography>
         </Grid>
         <Grid item>
-          <Button size="small" variant="contained" startIcon={<Add />}>
-            <Typography variant="button">Add New</Typography>
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => {
+              setAddNewModalOpen(true);
+            }}
+          >
+            <Typography variant="button" fontWeight={600} lineHeight={'17px'} fontFamily={'Inter'}>
+              Add New
+            </Typography>
           </Button>
         </Grid>
       </Grid>
@@ -91,7 +107,7 @@ export const AdminProducts = () => {
         </Grid>
 
         {/* PRODUCTS */}
-        <Grid item container flex={3} spacing={'21px'} paddingX={'12px'}>
+        <Grid item container flex={3} spacing={'21px'} paddingX={'12px'} paddingBottom={'32px'}>
           {/* SEARCH + SORT */}
           <Grid item container xs={12} gap={'21px'}>
             <Grid item flex={3}>
@@ -141,6 +157,14 @@ export const AdminProducts = () => {
               <ProductCard product={product} isAdminView />
             </Grid>
           ))}
+          {!productsLoading && hasNextPage && (
+            <Waypoint
+              onEnter={() => {
+                setPage((prev) => ++prev);
+                setProductsLoading(true);
+              }}
+            />
+          )}
           {productsLoading && (
             <>
               {Array.from({ length: 3 }).map((el, key) => (
@@ -152,6 +176,13 @@ export const AdminProducts = () => {
           )}
         </Grid>
       </Grid>
+
+      <AddNewProductModal
+        open={addNewModalOpen}
+        onClose={() => {
+          setAddNewModalOpen(false);
+        }}
+      />
     </Layout>
   );
 };
