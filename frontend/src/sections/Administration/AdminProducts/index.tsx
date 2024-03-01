@@ -8,7 +8,7 @@ import { debounce } from 'lodash';
 import { ProductCard } from '../../../components/product/ProductCard';
 import { getProducts } from '../../../services/product';
 import { Product } from '../../../constants/types';
-import { ProductSkeletonCard } from '../../../components/product/ProductSkeletonCard';
+import { ProductSkeletonCard } from '../../../components/skeletons/ProductSkeletonCard';
 
 export const AdminProducts = () => {
   const [page, setPage] = useState<number>(1);
