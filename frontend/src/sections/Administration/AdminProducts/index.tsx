@@ -10,6 +10,7 @@ import { getProducts } from '../../../services/product';
 import { Product } from '../../../constants/types';
 import { ProductSkeletonCard } from '../../../components/skeletons/ProductSkeletonCard';
 import { Waypoint } from 'react-waypoint';
+import { AddNewProductModal } from '../../../components/product/AddNewProductModal';
 
 export const AdminProducts = () => {
   const [page, setPage] = useState<number>(1);
@@ -21,6 +22,8 @@ export const AdminProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState<boolean>(false);
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+
+  const [addNewModalOpen, setAddNewModalOpen] = useState<boolean>(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
@@ -82,7 +85,14 @@ export const AdminProducts = () => {
           </Typography>
         </Grid>
         <Grid item>
-          <Button size="small" variant="contained" startIcon={<Add />}>
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => {
+              setAddNewModalOpen(true);
+            }}
+          >
             <Typography variant="button" fontWeight={600} lineHeight={'17px'} fontFamily={'Inter'}>
               Add New
             </Typography>
@@ -166,6 +176,13 @@ export const AdminProducts = () => {
           )}
         </Grid>
       </Grid>
+
+      <AddNewProductModal
+        open={addNewModalOpen}
+        onClose={() => {
+          setAddNewModalOpen(false);
+        }}
+      />
     </Layout>
   );
 };
