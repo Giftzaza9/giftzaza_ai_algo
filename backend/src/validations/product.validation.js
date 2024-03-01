@@ -3,10 +3,12 @@ const { objectId } = require('./custom.validation');
 
 const getProducts = {
   query: Joi.object().keys({
-    sortBy: Joi.string(),
-    limit: Joi.number().integer(),
     page: Joi.number().integer(),
-    title: Joi.string(),
+    limit: Joi.number().integer(),
+    sort: Joi.string(),
+    search: Joi.string(),
+    source: Joi.string(),
+    filter: Joi.string(),
   }),
 };
 

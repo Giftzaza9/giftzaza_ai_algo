@@ -2,22 +2,45 @@ const httpStatus = require('http-status');
 const { Product } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { scrapeProduct } = require('../lib/scrapeProduct');
-const classificateProduct = require('../lib/classificateProduct');
-const rulebasedTagging = require('../lib/rulebasedTagging');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
 const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleaners');
 
 /**
  * Query for products
- * @param {Object} filter - Mongo filter
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
+ * @param {Object} queryObject - Request-Query object
  * @returns {Promise<QueryResult>}
  */
-const queryProducts = async (filter, options) => {
-  return await Product.paginate(filter, options);
+const queryProducts = async (queryObject) => {
+  const { sort, search = '', filter = '', page = 1, limit = 12 } = queryObject;
+  const filterObject = {};
+  const optionsObject = { page, limit };
+  if (sort) {
+    switch (sort) {
+      case 'latest':
+        optionsObject.sort = { createdAt: -1 };
+        break;
+      case 'oldest':
+        optionsObject.sort = { createdAt: 1 };
+        break;
+      case 'price-hi-to-lo':
+        optionsObject.sort = { price: -1 };
+        break;
+      case 'price-lo-to-hi':
+        optionsObject.sort = { price: 1 };
+        break;
+      case 'alpha-desc':
+        optionsObject.sort = { title: -1 };
+        break;
+      case 'alpha-asc':
+        optionsObject.sort = { title: 1 };
+        break;
+      default:
+        optionsObject.sort = {};
+    }
+  }
+  if (search) filterObject.title = { $regex: new RegExp(search, 'i') };
+  if (filter) filterObject.tags = { $in: filter?.split(',')?.map((tag) => new RegExp(tag, 'i')) };
+  return await Product.paginate(filterObject, optionsObject);
 };
 
 /**

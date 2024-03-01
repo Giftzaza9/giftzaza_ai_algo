@@ -3,19 +3,22 @@ import { Layout } from '../../../components/shared/Layout';
 import { Button, Grid, InputAdornment, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Add, Search } from '@mui/icons-material';
 import { FilterSelector } from '../../../components/product/FilterSelector';
-import { sortOptions } from '../../../constants/constants';
+import { productPerPageAdmin, sortOptions } from '../../../constants/constants';
 import { debounce } from 'lodash';
 import { ProductCard } from '../../../components/product/ProductCard';
 import { getProducts } from '../../../services/product';
 import { Product } from '../../../constants/types';
+import { ProductSkeletonCard } from '../../../components/product/ProductSkeletonCard';
 
 export const AdminProducts = () => {
+  const [page, setPage] = useState<number>(1);
   const [filters, setFilters] = useState<string[]>([]);
   const [sort, setSort] = useState<string>('latest');
   const [searchDebounced, setSearchDebounced] = useState<string>('');
   const [searchRaw, setSearchRaw] = useState<string>('');
-  const [queryString, setQueryString] = useState<string>('');
+  const [queryString, setQueryString] = useState<string>(`page=1&limit=${productPerPageAdmin}`);
   const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState<boolean>(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
@@ -26,25 +29,43 @@ export const AdminProducts = () => {
   );
 
   const fetchProducts = useCallback(async (qString?: string) => {
-    const {data} = await getProducts(qString);
-    if (data?.docs?.length > 0) {
-      setProducts(prev => [...prev, ...data.docs])
+    try {
+      setProductsLoading(true);
+      const { data } = await getProducts(qString);
+      if (data?.docs?.length > 0) {
+        setProducts((prev) => [...prev, ...data.docs]);
+      }
+      setProductsLoading(false);
+    } catch (error) {
+      setProductsLoading(false);
     }
-    console.log('🚀 ~ fetchProducts ~ products:', data)
-  },[]);
+  }, []);
 
   useEffect(() => {
-    const queryParams: string[] = [];
-    if (filters.length > 0) queryParams.push(`filters=${filters.join(',')}`);
+    const queryParams: string[] = [`limit=${productPerPageAdmin}`, `page=${1}`];
+    if (filters.length > 0) queryParams.push(`filter=${filters.join(',')}`);
     queryParams.push(`sort=${sort}`);
     if (searchDebounced.trim()) queryParams.push(`search=${searchDebounced}`);
     setQueryString(queryParams.join('&'));
+    setProducts([]);
   }, [filters, sort, searchDebounced]);
 
   useEffect(() => {
+    const pageUpdated = queryString
+      ?.split('&')
+      ?.map((param) => {
+        if (param?.startsWith('page')) return `page=${page}`;
+        else return param;
+      })
+      ?.join('&');
+    setQueryString(pageUpdated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+
+  useEffect(() => {
     console.log({ queryString });
-    fetchProducts();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchProducts(queryString);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryString]);
 
   return (
@@ -115,13 +136,20 @@ export const AdminProducts = () => {
             </Grid>
           </Grid>
 
-          {products?.map(product => (
-          <Grid item xs={12} md={6} lg={4}>
-            <ProductCard product={product} isAdminView />
-          </Grid>
-
+          {products?.map((product) => (
+            <Grid item xs={12} md={6} lg={4}>
+              <ProductCard product={product} isAdminView />
+            </Grid>
           ))}
-
+          {productsLoading && (
+            <>
+              {Array.from({ length: 3 }).map((el, key) => (
+                <Grid key={key} item xs={12} md={6} lg={4}>
+                  <ProductSkeletonCard isAdminView />
+                </Grid>
+              ))}
+            </>
+          )}
         </Grid>
       </Grid>
     </Layout>

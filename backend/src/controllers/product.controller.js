@@ -1,12 +1,9 @@
-const pick = require('../utils/pick');
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { productService } = require('../services');
 
 const getProducts = catchAsync(async (req, res) => {
-  const filter = { title: new RegExp(req.query.title, 'i') };
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await productService.queryProducts(filter, options);
+  const result = await productService.queryProducts(req.query);
   res.send(result);
 });
 
