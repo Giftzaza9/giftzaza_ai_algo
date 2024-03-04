@@ -98,8 +98,10 @@ class LightFM_cls:
         matched_user_meta = udf.merge(filter_udf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_user_meta
     
-    def cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10):
+    def cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,test_sample_flag=False):
         filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        if test_sample_flag:
+            filter_idf = filter_idf[filter_idf['test_set']==True].copy()
         filter_idf.reset_index(drop=True,inplace=True)
         feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
         i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
@@ -153,8 +155,10 @@ class LightFM_cls:
         top_items_new.insert(0, 'ranking_score', list(-np.sort(-scores_new_user)))
         return top_items_new
     
-    def cold_start_similar_items_with_text_sim(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,content_attr=None):
+    def cold_start_similar_items_with_text_sim(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,content_attr=None,test_sample_flag=False):
         filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        if test_sample_flag:
+            filter_idf = filter_idf[filter_idf['test_set']==True].copy()
         filter_idf.reset_index(drop=True,inplace=True)
         feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
         i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
