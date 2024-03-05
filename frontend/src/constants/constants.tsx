@@ -77,6 +77,7 @@ export const filterObject = {
     'Chill',
     'Bougie',
   ],
+  budget: ['$50-$200', '$200-$400', '$400-$600', '$600-$800', '$800-$1000', '+$1000'],
 };
 
 export const productPerPageAdmin = 12;

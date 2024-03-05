@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material';
-import { Box, Container } from '@mui/system';
-import { theme } from '../../../utils/theme';
+import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
+import { theme } from '../../../utils/theme';
 
 const MobileHeader = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const MobileHeader = () => {
         alignSelf: 'flex-start',
         p: '20px',
         flexDirection: 'column',
-        borderBottom: '1px solid rgba(221, 110, 63, 1)',
+        // borderBottom: '1px solid rgba(221, 110, 63, 1)',
         position: 'fixed',
         top: 0,
         zIndex: 1000,
@@ -47,7 +47,7 @@ export const MobileLayout = ({ children }: any) => {
       }}
     >
       <MobileHeader />
-      <Box sx={{ flexGrow: 1, overflowY: 'auto', pb: '56px', marginTop: '100px' }}>{children}</Box>
+      <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: '75px', marginTop: '85px' }}>{children}</Box>
     </Grid>
   );
 };

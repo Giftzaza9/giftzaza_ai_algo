@@ -29,3 +29,13 @@ a:hover {
 	text-decoration: underline;
 	text-decoration-color: rgba(249, 225, 228, 1);
 }
+
+@keyframes fadeIn {  
+	from {  
+		opacity:0;  
+	}  
+ 
+	to {  
+		opacity:1;  
+	}  
+ }
