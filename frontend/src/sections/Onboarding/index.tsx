@@ -3,6 +3,8 @@ import { theme } from '../../utils/theme';
 import DoneIcon from '@mui/icons-material/Done';
 import { userStore } from '../../store/UserStore';
 import { useNavigate } from 'react-router-dom';
+import { bottomNavState } from '../../store/BottomNavState';
+import { observer } from 'mobx-react-lite';
 
 const textColor = 'rgba(68, 65, 66, 1)';
 
@@ -23,8 +25,10 @@ const text = {
   fontFamily: 'Inter',
 };
 
-export const Onboarding = () => {
+export const Onboarding = observer(() => {
   const { user } = userStore;
+  const { setIsVisible } = bottomNavState;
+
   const navigate = useNavigate();
 
   return (
@@ -67,11 +71,19 @@ export const Onboarding = () => {
           </Box>
         </Box>
         <Box width={'90%'}>
-          <Button variant="contained" color="secondary" sx={{ width: '100%' }} onClick={() => navigate('/profiles')}>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ width: '100%' }}
+            onClick={() => {
+              setIsVisible(true);
+              navigate('/profiles');
+            }}
+          >
             I Agree
           </Button>
         </Box>
       </Container>
     </Grid>
   );
-};
+});

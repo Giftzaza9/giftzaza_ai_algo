@@ -15,9 +15,12 @@ import { userStore } from '../../../store/UserStore';
 import { logOut, stringAvatar } from '../../../utils/helperFunctions';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { navbarLinks, navbarSettings } from '../../../constants/constants';
+import { roleEnum } from '../../../constants/types';
+import { bottomNavState } from '../../../store/BottomNavState';
 
 export function Layout({ children }: React.PropsWithChildren) {
-  const { user } = userStore;
+  const { user, setUser } = userStore;
+  const { setIsVisible } = bottomNavState;
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -43,6 +46,8 @@ export function Layout({ children }: React.PropsWithChildren) {
   const handleProfileMenu = (action: any) => {
     console.log(action);
     if (action === 'Logout') {
+      setUser(undefined);
+      setIsVisible(false);
       logOut();
       navigate('/login');
     }
@@ -100,7 +105,7 @@ export function Layout({ children }: React.PropsWithChildren) {
                 }}
               >
                 {navbarLinks.map((item, index) =>
-                  item?.access?.includes(user?.role) ? (
+                  item?.access?.includes(user?.role as roleEnum) ? (
                     <MenuItem key={item?.name + '-' + index} onClick={() => navigate(item?.link)}>
                       {item?.icon}
                       <Typography textAlign="center" sx={{ fontSize: 'medium', color: '#dfc9ea' }}>
@@ -132,7 +137,7 @@ export function Layout({ children }: React.PropsWithChildren) {
             {/* WEB-TABS-MENU */}
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {navbarLinks.map((item, index) =>
-                item?.access?.includes(user?.role) ? (
+                item?.access?.includes(user?.role as roleEnum) ? (
                   <Button
                     key={index + '--' + item?.name}
                     onClick={() => navigate(item?.link)}

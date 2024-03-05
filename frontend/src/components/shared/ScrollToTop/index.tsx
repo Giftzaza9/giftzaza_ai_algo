@@ -26,7 +26,11 @@ export const ScrollToTop: FC<Props> = (props) => {
 
   return (
     <Fade in={trigger}>
-      <Box onClick={handleClick} role="presentation" sx={{ position: 'fixed', bottom: '16px', right: '16px' }}>
+      <Box
+        onClick={handleClick}
+        role="presentation"
+        sx={{ position: 'fixed', bottom: { xs: '84px', md: '16px' }, right: { xs: '16px', md: '16px' } }}
+      >
         {children}
       </Box>
     </Fade>

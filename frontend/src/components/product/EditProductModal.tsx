@@ -5,6 +5,7 @@ import { EditProduct } from './EditProduct';
 import { Close } from '@mui/icons-material';
 import { UpdateProductBody, updateProduct } from '../../services/product';
 import { toast } from 'react-toastify';
+import { useStyles } from './styles';
 
 interface Props {
   open: boolean;
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export const EditProductModal: FC<Props> = ({ onClose, open, product }) => {
+  const classes = useStyles();
+
   const [updateProductBody, setUpdateProductBody] = useState<UpdateProductBody | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -40,28 +43,13 @@ export const EditProductModal: FC<Props> = ({ onClose, open, product }) => {
       }}
     >
       <Grid
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          boxShadow: 24,
-          bgcolor: 'white',
-          paddingX: '24px',
-          borderRadius: '16px',
-          width: '45vw',
-          height: '85vh',
-          overflow: 'auto',
-          msOverflowStyle: 'none',
-          scrollbarWidth: 'none',
-          '&::-webkit-scrollbar': {
-            display: 'none',
-          },
-        }}
+        className={classes.addProductContainer}
         container
-        direction={'column'}
-        gap={'24px'}
-        wrap="nowrap"
+        sx={{
+          boxShadow: 24,
+          width: { xs: '100vw', md: '45vw' },
+          height: { xs: '100vh', md: '85vh' },
+        }}
       >
         <Grid item sx={{ position: 'sticky', top: 0, zIndex: 2 }}>
           <Grid sx={{ backgroundColor: '#fff', paddingTop: '24px' }}>
@@ -104,18 +92,7 @@ export const EditProductModal: FC<Props> = ({ onClose, open, product }) => {
             >
               <Typography sx={{ fontWeight: 600, lineHeight: '21px' }}>Save</Typography>
             </Button>
-            {loading && (
-              <CircularProgress
-                size={24}
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  marginTop: '-12px',
-                  marginLeft: '-12px',
-                }}
-              />
-            )}
+            {loading && <CircularProgress size={24} className={classes.buttonCircularProgress} />}
           </Box>
         </Grid>
       </Grid>

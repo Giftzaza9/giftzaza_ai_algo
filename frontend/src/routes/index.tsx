@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { observer } from 'mobx-react-lite';
 import { Auth } from '../sections/Auth';
 import { Dashboard } from '../sections/Dashboard';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
@@ -12,6 +11,7 @@ import { Profiles } from '../sections/Profiles';
 import { AdminProducts } from '../sections/Administration/AdminProducts';
 import { Onboarding } from '../sections/Onboarding';
 import { Products } from '../sections/Products';
+import { observer } from 'mobx-react-lite';
 
 const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
