@@ -79,7 +79,6 @@ export const AdminProducts = () => {
     if (searchDebounced.trim()) queryParams.push(`search=${searchDebounced}`);
     const newQueryString = queryParams.join('&');
     if (newQueryString !== queryString) {
-      console.log('Inside 1');
       setProducts([]);
       setPage(1);
       setQueryString(newQueryString);
@@ -89,7 +88,6 @@ export const AdminProducts = () => {
 
   useEffect(() => {
     if (page > 1) {
-      console.log('Inside 2');
       const pageUpdated = queryString
         ?.split('&')
         ?.map((param) => {
@@ -111,7 +109,7 @@ export const AdminProducts = () => {
   return (
     <Layout>
       {/* TOP-SECTION */}
-      <Grid container justifyContent={'space-between'} my={2} px={2}>
+      <Grid container justifyContent={'space-between'} wrap='nowrap' my={2} px={2}>
         <Grid item id="back-to-top-anchor">
           <Typography pr={2} display={'inline-flex'} variant="h4" fontFamily={'Manrope'}>
             Products
@@ -129,7 +127,7 @@ export const AdminProducts = () => {
               setAddNewModalOpen(true);
             }}
           >
-            <Typography variant="button" fontWeight={600} lineHeight={'17px'} fontFamily={'Inter'}>
+            <Typography variant="button" textOverflow={'ellipsis'} fontWeight={600} lineHeight={'17px'} fontFamily={'Inter'}>
               Add New
             </Typography>
           </Button>
@@ -187,7 +185,7 @@ export const AdminProducts = () => {
           </Grid>
 
           {products?.map((product) => (
-            <Grid item xs={12} md={6} lg={3} key={product?.id}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={product?.id}>
               <ProductCard
                 setEditProduct={setEditProduct}
                 setEditModalOpen={setEditModalOpen}
@@ -208,7 +206,7 @@ export const AdminProducts = () => {
           {productsLoading && (
             <>
               {Array.from({ length: 4 }).map((el, key) => (
-                <Grid key={key} item xs={12} md={6} lg={3}>
+                <Grid key={key} item xs={12} sm={6} md={4} lg={3}>
                   <ProductSkeletonCard isAdminView />
                 </Grid>
               ))}
