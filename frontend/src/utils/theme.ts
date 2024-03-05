@@ -5,7 +5,7 @@ export const theme = createTheme({
     fontFamily: ['Manrope', 'Inter', 'Roboto'].join(','),
   },
   palette: {
-    primary: { main: 'rgba(168, 108, 198, 1)' },
+    primary: { main: 'rgba(168, 108, 198, 1)', light: 'rgba(165, 118, 188, 1)' },
     secondary: { main: '#F7E38D' },
   },
   components: {

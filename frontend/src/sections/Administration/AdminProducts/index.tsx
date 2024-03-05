@@ -12,6 +12,7 @@ import { ProductSkeletonCard } from '../../../components/skeletons/ProductSkelet
 import { Waypoint } from 'react-waypoint';
 import { AddNewProductModal } from '../../../components/product/AddNewProductModal';
 import { ScrollToTop } from '../../../components/shared/ScrollToTop';
+import { EditProductModal } from '../../../components/product/EditProductModal';
 
 export const AdminProducts = () => {
   const [page, setPage] = useState<number>(1);
@@ -19,13 +20,14 @@ export const AdminProducts = () => {
   const [sort, setSort] = useState<string>('latest');
   const [searchDebounced, setSearchDebounced] = useState<string>('');
   const [searchRaw, setSearchRaw] = useState<string>('');
-  const [queryString, setQueryString] = useState<string>(`page=1&limit=${productPerPageAdmin}&sort=latest`);
+  const [queryString, setQueryString] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState<boolean>(false);
   const [totalProducts, setTotalProducts] = useState<number>(0);
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
-
   const [addNewModalOpen, setAddNewModalOpen] = useState<boolean>(false);
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [editProduct, setEditProduct] = useState<Product | undefined>();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
@@ -35,57 +37,74 @@ export const AdminProducts = () => {
     []
   );
 
-  const fetchProducts = useCallback(async (qString?: string) => {
-    try {
-      setProductsLoading(true);
-      const { data } = await getProducts(qString);
-      if (data?.docs?.length > 0) {
-        setProducts((prev) => [...prev, ...data.docs]);
+  const fetchProducts = useCallback(
+    async (qString?: string) => {
+      try {
+        setProductsLoading(true);
+        const { data } = await getProducts(qString);
+        if (data?.docs?.length > 0) {
+          setProducts((prev) => (page === 1 ? [...data.docs] : [...prev, ...data.docs]));
+        }
+        setHasNextPage(data?.hasNextPage);
+        setTotalProducts(data?.totalDocs);
+        setProductsLoading(false);
+      } catch (error) {
+        setProductsLoading(false);
       }
-      setHasNextPage(data?.hasNextPage);
-      setTotalProducts(data?.totalDocs);
-      setProductsLoading(false);
-    } catch (error) {
-      setProductsLoading(false);
-    }
-  }, []);
-
-  const refetchProducts = useCallback(async () => {
-    await fetchProducts(`page=1&limit=${productPerPageAdmin}&sort=latest`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    },
+    [page]
+  );
 
   const removeProduct = (id: string) => {
     setProducts((prev) => prev?.filter((p) => p.id !== id));
   };
 
-  useEffect(() => {
-    console.log('Inside 1');
-    const queryParams: string[] = [`limit=${productPerPageAdmin}`, `page=${1}`];
-    if (filters.length > 0) queryParams.push(`filter=${filters.join(',')}`);
-    queryParams.push(`sort=${sort}`);
-    if (searchDebounced.trim()) queryParams.push(`search=${searchDebounced}`);
-    setProducts([]);
-    setPage(1);
-    setQueryString(queryParams.join('&'));
-  }, [filters, sort, searchDebounced, page]);
+  const replaceProduct = (product: Product) => {
+    setProducts((prev) => prev?.map((p) => (p.id === product.id ? product : p)));
+  };
+
+  const handleAddNewModalClose = async () => {
+    setAddNewModalOpen(false);
+    await fetchProducts(`page=1&limit=${productPerPageAdmin}&sort=latest`);
+  };
+
+  const handleEditModalClose = async (product?: Product) => {
+    setEditModalOpen(false);
+    if (product) replaceProduct(product);
+  };
 
   useEffect(() => {
-    console.log('Inside 2');
-    const pageUpdated = queryString
-      ?.split('&')
-      ?.map((param) => {
-        if (param?.startsWith('page')) return `page=${page}`;
-        else return param;
-      })
-      ?.join('&');
-    setQueryString(pageUpdated);
+    const queryParams: string[] = [`page=${1}&limit=${productPerPageAdmin}&sort=${sort}`];
+    if (filters.length > 0) queryParams.push(`filter=${filters.join(',')}`);
+    if (searchDebounced.trim()) queryParams.push(`search=${searchDebounced}`);
+    const newQueryString = queryParams.join('&');
+    if (newQueryString !== queryString) {
+      console.log('Inside 1');
+      setProducts([]);
+      setPage(1);
+      setQueryString(newQueryString);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, sort, searchDebounced]);
+
+  useEffect(() => {
+    if (page > 1) {
+      console.log('Inside 2');
+      const pageUpdated = queryString
+        ?.split('&')
+        ?.map((param) => {
+          if (param?.startsWith('page')) return `page=${page}`;
+          else return param;
+        })
+        ?.join('&');
+      setQueryString(pageUpdated);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   useEffect(() => {
     console.log({ queryString });
-    fetchProducts(queryString);
+    if (queryString) fetchProducts(queryString);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryString]);
 
@@ -169,7 +188,13 @@ export const AdminProducts = () => {
 
           {products?.map((product) => (
             <Grid item xs={12} md={6} lg={3} key={product?.id}>
-              <ProductCard removeProduct={removeProduct} product={product} isAdminView />
+              <ProductCard
+                setEditProduct={setEditProduct}
+                setEditModalOpen={setEditModalOpen}
+                removeProduct={removeProduct}
+                product={product}
+                isAdminView
+              />
             </Grid>
           ))}
           {!productsLoading && hasNextPage && (
@@ -192,13 +217,9 @@ export const AdminProducts = () => {
         </Grid>
       </Grid>
 
-      <AddNewProductModal
-        refetchProducts={refetchProducts}
-        open={addNewModalOpen}
-        onClose={() => {
-          setAddNewModalOpen(false);
-        }}
-      />
+      <AddNewProductModal open={addNewModalOpen} onClose={handleAddNewModalClose} />
+
+      <EditProductModal product={editProduct!} open={editModalOpen} onClose={handleEditModalClose} />
 
       <ScrollToTop>
         <Fab size="small" aria-label="scroll back to top" color="primary">

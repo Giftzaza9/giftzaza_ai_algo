@@ -48,7 +48,7 @@ const updateProduct = {
   }),
   body: Joi.object().keys({
     tags: Joi.array(),
-    curated: Joi.string(),
+    curated: Joi.boolean(),
   }),
 };
 
