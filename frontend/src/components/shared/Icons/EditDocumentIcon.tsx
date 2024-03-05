@@ -1,6 +1,11 @@
-import React from 'react';
+import { FC } from 'react';
+import { theme } from '../../../utils/theme';
 
-export const EditDocumentIcon = () => {
+interface Props {
+  color?: string;
+}
+
+export const EditDocumentIcon: FC<Props> = ({ color }) => {
   return (
     <svg
       version="1.0"
@@ -11,7 +16,11 @@ export const EditDocumentIcon = () => {
       preserveAspectRatio="xMidYMid meet"
       fill="none"
     >
-      <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="rgba(168, 108, 198, 1)" stroke="none">
+      <g
+        transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+        fill={color ? color : theme.palette.primary.main}
+        stroke="none"
+      >
         <path
           d="M3880 4904 c-132 -20 -235 -60 -358 -140 -102 -66 -124 -88 -1193
 -1161 -806 -808 -799 -800 -854 -947 -30 -81 -126 -716 -127 -841 -1 -197 90

@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Product } from '../../constants/types';
-import { FC, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useState } from 'react';
 import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
 import { deleteProduct } from '../../services/product';
 import { getSwalConfirmation } from '../../utils/swalConfirm';
@@ -26,9 +26,11 @@ interface Props {
   product: Product;
   isAdminView?: boolean;
   removeProduct: (id: string) => void;
+  setEditProduct: Dispatch<SetStateAction<Product | undefined>>;
+  setEditModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct }) => {
+export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, setEditProduct, setEditModalOpen }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const showTags: string[] = [];
@@ -71,7 +73,12 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct }) 
           sx={{ position: 'absolute', top: '12px', right: '12px' }}
           action={
             <Grid container direction={'column'} alignItems={'center'}>
-              <IconButton aria-label="edit">
+              <IconButton
+                onClick={() => {
+                  setEditModalOpen(true);
+                  setEditProduct(product);
+                }}
+              >
                 <EditDocumentIcon />
               </IconButton>
               <IconButton
