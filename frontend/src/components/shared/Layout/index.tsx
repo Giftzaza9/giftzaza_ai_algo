@@ -23,9 +23,7 @@ export function Layout({ children }: React.PropsWithChildren) {
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const activeLink = location?.pathname?.substring(
-    location?.pathname?.lastIndexOf("/") + 1
-  );
+  const activeLink = location?.pathname?.substring(location?.pathname?.lastIndexOf('/') + 1);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -52,11 +50,10 @@ export function Layout({ children }: React.PropsWithChildren) {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <AppBar position="sticky" sx={{ backgroundColor: 'rgb(250 240 255)', boxShadow: 'none', top: 0, px: 2 }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-
             {/* WEB-LOGO */}
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
               <img
@@ -102,14 +99,18 @@ export function Layout({ children }: React.PropsWithChildren) {
                   display: { xs: 'block', md: 'none' },
                 }}
               >
-                {navbarLinks.map((item, index) => (
-                  item?.access?.includes(user?.role) ? <MenuItem key={item?.name + '-' + index} onClick={() => navigate(item?.link)}>
-                    {item?.icon}
-                    <Typography textAlign="center" sx={{ fontSize: 'medium', color: '#dfc9ea' }}>
-                      {item?.name}
-                    </Typography>
-                  </MenuItem> : <></>
-                ))}
+                {navbarLinks.map((item, index) =>
+                  item?.access?.includes(user?.role) ? (
+                    <MenuItem key={item?.name + '-' + index} onClick={() => navigate(item?.link)}>
+                      {item?.icon}
+                      <Typography textAlign="center" sx={{ fontSize: 'medium', color: '#dfc9ea' }}>
+                        {item?.name}
+                      </Typography>
+                    </MenuItem>
+                  ) : (
+                    <></>
+                  )
+                )}
               </Menu>
             </Box>
 
@@ -130,34 +131,39 @@ export function Layout({ children }: React.PropsWithChildren) {
 
             {/* WEB-TABS-MENU */}
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {navbarLinks.map((item, index) => (
-                item?.access?.includes(user?.role) ? <Button
-                  key={index + '--' + item?.name}
-                  onClick={() => navigate(item?.link)}
-                  sx={{
-                    my: 3,
-                    mx: 1,
-                    display: 'block',
-                    textTransform: 'unset',
-                    fontSize: 'medium',
-                    color: 'rgb(132, 64, 165)',
-                    fontWeight: activeLink === item?.link ? "600" : "none"
-                  }}
-                >
-                  {item?.icon}
-                  {item?.name}
-                </Button> : <></>
-              ))}
+              {navbarLinks.map((item, index) =>
+                item?.access?.includes(user?.role) ? (
+                  <Button
+                    key={index + '--' + item?.name}
+                    onClick={() => navigate(item?.link)}
+                    sx={{
+                      my: 3,
+                      mx: 1,
+                      display: 'block',
+                      textTransform: 'unset',
+                      fontSize: 'medium',
+                      color: 'rgb(132, 64, 165)',
+                      fontWeight: activeLink === item?.link ? '600' : 'none',
+                    }}
+                  >
+                    {item?.icon}
+                    {item?.name}
+                  </Button>
+                ) : (
+                  <></>
+                )
+              )}
             </Box>
 
             {/* RIGHT-SETTINGS */}
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title={user?.name}>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  { user?.profile_picture ?
-                  <Avatar src={user?.profile_picture || user?.name} /> :
-                  <Avatar {...stringAvatar(user?.name || '')} /> 
-                }
+                  {user?.profile_picture ? (
+                    <Avatar src={user?.profile_picture || user?.name} />
+                  ) : (
+                    <Avatar {...stringAvatar(user?.name || '')} />
+                  )}
                 </IconButton>
               </Tooltip>
               <Menu
@@ -194,10 +200,7 @@ export function Layout({ children }: React.PropsWithChildren) {
           flexDirection: 'column',
         }}
       >
-        
-
-        <Container maxWidth="xl" >{children}</Container>
-        
+        <Container maxWidth="xl">{children}</Container>
       </Box>
     </Box>
   );

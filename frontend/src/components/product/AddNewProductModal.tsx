@@ -11,11 +11,10 @@ import { toast } from 'react-toastify';
 
 interface Props {
   open: boolean;
-  onClose: (event: {}, reason: 'backdropClick' | 'escapeKeyDown') => void;
-  refetchProducts: () => Promise<void>;
+  onClose: () => void;
 }
 
-export const AddNewProductModal: FC<Props> = ({ onClose, open, refetchProducts }) => {
+export const AddNewProductModal: FC<Props> = ({ onClose, open }) => {
   const [link, setLink] = useState<string>('');
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -52,8 +51,7 @@ export const AddNewProductModal: FC<Props> = ({ onClose, open, refetchProducts }
           toast.success(`Product added successfully !`);
           setLoading(false);
           resetModal();
-          await refetchProducts();
-          onClose({}, 'escapeKeyDown');
+          onClose();
           break;
       }
     } catch (error) {
@@ -77,7 +75,7 @@ export const AddNewProductModal: FC<Props> = ({ onClose, open, refetchProducts }
     <Modal
       open={open}
       onClose={() => {
-        onClose({}, 'backdropClick');
+        onClose();
       }}
     >
       <Grid
@@ -114,7 +112,7 @@ export const AddNewProductModal: FC<Props> = ({ onClose, open, refetchProducts }
               <IconButton
                 sx={{ position: 'absolute', top: '28px', right: '4px' }}
                 onClick={(e) => {
-                  onClose(e, 'backdropClick');
+                  onClose();
                 }}
               >
                 <Close />

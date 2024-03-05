@@ -58,8 +58,7 @@ export const EditProduct: FC<Props> = ({ product, handleChange }) => {
             Curated
           </Typography>
           <Switch
-            // size="small"
-            value={isCurated}
+            checked={isCurated}
             onChange={(e, checked) => {
               setIsCurated(checked);
             }}
