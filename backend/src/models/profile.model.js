@@ -3,26 +3,51 @@ const { toJSON } = require('./plugins');
 
 const profileSchema = new mongoose.Schema(
   {
-    recommended_products: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-      },
-    ],
-    profile_preferences: [
-      {
-        type: String,
-      },
-    ],
-    user_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+    title: {
+      type : String,
+    },
+    age: {
+      type : String,
+    },
+    gender: {
+      type : String,
+    },
+    relation: {
+      type : String,
     },
     occasion: {
       type: String,
     },
     occasion_date: {
       type: Date,
+    },
+    min_price: {
+      type: Number,
+    },
+    max_price: {
+      type: Number,
+    },
+    styles: [{
+      type : String,
+    }],
+    interests: [{
+      type : String,
+    }],
+    preferences: [{
+      type : String,
+    }],
+    profile_preferences: {
+      type : Object,
+    },
+    recommended_products: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+      },
+    ],
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
   },
   {

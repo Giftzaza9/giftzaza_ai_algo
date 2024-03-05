@@ -10,14 +10,18 @@ import { Loved } from '../sections/Loved';
 import { roleEnum } from '../constants/types';
 import { Profiles } from '../sections/Profiles';
 import { AdminProducts } from '../sections/Administration/AdminProducts';
+import { Onboarding } from '../sections/Onboarding';
+import { Products } from '../sections/Products';
 
 const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
   const commonRoutes = (
     <>
       <Route path="/" element={<Dashboard />} />
-      <Route path="/loved" element={<Loved />} />
+      <Route path="/welcome" element={<Onboarding />} />
       <Route path="/profiles" element={<Profiles />} />
+      <Route path="/products" element={<Products />} />
+      <Route path="/loved" element={<Loved />} />
     </>
   );
 

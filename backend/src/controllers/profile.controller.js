@@ -1,4 +1,5 @@
 const httpStatus = require('http-status');
+const pick = require('../utils/pick');
 const catchAsync = require('../utils/catchAsync');
 const ApiError = require('../utils/ApiError');
 const { profileService } = require('../services');
@@ -11,9 +12,15 @@ const getProfile = catchAsync(async (req, res) => {
   res.send(profile);
 });
 
+const getProfiles = catchAsync(async (req, res) => {
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  console.log({options});
+  const result = await profileService.queryProfiles(options);
+  res.send(result);
+});
+
 const createProfile = catchAsync(async (req, res) => {
-	console.log("profile preference", req.body.preferences)
- req.body.preferences = JSON.parse(req.body.preferences);
+  req.body.user_id = req.user._id;
   const profile = await profileService.createProfile(req.body);
   res.status(httpStatus.CREATED).send(profile);
 });
@@ -28,13 +35,15 @@ const updateProfile = catchAsync(async (req, res) => {
   if (!profile) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
   }
-  req.body.preferences = JSON.parse(req.body.preferences);
-  profile = await profileService.updateProfile(profile, req.body);
+
+  
+  profile = await profileService.updateProfile(req.body, req.params.profileId);
   res.status(httpStatus.CREATED).send(profile);
 });
 
 module.exports = {
   getProfile,
+  getProfiles,
   createProfile,
   deleteProfile,
   updateProfile,
