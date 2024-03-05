@@ -1,12 +1,9 @@
-const pick = require('../utils/pick');
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { productService } = require('../services');
 
 const getProducts = catchAsync(async (req, res) => {
-  const filter = { title: new RegExp(req.query.title, 'i') };
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await productService.queryProducts(filter, options);
+  const result = await productService.queryProducts(req.query);
   res.send(result);
 });
 
@@ -24,8 +21,8 @@ const createProduct = catchAsync(async (req, res) => {
 });
 
 const deleteProduct = catchAsync(async (req, res) => {
-  await productService.deleteProductById(req.params.productId);
-  res.status(httpStatus.NO_CONTENT).send();
+  const product = await productService.deleteProductById(req.params.productId);
+  res.status(httpStatus.NO_CONTENT).send(product);
 });
 
 const updateProduct = catchAsync(async (req, res) => {

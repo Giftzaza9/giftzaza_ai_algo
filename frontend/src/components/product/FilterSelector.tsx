@@ -62,14 +62,14 @@ export const FilterSelector: FC<Props> = ({ filters, setFilters }) => {
               <AccordionDetails>
                 <FormControl component="fieldset">
                   <FormGroup aria-label="position">
-                    {val?.map((el) => (
+                    {val?.map((tag) => (
                       <FormControlLabel
-                        value={el?.value}
-                        control={<Checkbox checked={filters?.includes(el?.value)} />}
-                        label={el?.label}
+                        value={tag}
+                        control={<Checkbox />}
+                        label={tag}
                         labelPlacement="end"
                         onChange={(e, checked) => {
-                          handleFilterChecked(checked, el?.value);
+                          handleFilterChecked(checked, tag);
                         }}
                       />
                     ))}

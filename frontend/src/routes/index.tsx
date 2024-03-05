@@ -6,7 +6,6 @@ import ProtectedRoute from '../components/auth/ProtectedRoute';
 import { userStore } from '../store/UserStore';
 import { decodeToken } from '../utils/decodeToken';
 import { NotFound } from '../sections/NotFound';
-import { Administration } from '../sections/Administration';
 import { Loved } from '../sections/Loved';
 import { roleEnum } from '../constants/types';
 import { Profiles } from '../sections/Profiles';
@@ -29,12 +28,11 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Admin specific routes
   const adminRoutes = (
     <>
-      <Route path="/admin" element={<Administration />} />
       <Route
         path="/admin/*"
         element={
           <Routes>
-            <Route path="/products" element={<AdminProducts />} />
+            <Route path="/" element={<AdminProducts />} />
           </Routes>
         }
       />

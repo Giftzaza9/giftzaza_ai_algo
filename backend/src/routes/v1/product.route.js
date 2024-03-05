@@ -2,7 +2,6 @@ const express = require('express');
 const validate = require('../../middlewares/validate');
 const productValidation = require('../../validations/product.validation');
 const productController = require('../../controllers/product.controller');
-const { validateApiKey } = require('../../middlewares/apiKey');
 const auth = require('../../middlewares/auth');
 const { rightsEnum } = require('../../config/roles');
 

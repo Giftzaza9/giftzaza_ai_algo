@@ -14,10 +14,9 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <div>
         <Router />
-
         <ToastContainer
-          progressStyle={{ color: "#4318FF" }}
-          bodyStyle={{ color: "#00000", fontWeight: "400" }}
+          progressStyle={{ color: '#4318FF' }}
+          bodyStyle={{ color: '#00000', fontWeight: '400' }}
           theme="colored"
           hideProgressBar
         />

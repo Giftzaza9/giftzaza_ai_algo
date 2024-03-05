@@ -2,22 +2,48 @@ const httpStatus = require('http-status');
 const { Product } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { scrapeProduct } = require('../lib/scrapeProduct');
-const classificateProduct = require('../lib/classificateProduct');
-const rulebasedTagging = require('../lib/rulebasedTagging');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
 const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleaners');
 
 /**
  * Query for products
- * @param {Object} filter - Mongo filter
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
+ * @param {Object} queryObject - Request-Query object
  * @returns {Promise<QueryResult>}
  */
-const queryProducts = async (filter, options) => {
-  return await Product.paginate(filter, options);
+const queryProducts = async (queryObject) => {
+  const { sort, search = '', filter = '', page = 1, limit = 12 } = queryObject;
+  const filterObject = {
+    // is_active: true,
+    //  hil: true
+  };
+  const optionsObject = { page, limit, sort: { createdAt: -1 } };
+  if (sort) {
+    switch (sort) {
+      case 'latest':
+        optionsObject.sort = { createdAt: -1 };
+        break;
+      case 'oldest':
+        optionsObject.sort = { createdAt: 1 };
+        break;
+      case 'price-hi-to-lo':
+        optionsObject.sort = { price: -1 };
+        break;
+      case 'price-lo-to-hi':
+        optionsObject.sort = { price: 1 };
+        break;
+      case 'alpha-desc':
+        optionsObject.sort = { title: -1 };
+        break;
+      case 'alpha-asc':
+        optionsObject.sort = { title: 1 };
+        break;
+      default:
+        optionsObject.sort = { createdAt: -1 };
+    }
+  }
+  if (search) filterObject.title = { $regex: new RegExp(search, 'i') };
+  if (filter) filterObject.tags = { $all: filter?.split(',') };
+  return await Product.paginate(filterObject, optionsObject);
 };
 
 /**
@@ -30,7 +56,7 @@ const scrapeAndAddProduct = async (productBody) => {
 
   if (product_link.includes('amazon')) product_link = amazonUrlCleaner(product_link) || product_link;
   if (product_link.includes('bloomingdale')) product_link = bloomingdaleUrlCleaner(product_link) || product_link;
-  
+
   const productDB = await Product.findOne({ link: product_link });
   const product_data = await scrapeProduct(product_link, user_id);
 
@@ -80,12 +106,11 @@ const createProduct = async (productBody) => {
  * @returns {Promise<Product>}
  */
 const updateProductById = async (productId, updateBody) => {
-
   const { tags, curated } = updateBody;
   const product = await Product.findById(productId);
   const product_data = await scrapeProduct(product.link);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-  
+
   product.tags = tags;
   product.title = product_data.title;
   product.price = product_data.price;
@@ -103,7 +128,7 @@ const updateProductById = async (productId, updateBody) => {
  * @returns {Promise<Product>}
  */
 const deleteProductById = async (productId) => {
-  const product = await Product.findByIdAndDelete(productId);
+  const product = await Product.findByIdAndUpdate(productId, { is_active: false });
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   return product;
 };

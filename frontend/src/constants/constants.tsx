@@ -1,7 +1,6 @@
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import { roleEnum } from './types';
+import { Product, roleEnum } from './types';
 
 const iconStyle = {
   fontSize: 'large',
@@ -17,7 +16,7 @@ export const navbarLinks = [
     access: [roleEnum.ADMIN, roleEnum.USER],
   },
   { name: 'Administration', link: '/admin', icon: <DescriptionOutlinedIcon sx={iconStyle} />, access: [roleEnum.ADMIN] },
-  { name: 'Loved', link: '/loved', icon: <FavoriteBorderIcon sx={iconStyle} />, access: [roleEnum.ADMIN, roleEnum.USER] },
+  // { name: 'Loved', link: '/loved', icon: <FavoriteBorderIcon sx={iconStyle} />, access: [roleEnum.ADMIN, roleEnum.USER] },
 ];
 
 export const navbarSettings = ['Logout'];
@@ -32,68 +31,100 @@ export const sortOptions = [
 ];
 
 export const filterObject = {
-  gender: [
-    { label: 'Male', value: 'male' },
-    { label: 'Female', value: 'female' },
-  ],
-  age_category: [
-    { label: 'Under 12', value: 'under-12' },
-    { label: '12 - 18', value: '12-18' },
-    { label: '18 - 25', value: '18-25' },
-    { label: '25 - 45', value: '25-45' },
-    { label: '45 - 65', value: '45-65' },
-    { label: '65 +', value: '65+' },
-  ],
+  gender: ['Male', 'Female'],
+  age_category: ['Under 12', '12 - 18', '18 - 25', '25 - 45', '45 - 65', '65 +'],
   interest: [
-    { label: 'Fitness and Wellness', value: 'fitness,wellness' },
-    { label: 'Tech and Gadgets', value: 'tech,gadgets' },
-    { label: 'Fashion and Accessories', value: 'fashion,accessories' },
-    { label: 'Books and Learning', value: 'books,learning' },
-    { label: 'Travel and Adventure', value: 'travel,adventure' },
-    { label: 'Food and Cooking', value: 'food,cooking' },
-    { label: 'Arts and Crafts', value: 'arts,crafts' },
-    { label: 'Music and Entertainment', value: 'music,entertainment' },
-    { label: 'Outdoor and Nature', value: 'outdoor,nature' },
-    { label: 'Beauty and Self-Care', value: 'beauty,self-care' },
-    { label: 'Home and Decor', value: 'home,decor' },
-    { label: 'Sports and Hobbies', value: 'sports,hobbies' },
-    { label: 'Pets and Animal Lovers', value: 'pets,animal' },
-    { label: 'Art and Culture', value: 'art,culture' },
-    { label: 'Social Impact and Charity', value: 'social-impact,charity' },
-    { label: 'Spirituality', value: 'spirituality' },
+    'Fitness and Wellness',
+    'Tech and Gadgets',
+    'Fashion and Accessories',
+    'Books and Learning',
+    'Travel and Adventure',
+    'Food and Cooking',
+    'Arts and Crafts',
+    'Music and Entertainment',
+    'Outdoor and Nature',
+    'Beauty and Self-Care',
+    'Home and Decor',
+    'Sports and Hobbies',
+    'Pets and Animal Lovers',
+    'Art and Culture',
+    'Social Impact and Charity',
+    'Spirituality',
   ],
   occasion: [
-    { label: 'Birthdays', value: 'birthdays' },
-    { label: 'Anniversaries', value: 'anniversaries' },
-    { label: 'Holidays', value: 'holidays' },
-    { label: 'Promotions and Achievements', value: 'promotions-and-achievements' },
-    { label: 'Weddings', value: 'weddings' },
-    { label: 'Newborns', value: 'newborns' },
-    { label: 'Retirements', value: 'retirements' },
-    { label: 'Housewarmings', value: 'housewarmings' },
-    { label: 'Graduations', value: 'graduations' },
-    { label: "Valentine's Day", value: 'valentines-day' },
-    { label: 'Appreciation', value: 'appreciation' },
-    { label: 'Get Well Soon', value: 'get-well-soon' },
-    { label: 'Thank You Gifts', value: 'thank-you-gifts' },
-    { label: 'Apologies', value: 'apologies' },
+    'Birthdays',
+    'Anniversaries',
+    'Holidays',
+    'Promotions and Achievements',
+    'Weddings',
+    'Newborns',
+    'Retirements',
+    'Housewarmings',
+    'Graduations',
+    "Valentine's Day",
+    'Appreciation',
+    'Get Well Soon',
+    'Thank You Gifts',
+    'Apologies',
   ],
-  relationship: [
-    { label: 'Spouse or Significant Other', value: 'spouse-or-significant-other' },
-    { label: 'Girlfriend', value: 'girlfriend' },
-    { label: 'Child', value: 'child' },
-    { label: 'Parent', value: 'parent' },
-    { label: 'Grand Parent', value: 'grand-parent' },
-    { label: 'Friend', value: 'friend' },
-    { label: 'Colleague', value: 'colleague' },
-  ],
+  relationship: ['Spouse or Significant Other', 'Girlfriend', 'Child', 'Parent', 'Grand Parent', 'Friend', 'Colleague'],
   style: [
-    { label: 'Classic and Timeless', value: 'classic-and-timeless' },
-    { label: 'Comfortable Yet Stylish', value: 'comfortable-yet-stylish' },
-    { label: 'Premium Brands', value: 'premium-brands' },
-    { label: 'Minimalistic', value: 'minimalistic' },
-    { label: 'Practical', value: 'practical' },
-    { label: 'Chill', value: 'chill' },
-    { label: 'Bougie', value: 'bougie' },
+    'Classic and Timeless',
+    'Comfortable Yet Stylish',
+    'Premium Brands',
+    'Minimalistic',
+    'Practical',
+    'Chill',
+    'Bougie',
   ],
 };
+
+export const productPerPageAdmin = 12;
+
+export const dummyProduct: Product = {
+  source: 'amazon',
+  views: 0,
+  tags: [
+    'Female',
+    '25 - 45',
+    '45 - 65',
+    'Fashion and Accessories',
+    'Jewelry',
+    'Romantic',
+    'Anniversaries',
+    'Birthdays',
+    "Valentine's Day",
+    'Weddings',
+    'Spouse or Significant Other',
+    'Romantic',
+    'Classic and Timeless',
+  ],
+  similarity: 39,
+  rulebased_tags: [],
+  gptTagging: [
+    {
+      gender: ['Female'],
+      age_category: ['25 - 45', '45 - 65'],
+      interest: ['Fashion and Accessories', 'Jewelry', 'Romantic'],
+      occasion: ['Anniversaries', 'Birthdays', "Valentine's Day", 'Weddings'],
+      relationship: ['Spouse or Significant Other'],
+      style: ['Romantic', 'Classic and Timeless'],
+    },
+  ],
+  hil: false,
+  created_at: null,
+  updated_at: null,
+  title:
+    'TRYNDI Necklace Gifts for Wife from Husband - Gift for Wife Anniversary Birthday Gift Ideas, Gift for Wife, Christmas, Valentines, Wedding Anniversary Romantic Gifts for Her',
+  image: 'https://m.media-amazon.com/images/I/6181Ls1lFWL._AC_SY500_.jpg',
+  link: 'https://www.amazon.com/TRYNDI-Necklace-Gifts-Wife-Husband/dp/B0BH36R7G5/ref=sr_1_31?keywords=gift%2Babove%2B%24100&qid=1706637028&refinements=p_36%3A10000-&rnid=386465011&sr=8-31&th=1',
+  rating: 4.6,
+  price: 12312,
+  description:
+    'tryndi necklace gifts for wife from husband  gift for wife anniversary birthday gift ideas gift for wife christmas valentines wedding anniversary romantic gifts for her go to your orders to start the return print the return shipping label ship it',
+  id: '65b938a782c661c2f563261f',
+  curated: true,
+  price_currency: 'USD',
+};
+
+export const addNewProductSteps = ['Link', 'Product Info', 'Preview'];
