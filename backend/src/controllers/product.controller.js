@@ -21,8 +21,8 @@ const createProduct = catchAsync(async (req, res) => {
 });
 
 const deleteProduct = catchAsync(async (req, res) => {
-  await productService.deleteProductById(req.params.productId);
-  res.status(httpStatus.NO_CONTENT).send();
+  const product = await productService.deleteProductById(req.params.productId);
+  res.status(httpStatus.NO_CONTENT).send(product);
 });
 
 const updateProduct = catchAsync(async (req, res) => {

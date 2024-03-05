@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Layout } from '../../../components/shared/Layout';
-import { Button, Grid, InputAdornment, MenuItem, Select, TextField, Typography } from '@mui/material';
-import { Add, Search } from '@mui/icons-material';
+import { Button, Fab, Grid, InputAdornment, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Add, KeyboardArrowUp, Search } from '@mui/icons-material';
 import { FilterSelector } from '../../../components/product/FilterSelector';
 import { productPerPageAdmin, sortOptions } from '../../../constants/constants';
 import { debounce } from 'lodash';
@@ -11,6 +11,7 @@ import { Product } from '../../../constants/types';
 import { ProductSkeletonCard } from '../../../components/skeletons/ProductSkeletonCard';
 import { Waypoint } from 'react-waypoint';
 import { AddNewProductModal } from '../../../components/product/AddNewProductModal';
+import { ScrollToTop } from '../../../components/shared/ScrollToTop';
 
 export const AdminProducts = () => {
   const [page, setPage] = useState<number>(1);
@@ -18,9 +19,10 @@ export const AdminProducts = () => {
   const [sort, setSort] = useState<string>('latest');
   const [searchDebounced, setSearchDebounced] = useState<string>('');
   const [searchRaw, setSearchRaw] = useState<string>('');
-  const [queryString, setQueryString] = useState<string>(`page=1&limit=${productPerPageAdmin}`);
+  const [queryString, setQueryString] = useState<string>(`page=1&limit=${productPerPageAdmin}&sort=latest`);
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState<boolean>(false);
+  const [totalProducts, setTotalProducts] = useState<number>(0);
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
 
   const [addNewModalOpen, setAddNewModalOpen] = useState<boolean>(false);
@@ -41,13 +43,24 @@ export const AdminProducts = () => {
         setProducts((prev) => [...prev, ...data.docs]);
       }
       setHasNextPage(data?.hasNextPage);
+      setTotalProducts(data?.totalDocs);
       setProductsLoading(false);
     } catch (error) {
       setProductsLoading(false);
     }
   }, []);
 
+  const refetchProducts = useCallback(async () => {
+    await fetchProducts(`page=1&limit=${productPerPageAdmin}&sort=latest`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const removeProduct = (id: string) => {
+    setProducts((prev) => prev?.filter((p) => p.id !== id));
+  };
+
   useEffect(() => {
+    console.log('Inside 1');
     const queryParams: string[] = [`limit=${productPerPageAdmin}`, `page=${1}`];
     if (filters.length > 0) queryParams.push(`filter=${filters.join(',')}`);
     queryParams.push(`sort=${sort}`);
@@ -55,9 +68,10 @@ export const AdminProducts = () => {
     setProducts([]);
     setPage(1);
     setQueryString(queryParams.join('&'));
-  }, [filters, sort, searchDebounced]);
+  }, [filters, sort, searchDebounced, page]);
 
   useEffect(() => {
+    console.log('Inside 2');
     const pageUpdated = queryString
       ?.split('&')
       ?.map((param) => {
@@ -79,9 +93,12 @@ export const AdminProducts = () => {
     <Layout>
       {/* TOP-SECTION */}
       <Grid container justifyContent={'space-between'} my={2} px={2}>
-        <Grid item>
-          <Typography variant="h4" fontFamily={'Manrope'}>
+        <Grid item id="back-to-top-anchor">
+          <Typography pr={2} display={'inline-flex'} variant="h4" fontFamily={'Manrope'}>
             Products
+          </Typography>
+          <Typography display={'inline-flex'} variant="h6" fontFamily={'Inter'} sx={{ color: 'rgba(125, 141, 160, 1)' }}>
+            {`( ${totalProducts} items )`}
           </Typography>
         </Grid>
         <Grid item>
@@ -107,10 +124,10 @@ export const AdminProducts = () => {
         </Grid>
 
         {/* PRODUCTS */}
-        <Grid item container flex={3} spacing={'21px'} paddingX={'12px'} paddingBottom={'32px'}>
+        <Grid item container flex={4.5} spacing={'21px'} paddingX={'12px'} paddingBottom={'32px'}>
           {/* SEARCH + SORT */}
           <Grid item container xs={12} gap={'21px'}>
-            <Grid item flex={3}>
+            <Grid item flex={3.4}>
               <TextField
                 sx={{ backgroundColor: 'white' }}
                 hiddenLabel
@@ -133,8 +150,6 @@ export const AdminProducts = () => {
             </Grid>
             <Grid item flex={1}>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
                 value={sort}
                 onChange={(e) => {
                   setSort(e.target.value);
@@ -153,8 +168,8 @@ export const AdminProducts = () => {
           </Grid>
 
           {products?.map((product) => (
-            <Grid item xs={12} md={6} lg={4}>
-              <ProductCard product={product} isAdminView />
+            <Grid item xs={12} md={6} lg={3} key={product?.id}>
+              <ProductCard removeProduct={removeProduct} product={product} isAdminView />
             </Grid>
           ))}
           {!productsLoading && hasNextPage && (
@@ -167,8 +182,8 @@ export const AdminProducts = () => {
           )}
           {productsLoading && (
             <>
-              {Array.from({ length: 3 }).map((el, key) => (
-                <Grid key={key} item xs={12} md={6} lg={4}>
+              {Array.from({ length: 4 }).map((el, key) => (
+                <Grid key={key} item xs={12} md={6} lg={3}>
                   <ProductSkeletonCard isAdminView />
                 </Grid>
               ))}
@@ -178,11 +193,18 @@ export const AdminProducts = () => {
       </Grid>
 
       <AddNewProductModal
+        refetchProducts={refetchProducts}
         open={addNewModalOpen}
         onClose={() => {
           setAddNewModalOpen(false);
         }}
       />
+
+      <ScrollToTop>
+        <Fab size="small" aria-label="scroll back to top" color="primary">
+          <KeyboardArrowUp />
+        </Fab>
+      </ScrollToTop>
     </Layout>
   );
 };

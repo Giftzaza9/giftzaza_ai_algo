@@ -15,16 +15,40 @@ import {
 } from '@mui/material';
 import { Product } from '../../constants/types';
 import { FC, useState } from 'react';
-import { ellipsisText } from '../../utils/helperFunctions';
-import { Delete, Edit } from '@mui/icons-material';
+import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
+import { deleteProduct } from '../../services/product';
+import { getSwalConfirmation } from '../../utils/swalConfirm';
+import { filterObject } from '../../constants/constants';
+import { EditDocumentIcon } from '../shared/Icons/EditDocumentIcon';
+import { DeleteIcon } from '../shared/Icons/DeleteIcon';
 
 interface Props {
   product: Product;
   isAdminView?: boolean;
+  removeProduct: (id: string) => void;
 }
 
-export const ProductCard: FC<Props> = ({ product, isAdminView }) => {
+export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct }) => {
   const [isFocused, setIsFocused] = useState(false);
+
+  const showTags: string[] = [];
+  const remainingTags: string[] = [];
+  product?.tags?.forEach((el) => {
+    if (filterObject.age_category.includes(el)) return;
+    if (!filterObject.age_category.includes(el) && el?.length < 10 && showTags?.length < 5) showTags.push(el);
+    else remainingTags.push(el);
+  });
+
+  const handleDelete = async () => {
+    try {
+      const isConfirm = await getSwalConfirmation();
+      if (!isConfirm) return;
+      await deleteProduct(product?.id);
+      removeProduct(product?.id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Card
@@ -46,18 +70,61 @@ export const ProductCard: FC<Props> = ({ product, isAdminView }) => {
         <CardHeader
           sx={{ position: 'absolute', top: '12px', right: '12px' }}
           action={
-            <>
+            <Grid container direction={'column'} alignItems={'center'}>
               <IconButton aria-label="edit">
-                <Edit />
+                <EditDocumentIcon />
               </IconButton>
-              <IconButton aria-label="delete">
-                <Delete />
+              <IconButton
+                onClick={(e) => {
+                  handleDelete();
+                }}
+                aria-label="delete"
+              >
+                <DeleteIcon />
               </IconButton>
-            </>
+              <Grid item>
+                <Box
+                  borderRadius={'50%'}
+                  height={32}
+                  width={32}
+                  bgcolor={'rgba(168, 108, 198, 0.4)'}
+                  display={'flex'}
+                  justifyContent={'center'}
+                  alignItems={'center'}
+                >
+                  <Typography variant="body2" fontSize={'12px'} sx={{ color: '#fff' }} textAlign={'center'}>
+                    0
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <Typography variant="body2" fontSize={'8px'} sx={{ color: 'rgba(125, 141, 160, 1)' }} textAlign={'center'}>
+                  Clicks
+                </Typography>
+              </Grid>
+            </Grid>
           }
         />
       )}
       <Box height={isAdminView ? '270px' : '212px'} overflow={'hidden'}>
+        {product?.curated && (
+          <Typography
+            fontWeight={500}
+            sx={{
+              position: 'absolute',
+              top: '10px',
+              left: 0,
+              bgcolor: 'rgba(168, 108, 198, 1)',
+              color: 'white',
+              display: 'inline-flex',
+              padding: '2px 14px',
+              fontSize: '14px',
+              borderRadius: '0px 4px 4px 0px',
+            }}
+          >
+            Curated
+          </Typography>
+        )}
         <img
           src={product?.image ?? ''}
           alt={product?.title}
@@ -114,7 +181,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView }) => {
           {/* PRICE + RATING */}
           <Stack direction={'row'} justifyContent={'space-between'}>
             <Typography variant="h6" sx={{ fontFamily: 'Inter', fontSize: '15px', fontWeight: 600, lineHeight: '18.15px' }}>
-              $ {product?.price?.toFixed(2)}
+              {getCurrencySymbol(product?.price_currency)} {product?.price?.toFixed(2)}
             </Typography>
             <Tooltip title={product?.rating} TransitionComponent={Fade} TransitionProps={{ timeout: 600 }} followCursor>
               <Box>
@@ -147,7 +214,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView }) => {
           )}
 
           <Grid container gap={1} height={'56px'}>
-            {product?.tags?.slice(0, 5).map((tag) => (
+            {showTags.map((tag) => (
               <Grid item>
                 <Chip
                   size="small"
@@ -165,10 +232,10 @@ export const ProductCard: FC<Props> = ({ product, isAdminView }) => {
                 />
               </Grid>
             ))}
-            {product?.tags?.length > 5 && (
+            {remainingTags?.length > 0 && (
               <Grid item>
                 <Tooltip
-                  title={product?.tags?.slice(5)?.map((tag) => (
+                  title={remainingTags?.map((tag) => (
                     <div key={tag}>{tag}</div>
                   ))}
                   arrow
@@ -177,7 +244,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView }) => {
                     size="small"
                     label={
                       <Typography variant="caption" sx={{ fontSize: '9px', fontWeight: 600, lineHeight: '13px' }}>
-                        {`+${product?.tags?.length - 5} more`}
+                        {`+${remainingTags?.length} more`}
                       </Typography>
                     }
                     variant="outlined"
