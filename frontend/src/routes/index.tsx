@@ -1,16 +1,15 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { observer } from "mobx-react-lite";
-import { Auth } from "../sections/Auth";
-import { Dashboard } from "../sections/Dashboard";
-import ProtectedRoute from "../components/auth/ProtectedRoute";
-import { userStore } from "../store/UserStore";
-import { decodeToken } from "../utils/decodeToken";
-import { NotFound } from "../sections/NotFound";
-import { Administration } from "../sections/Administration";
-import { Loved } from "../sections/Loved";
-import { roleEnum } from "../constants/types";
-import { Profiles } from "../sections/Profiles";
-import { AdminProducts } from "../sections/Administration/AdminProducts";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { Auth } from '../sections/Auth';
+import { Dashboard } from '../sections/Dashboard';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
+import { userStore } from '../store/UserStore';
+import { decodeToken } from '../utils/decodeToken';
+import { NotFound } from '../sections/NotFound';
+import { Loved } from '../sections/Loved';
+import { roleEnum } from '../constants/types';
+import { Profiles } from '../sections/Profiles';
+import { AdminProducts } from '../sections/Administration/AdminProducts';
 
 const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
@@ -25,17 +24,24 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Admin specific routes
   const adminRoutes = (
     <>
-      <Route path="/admin" element={<Administration />} />
-      <Route path="/admin/*" element={
-        <Routes>
-          <Route path='/products' element={<AdminProducts />} />
-        </Routes>
-      } />
+      <Route
+        path="/admin/*"
+        element={
+          <Routes>
+            <Route path="/" element={<AdminProducts />} />
+          </Routes>
+        }
+      />
     </>
   );
 
   if (app_role === roleEnum.ADMIN) {
-    return <>{commonRoutes}{adminRoutes}</>;
+    return (
+      <>
+        {commonRoutes}
+        {adminRoutes}
+      </>
+    );
   } else if (app_role === roleEnum.USER) {
     return <>{commonRoutes}</>;
   } else {
@@ -45,7 +51,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
 };
 
 const Router = observer(() => {
-  const token = localStorage.getItem("__giftzaza__");
+  const token = localStorage.getItem('__giftzaza__');
   let user: any;
   if (token) {
     user = decodeToken(token);
@@ -54,12 +60,12 @@ const Router = observer(() => {
 
   return (
     <Routes>
-      <Route path={"/login"} element={<Auth />} />
+      <Route path={'/login'} element={<Auth />} />
       <Route path="/404" element={<NotFound />} />
       <Route path="/" element={<ProtectedRoute />}>
         {roleBasedRouteAccess(user_role)}
       </Route>
-      <Route path="*" element={<Navigate to="/404" />} /> 
+      <Route path="*" element={<Navigate to="/404" />} />
     </Routes>
   );
 });

@@ -12,8 +12,11 @@ const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleane
  */
 const queryProducts = async (queryObject) => {
   const { sort, search = '', filter = '', page = 1, limit = 12 } = queryObject;
-  const filterObject = {};
-  const optionsObject = { page, limit };
+  const filterObject = {
+    // is_active: true,
+    //  hil: true
+  };
+  const optionsObject = { page, limit, sort: { createdAt: -1 } };
   if (sort) {
     switch (sort) {
       case 'latest':
@@ -35,11 +38,11 @@ const queryProducts = async (queryObject) => {
         optionsObject.sort = { title: 1 };
         break;
       default:
-        optionsObject.sort = {};
+        optionsObject.sort = { createdAt: -1 };
     }
   }
   if (search) filterObject.title = { $regex: new RegExp(search, 'i') };
-  if (filter) filterObject.tags = { $in: filter?.split(',')?.map((tag) => new RegExp(tag, 'i')) };
+  if (filter) filterObject.tags = { $all: filter?.split(',') };
   return await Product.paginate(filterObject, optionsObject);
 };
 
@@ -53,7 +56,7 @@ const scrapeAndAddProduct = async (productBody) => {
 
   if (product_link.includes('amazon')) product_link = amazonUrlCleaner(product_link) || product_link;
   if (product_link.includes('bloomingdale')) product_link = bloomingdaleUrlCleaner(product_link) || product_link;
-  
+
   const productDB = await Product.findOne({ link: product_link });
   const product_data = await scrapeProduct(product_link, user_id);
 
@@ -103,12 +106,11 @@ const createProduct = async (productBody) => {
  * @returns {Promise<Product>}
  */
 const updateProductById = async (productId, updateBody) => {
-
   const { tags, curated } = updateBody;
   const product = await Product.findById(productId);
   const product_data = await scrapeProduct(product.link);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-  
+
   product.tags = tags;
   product.title = product_data.title;
   product.price = product_data.price;
@@ -126,7 +128,7 @@ const updateProductById = async (productId, updateBody) => {
  * @returns {Promise<Product>}
  */
 const deleteProductById = async (productId) => {
-  const product = await Product.findByIdAndDelete(productId);
+  const product = await Product.findByIdAndUpdate(productId, { is_active: false });
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
   return product;
 };

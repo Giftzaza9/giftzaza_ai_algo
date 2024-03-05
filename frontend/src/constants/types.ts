@@ -44,4 +44,5 @@ export type Product = {
   link: string;
   rating: number;
   curated: boolean;
+  price_currency: string;
 };
