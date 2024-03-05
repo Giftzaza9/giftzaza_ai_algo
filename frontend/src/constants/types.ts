@@ -1,7 +1,7 @@
 export enum roleEnum {
-    USER = 'user',
-    ADMIN = 'admin',
-} 
+  USER = 'user',
+  ADMIN = 'admin',
+}
 
 export interface User {
   email: string;
@@ -45,4 +45,16 @@ export type Product = {
   rating: number;
   curated: boolean;
   price_currency: string;
+};
+
+export type ProfileData = {
+  styles: string[];
+  interests: string[];
+  title: string;
+  relation: string;
+  age: string;
+  gender: string;
+  occasion: string;
+  occasion_date: string;
+  budget: string;
 };
