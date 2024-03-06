@@ -2,6 +2,9 @@ import { Box, Chip, Fade, Grid, Rating, Stack, Tooltip, Typography } from '@mui/
 import { FC } from 'react';
 import { Product } from '../../constants/types';
 import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
+import { Amazon } from '../shared/Icons/Amazon';
+import { Bloomingdales } from '../shared/Icons/Bloomingdales';
+import _ from 'lodash';
 
 interface Props {
   product: Product;
@@ -29,6 +32,17 @@ export const PreviewProduct: FC<Props> = ({ product }) => {
             Curated
           </Typography>
         )}
+        <Tooltip title={_.capitalize(product?.source)} followCursor color="primary">
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '4px',
+              right: '8px',
+            }}
+          >
+            {product?.source === 'amazon' ? <Amazon /> : <Bloomingdales />}
+          </Box>
+        </Tooltip>
         <img src={product?.image} alt={product?.title} style={{ objectFit: 'contain', width: '100%', height: '100%' }} />
       </Grid>
 
@@ -69,6 +83,7 @@ export const PreviewProduct: FC<Props> = ({ product }) => {
           </Typography>
         )}
       </Grid>
+
       <Grid item>
         <Stack direction={'row'} justifyContent={'space-between'}>
           <Typography variant="h6" sx={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 600, lineHeight: '18.15px' }}>
@@ -81,6 +96,22 @@ export const PreviewProduct: FC<Props> = ({ product }) => {
           </Tooltip>
         </Stack>
       </Grid>
+
+      <Grid item>
+        <Typography
+          variant="body1"
+          sx={{
+            color: 'rgba(125, 141, 160, 1)',
+            fontSize: '12px',
+            fontWeight: 500,
+            lineHeight: '16px',
+            fontFamily: 'Manrope',
+          }}
+        >
+          {product?.description}
+        </Typography>
+      </Grid>
+
       <Grid item>
         <Grid container gap={1}>
           {product?.tags?.map((tag) => (
