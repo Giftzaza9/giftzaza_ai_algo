@@ -13,7 +13,6 @@ const scrapeProduct = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(product);
 });
 
-
 const createProduct = catchAsync(async (req, res) => {
   req.body.user_id = req.user._id;
   const product = await productService.createProduct(req.body);

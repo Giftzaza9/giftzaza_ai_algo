@@ -49,7 +49,6 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
   } else if (app_role === roleEnum.USER) {
     return <>{commonRoutes}</>;
   } else {
-    // Default to a fallback route for unknown roles
     return <Route path="/" element={<Dashboard />} />;
   }
 };

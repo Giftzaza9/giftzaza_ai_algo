@@ -58,20 +58,22 @@ const scrapeAndAddProduct = async (productBody) => {
   if (product_link.includes('bloomingdale')) product_link = bloomingdaleUrlCleaner(product_link) || product_link;
 
   const productDB = await Product.findOne({ link: product_link });
-  const product_data = await scrapeProduct(product_link, user_id);
+  const scrapedProduct = await scrapeProduct(product_link, user_id);
+  console.log('🚀 ~ scrapeAndAddProduct ~ scrapedProduct:', scrapedProduct)
 
-  if (!product_data || !product_data.description) {
+  if (!scrapedProduct || !scrapedProduct.description) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
 
-  const gptData = await GPTbasedTagging(product_data.description);
-  product_data.tags = gptData.preferenceData;
-  product_data.gptTagging = gptData.JSON_response;
-  product_data.curated = false;
-  product_data.hil = false;
+  const gptData = await GPTbasedTagging(scrapedProduct.description);
+  scrapedProduct.tags = gptData.preferenceData;
+  scrapedProduct.gptTagging = gptData.JSON_response;
+  scrapedProduct.curated = false;
+  scrapedProduct.hil = false;
+  console.log('🚀 ~ scrapeAndAddProduct ~ scrapedProduct:', scrapedProduct)
   const product = productDB
-    ? await Product.findByIdAndUpdate(productDB?._id, product_data, { new: true, useFindAndModify: false })
-    : await Product.create(product_data);
+    ? await Product.findByIdAndUpdate(productDB?._id, scrapedProduct, { new: true, useFindAndModify: false })
+    : await Product.create(scrapedProduct);
   return product;
 };
 
