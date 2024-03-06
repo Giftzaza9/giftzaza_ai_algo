@@ -47,14 +47,14 @@ def similar_items_endpoint(item_id,N=10):
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     return idf.to_dict(orient='records')
 
-def cs_similar_user(new_user_attriutes,N=10):
+def cs_similar_user(new_user_attributes,N=10):
     filter_dict = {}
     hard_filter_attrs = []
     for i in Global_Obj.hard_filters:
-        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_user_attriutes))
+        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_user_attributes))
         hard_filter_attrs.extend(common_list)
         filter_dict.update({i: common_list})
-    soft_filter_attrs = list(set(new_user_attriutes).difference(set(hard_filter_attrs)))
+    soft_filter_attrs = list(set(new_user_attributes).difference(set(hard_filter_attrs)))
 
     udf = LightFM_Obj.cold_start_similar_user(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N)
     udf = udf[['left_all_unique_id','left_score']].copy()
@@ -62,16 +62,16 @@ def cs_similar_user(new_user_attriutes,N=10):
     
     return udf.to_dict(orient='records')
 
-def cs_similar_items(new_item_attriutes,N=10,test_sample_flag=False):
+def cs_similar_items(new_item_attributes,N=10,test_sample_flag=False):
     filter_dict = {}
     hard_filter_attrs = []
     for i in Global_Obj.hard_filters:
-        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_item_attriutes))
+        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_item_attributes))
         hard_filter_attrs.extend(common_list)
         filter_dict.update({i: common_list})
-    soft_filter_attrs = list(set(new_item_attriutes).difference(set(hard_filter_attrs)))
+    soft_filter_attrs = list(set(new_item_attributes).difference(set(hard_filter_attrs)))
 
-    idf = LightFM_Obj.cold_start_similar_items(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,test_sample_flag=test_sample_flag)
+    idf = LightFM_Obj.new_cold_start_similar_items(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,test_sample_flag=test_sample_flag)
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     
@@ -81,30 +81,30 @@ def user_item_recommendation(user_id,N=10):
     idf = LightFM_Obj.user_item_recommendation(user_id)[['all_unique_id','title','ranking_score']].rename(columns={"ranking_score":"score"})
     return idf.head(N).to_dict(orient='records')
 
-def cs_user_item_recommendation(new_user_attriutes,similar_user_id = "test_profile_id1",N=10,test_sample_flag=False):
+def cs_user_item_recommendation(new_user_attributes,similar_user_id = "test_profile_id1",N=10,test_sample_flag=False):
     filter_dict = {}
     all_filter_values = []
     for i in Global_Obj.hard_filters:
-        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_user_attriutes))
+        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_user_attributes))
         all_filter_values.extend(common_list)
         filter_dict.update({i: common_list})
-    filter_user_attriutes = list(set(new_user_attriutes).difference(set(all_filter_values)))
+    filter_user_attributes = list(set(new_user_attributes).difference(set(all_filter_values)))
 
-    idf = LightFM_Obj.cold_start_user_item_recommendation(filter_user_attriutes,similar_user_id,test_sample_flag=test_sample_flag)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"score"})
+    idf = LightFM_Obj.cold_start_user_item_recommendation(filter_user_attributes,similar_user_id,test_sample_flag=test_sample_flag)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"score"})
     idf['tags'] = idf['tags'].apply(lambda eachList : list(map(Global_Obj.preprocess_str,ast.literal_eval(eachList))))
     idf = idf[idf['test_set']==True].copy()
 
     return idf[idf['tags'].apply(lambda eachList : set(all_filter_values).issubset(set(eachList)))].head(N).to_dict(orient='records')
     # return idf.to_dict(orient='records')
 
-def cs_similar_items_with_text_sim(new_item_attriutes,content_attr=None,N=10,test_sample_flag=False):
+def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,test_sample_flag=False):
     filter_dict = {}
     hard_filter_attrs = []
     for i in Global_Obj.hard_filters:
-        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_item_attriutes))
+        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_item_attributes))
         hard_filter_attrs.extend(common_list)
         filter_dict.update({i: common_list})
-    soft_filter_attrs = list(set(new_item_attriutes).difference(set(hard_filter_attrs)))
+    soft_filter_attrs = list(set(new_item_attributes).difference(set(hard_filter_attrs)))
 
     idf = LightFM_Obj.cold_start_similar_items_with_text_sim(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr,test_sample_flag=test_sample_flag)
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
@@ -194,13 +194,13 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,test_sam
         if profile_user_id:
             for profile_id in profile_user_id:
                 if LightFM_Obj.check_profile_interaction(profile_id=profile_id):
-                    return cs_user_item_recommendation(new_user_attriutes=new_attributes,similar_user_id=profile_user_id,N=N,test_sample_flag = test_sample_flag)
+                    return cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_user_id,N=N,test_sample_flag = test_sample_flag)
         ####  If No Similar profile from same user - Popular recommendation from all profile
         popular_recommdendations = []
         for profile_id in similar_profile_cutoff['user_id'].to_list():
             try:
                 if LightFM_Obj.check_profile_interaction(profile_id=profile_id):
-                    popular_recommdendations.extend(cs_user_item_recommendation(new_user_attriutes=new_attributes,similar_user_id=profile_id,N=N,test_sample_flag = test_sample_flag))
+                    popular_recommdendations.extend(cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_id,N=N,test_sample_flag = test_sample_flag))
             except Exception as e:
                 raise Exception(f"Error in Getting Similar Profile recommdendation : {e}")
         if popular_recommdendations:
@@ -208,7 +208,7 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,test_sam
             return popular_recommdendations[:N]
     #### if No interaction for any of the profiles
     if content_attr:
-        return cs_similar_items_with_text_sim(new_item_attriutes=new_attributes,content_attr=content_attr,N=N,test_sample_flag=test_sample_flag)
-    return cs_similar_items(new_item_attriutes=new_attributes,N=N,test_sample_flag=test_sample_flag)
+        return cs_similar_items_with_text_sim(new_item_attributes=new_attributes,content_attr=content_attr,N=N,test_sample_flag=test_sample_flag)
+    return cs_similar_items(new_item_attributes=new_attributes,N=N,test_sample_flag=test_sample_flag)
 
 

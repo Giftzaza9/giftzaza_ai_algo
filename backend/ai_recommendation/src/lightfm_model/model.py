@@ -6,6 +6,7 @@ import shutil
 import datetime
 import numpy as np
 import json
+import itertools
 from pathlib import Path
 from lightfm import LightFM
 from lightfm.cross_validation import random_train_test_split
@@ -138,6 +139,35 @@ class LightFM_cls:
         matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
+    def new_cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,test_sample_flag=False):
+        filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        all_soft_attrs = list(itertools.chain(*map(Global_Obj.cat_dict.get,Global_Obj.soft_filters)))
+        # filter_idf['matched_tags'] = filter_idf['tags'].apply(lambda eachList: list(set(eachList) & set(soft_filter_attrs)))
+        filter_idf['matched_tags'] = filter_idf['tags'].apply(lambda eachList: list(set(eachList) & set(all_soft_attrs)))
+        filter_idf['embedding_tags'] = filter_idf['matched_tags'].apply(lambda eachList : [*map(dict(enumerate(self.model.item_embeddings)).get,[*map(self.item_fmapper.get, eachList)])] )
+        filter_idf['embedding_tags'] = filter_idf['embedding_tags'].apply(sum)
+        if test_sample_flag:
+            filter_idf = filter_idf[filter_idf['test_set']==True].copy()
+        filter_idf.reset_index(drop=True,inplace=True)
+        feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
+
+        summation = 0
+        for idx in range(len(feat_idxs)):
+            summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
+        filter_item_embeddings = np.array(filter_idf['embedding_tags'].to_list())
+        scores = filter_item_embeddings.dot(summation)
+        item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
+        item_vec_norm = np.linalg.norm(summation)
+        scores = np.squeeze(scores / item_norms / item_vec_norm)
+
+        best = np.argsort(-scores)[0 : N]
+        idf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
+        idf = pd.DataFrame(idf,columns=['itemID','score'])
+        idf['all_unique_id'] = idf['itemID'].map(filter_idf['all_unique_id'].to_dict())
+        idf.columns = 'left_' + idf.columns.values
+        matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
+        return matched_item_meta
+    
     def user_item_recommendation(self,original_user_id):
         try:
             user_id = self.user_mapper[original_user_id]
@@ -148,8 +178,8 @@ class LightFM_cls:
         top_items.insert(0, 'ranking_score', list(-np.sort(-scores)))
         return top_items
     
-    def cold_start_user_item_recommendation(self,new_user_attriutes,similar_user_id):
-        new_user_features = self.dataset.build_user_features([(similar_user_id,new_user_attriutes)])
+    def cold_start_user_item_recommendation(self,new_user_attributes,similar_user_id):
+        new_user_features = self.dataset.build_user_features([(similar_user_id,new_user_attributes)])
         scores_new_user = self.model.predict(user_ids = 0,item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
         top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
         top_items_new.insert(0, 'ranking_score', list(-np.sort(-scores_new_user)))

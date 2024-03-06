@@ -40,11 +40,11 @@ def get_similar_item(body : similar_existing_item_schema):
 
 @app.post("/cs_similar_user")
 def cs_similar_user(body : cs_similar_user_schema):
-    return lfm.cs_similar_user(new_user_attriutes=body.new_user_attriutes,N=body.top_n)
+    return lfm.cs_similar_user(new_user_attributes=body.new_user_attributes,N=body.top_n)
 
 @app.post("/cs_similar_item")
 def cs_similar_item(body : cs_similar_item_schema):
-    return lfm.cs_similar_items(new_item_attriutes=body.new_item_attriutes,N=body.top_n)
+    return lfm.cs_similar_items(new_item_attributes=body.new_item_attributes,N=body.top_n)
 
 @app.post("/user_item_recommendation")
 def user_item_recommendation(body : user_item_recommendation_schema):
@@ -52,7 +52,7 @@ def user_item_recommendation(body : user_item_recommendation_schema):
 
 @app.post("/cs_user_item_recommendation")
 def cs_user_item_recommendation(body : cs_user_item_recommendation_schema):
-    return lfm.cs_user_item_recommendation(new_user_attriutes=body.new_user_attriutes,N=body.top_n)
+    return lfm.cs_user_item_recommendation(new_user_attributes=body.new_user_attributes,N=body.top_n)
 
 @app.post("/create_recommendation")
 def create_recommendation(body : create_recommendation_schema):
