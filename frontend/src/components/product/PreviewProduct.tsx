@@ -5,6 +5,7 @@ import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
 import { Amazon } from '../shared/Icons/Amazon';
 import { Bloomingdales } from '../shared/Icons/Bloomingdales';
 import _ from 'lodash';
+import { Carousal } from '../shared/Carousal';
 
 interface Props {
   product: Product;
@@ -13,7 +14,7 @@ interface Props {
 export const PreviewProduct: FC<Props> = ({ product }) => {
   return (
     <>
-      <Grid item height={'200px'} position={'relative'}>
+      <Grid item height={'260px'} position={'relative'}>
         {product?.curated && (
           <Typography
             fontWeight={500}
@@ -43,7 +44,16 @@ export const PreviewProduct: FC<Props> = ({ product }) => {
             {product?.source === 'amazon' ? <Amazon /> : <Bloomingdales />}
           </Box>
         </Tooltip>
-        <img src={product?.image} alt={product?.title} style={{ objectFit: 'contain', width: '100%', height: '100%' }} />
+        {product?.thumbnails?.length ? (
+          <Carousal images={product?.thumbnails} />
+        ) : (
+          <img
+            src={product?.image ?? ''}
+            alt={product?.title}
+            style={{ objectFit: 'contain', width: '100%', height: '100%' }}
+          />
+        )}
+        {/* <img src={product?.image} alt={product?.title} style={{ objectFit: 'contain', width: '100%', height: '100%' }} /> */}
       </Grid>
 
       <Grid item>

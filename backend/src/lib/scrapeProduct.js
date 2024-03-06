@@ -1,22 +1,22 @@
 const puppeteer = require('puppeteer-extra');
-const amazonpuppeteer = require('puppeteer');
-// Add stealth plugin and use defaults (all tricks to hide puppeteer usage)
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+
+// plugin to use defaults (all tricks to hide puppeteer usage)
 puppeteer.use(StealthPlugin());
 
-// Add adblocker plugin to block all ads and trackers (saves bandwidth)
-const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
-puppeteer.use(AdblockerPlugin({ blockTrackers: true }));
+// plugin to block all ads and trackers (saves bandwidth)
+const AdBlockerPlugin = require('puppeteer-extra-plugin-adblocker');
+puppeteer.use(AdBlockerPlugin({ blockTrackers: true }));
 
-const scrapeProduct = async (productlink, userId) => {
-  if (productlink.includes('nordstrom')) {
-    const res = await NodestormScraper(productlink);
+const scrapeProduct = async (productLink, userId) => {
+  if (productLink.includes('nordstrom')) {
+    const res = await NodestormScraper(productLink);
     return res;
-  } else if (productlink.includes('bloomingdales')) {
-    const res = await bloomingdalescrapeProduct(productlink, userId);
+  } else if (productLink.includes('bloomingdales')) {
+    const res = await bloomingdaleScrapeProduct(productLink, userId);
     return res;
-  } else if (productlink.includes('amazon')) {
-    const res = await AmazonScraper(productlink, userId);
+  } else if (productLink.includes('amazon')) {
+    const res = await AmazonScraper(productLink, userId);
     return res;
   } else return 'unknown source';
 };
@@ -32,6 +32,15 @@ async function AmazonScraper(product_link, userId) {
       const spanElement = document.querySelector('span#productTitle');
       return spanElement?.innerText;
     });
+
+    const thumbnails = await page.evaluate(() => {
+      const imgContainer = document.querySelector('#main-image-container');
+      const imgElements = imgContainer.querySelectorAll('img');
+      const imgSrcArray = Array.from(imgElements).map((imgElement) => imgElement.getAttribute('src'));
+      return imgSrcArray;
+    });
+
+    console.log(thumbnails)
 
     const product_image = await page.evaluate(() => {
       const imgElement = document.querySelector('img#landingImage');
@@ -81,6 +90,7 @@ async function AmazonScraper(product_link, userId) {
         return null;
       }
     });
+    console.log('🚀 ~ constproduct_description=awaitpage.evaluate ~ product_description:', product_description)
 
     await browser.close();
 
@@ -107,11 +117,11 @@ async function AmazonScraper(product_link, userId) {
   }
 }
 
-const bloomingdalescrapeProduct = async (product_link, userId) => {
+const bloomingdaleScrapeProduct = async (product_link, userId) => {
   const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
-    const response = await page.goto(product_link, { waitUntil: 'load', timeout: 0 });
+    await page.goto(product_link, { waitUntil: 'load', timeout: 0 });
     const textgetter = async (tagname) => {
       const element = await page.$(tagname);
       return (await element?.evaluate((el) => el.textContent.trim())) ?? null;
@@ -132,6 +142,26 @@ const bloomingdalescrapeProduct = async (product_link, userId) => {
     const product_image = await sourcegetter('picture[class="main-picture"] > img[src]');
 
     let product_rating = await textgetter('.product-header-reviews-count');
+
+    const thumbnails = await page.evaluate(() => {
+      const isUniqueNumber = (link) => {
+        const uniqueNumbers = [];
+        const match = link.match(/optimized\/(\d+)_fpx/);
+        return match && !uniqueNumbers.includes(match[1]);
+      }
+      const getUniqueLinks = (imgSrcArray) => {
+        const uniqueLinks = [];
+        imgSrcArray.forEach((src) => {
+          if (src && !uniqueLinks.includes(src) && isUniqueNumber(src)) {
+            uniqueLinks.push(src);
+          }
+        });
+        return uniqueLinks;
+      }
+      const imgElements = document.querySelectorAll('picture.main-picture > img');
+      const imgSrcArray = Array.from(imgElements).map((imgElement) => imgElement.getAttribute('data-lazy-src'));
+      return getUniqueLinks(imgSrcArray)
+    });
 
     let containsNumber = /\d/.test(product_rating);
     if (!containsNumber) {
@@ -162,8 +192,10 @@ const bloomingdalescrapeProduct = async (product_link, userId) => {
         .trim(),
       price_currency: product_price_currency,
       added_by: userId,
+      thumbnails: thumbnails
     };
   } catch (error) {
+    console.error(error)
     return null;
   }
 };
@@ -267,4 +299,4 @@ const NodestormScraper = async (product_link) => {
   }
 };
 
-module.exports = { AmazonScraper, bloomingdalescrapeProduct, NodestormScraper, scrapeProduct };
+module.exports = { AmazonScraper, bloomingdaleScrapeProduct, NodestormScraper, scrapeProduct };
