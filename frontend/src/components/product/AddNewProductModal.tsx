@@ -8,7 +8,6 @@ import { PreviewProduct } from './PreviewProduct';
 import { Close } from '@mui/icons-material';
 import { CreateProductBody, createProduct, scrapeProduct } from '../../services/product';
 import { toast } from 'react-toastify';
-import { useStyles } from './styles';
 
 interface Props {
   open: boolean;
@@ -16,8 +15,6 @@ interface Props {
 }
 
 export const AddNewProductModal: FC<Props> = ({ onClose, open }) => {
-  const classes = useStyles();
-
   const [link, setLink] = useState<string>('');
   const [activeStep, setActiveStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -82,12 +79,27 @@ export const AddNewProductModal: FC<Props> = ({ onClose, open }) => {
       }}
     >
       <Grid
-        className={classes.addProductContainer}
         container
         sx={{
           boxShadow: 24,
           width: { xs: '100vw', md: '45vw' },
           height: { xs: '100vh', md: '85vh' },
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: 'white',
+          paddingX: '24px',
+          borderRadius: '16px',
+          overflow: 'auto',
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+          flexDirection: 'column',
+          gap: '24px',
+          flexWrap: 'nowrap',
         }}
       >
         {/* Header + Stepper */}
@@ -136,7 +148,14 @@ export const AddNewProductModal: FC<Props> = ({ onClose, open }) => {
         <Grid item flexGrow={1}></Grid>
 
         {/* Buttons */}
-        <Grid item container className={classes.addModalButtonContainer}>
+        <Grid
+          item
+          container
+          justifyContent={'flex-end'}
+          gap={2}
+          sx={{ position: 'sticky', bottom: 0, zIndex: 1, backgroundColor: '#fff' }}
+          paddingY={'12px'}
+        >
           {activeStep !== 0 && (
             <Button
               disabled={loading}
@@ -170,7 +189,12 @@ export const AddNewProductModal: FC<Props> = ({ onClose, open }) => {
                 <Typography>Submit</Typography>
               )}
             </Button>
-            {loading && <CircularProgress size={24} className={classes.buttonCircularProgress} />}
+            {loading && (
+              <CircularProgress
+                size={24}
+                sx={{ position: 'absolute', top: '50%', left: '50%', marginTop: '-12px', marginLeft: '-12px' }}
+              />
+            )}
           </Box>
         </Grid>
       </Grid>
