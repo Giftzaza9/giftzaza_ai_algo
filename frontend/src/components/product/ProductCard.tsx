@@ -21,6 +21,9 @@ import { getSwalConfirmation } from '../../utils/swalConfirm';
 import { filterObject } from '../../constants/constants';
 import { EditDocumentIcon } from '../shared/Icons/EditDocumentIcon';
 import { DeleteIcon } from '../shared/Icons/DeleteIcon';
+import _ from 'lodash';
+import { Amazon } from '../shared/Icons/Amazon';
+import { Bloomingdales } from '../shared/Icons/Bloomingdales';
 
 interface Props {
   product: Product;
@@ -74,7 +77,8 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
           action={
             <Grid container direction={'column'} alignItems={'center'}>
               <IconButton
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setEditModalOpen(true);
                   setEditProduct(product);
                 }}
@@ -83,6 +87,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
               </IconButton>
               <IconButton
                 onClick={(e) => {
+                  e.stopPropagation();
                   handleDelete();
                 }}
                 aria-label="delete"
@@ -132,6 +137,34 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
             Curated
           </Typography>
         )}
+        <Tooltip title={_.capitalize(product?.source)} followCursor color="primary">
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '4px',
+              right: '8px',
+            }}
+          >
+            {product?.source === 'amazon' ? <Amazon /> : <Bloomingdales />}
+          </Box>
+        </Tooltip>
+        {/* <Typography
+          fontWeight={500}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bgcolor: product?.source === 'amazon' ? 'rgba(255,153,0, 0.5)' : 'rgba(0, 0, 0, 0.5)',
+            color:  product?.source === 'amazon' ? 'black' : 'white',
+            display: 'inline-flex',
+            padding: '2px 14px',
+            fontSize: '14px',
+            borderRadius: '0px 4px 0px 4px',
+            fontFamily: 'Inter'
+          }}
+        >
+          {_.capitalize(product?.source)}
+        </Typography> */}
         <img
           src={product?.image ?? ''}
           alt={product?.title}
@@ -141,12 +174,6 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
       <CardContent>
         <Stack gap={'16px'}>
           {/* TOP-CHIPS */}
-          {!isAdminView && (
-            <Stack direction={'row'} justifyContent={'space-between'}>
-              <Chip label={`88% match`} size="small" />
-              <Chip label={`giftzaza recommended`} size="small" />
-            </Stack>
-          )}
 
           {/* Title */}
           {product?.title !== undefined && product?.title?.length > 50 ? (

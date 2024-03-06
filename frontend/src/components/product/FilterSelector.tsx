@@ -8,12 +8,15 @@ import {
   FormControlLabel,
   FormGroup,
   Grid,
+  IconButton,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { filterObject } from '../../constants/constants';
 import _ from 'lodash';
 import { Dispatch, FC, SetStateAction } from 'react';
+import { RestartAlt } from '@mui/icons-material';
 
 interface Props {
   filters: string[];
@@ -35,15 +38,30 @@ export const FilterSelector: FC<Props> = ({ filters, setFilters }) => {
       flexDirection={'column'}
       paddingBottom={3}
     >
-      <Grid item padding={'24px 14px'}>
-        <Typography variant="h6" fontSize={'20px'} fontWeight={500} lineHeight={'24px'} color={'rgba(43, 50, 59, 1)'}>
-          Filters
-        </Typography>
+      <Grid item padding={'10px 14px'}>
+        <Grid container justifyContent={'space-between'} alignItems={'center'}>
+          <Grid item>
+            <Typography variant="h6" fontSize={'20px'} fontWeight={500} lineHeight={'24px'} color={'rgba(43, 50, 59, 1)'}>
+              Filters
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Tooltip title="Reset the filters">
+              <IconButton
+                onClick={() => {
+                  setFilters([]);
+                }}
+              >
+                <RestartAlt />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </Grid>
       </Grid>
 
       <Divider variant="fullWidth" sx={{ backgroundColor: 'rgba(233, 218, 241, 1)' }} />
       <Grid item>
-        {Object.entries(filterObject).map(([key, val]) => (
+        {Object.entries(_.omit(filterObject, 'budget')).map(([key, val]) => (
           <>
             <Accordion key={key} sx={{ boxShadow: 'none' }}>
               <AccordionSummary
@@ -65,7 +83,7 @@ export const FilterSelector: FC<Props> = ({ filters, setFilters }) => {
                     {val?.map((tag) => (
                       <FormControlLabel
                         value={tag}
-                        control={<Checkbox />}
+                        control={<Checkbox checked={filters?.includes(tag)} />}
                         label={tag}
                         labelPlacement="end"
                         onChange={(e, checked) => {

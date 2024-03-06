@@ -1,4 +1,4 @@
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+// import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { Product, roleEnum } from './types';
 
@@ -9,12 +9,12 @@ const iconStyle = {
 };
 
 export const navbarLinks = [
-  {
-    name: 'Profiles',
-    link: '/profiles',
-    icon: <PersonOutlineIcon sx={iconStyle} />,
-    access: [roleEnum.ADMIN, roleEnum.USER],
-  },
+  // {
+  //   name: 'Profiles',
+  //   link: '/profiles',
+  //   icon: <PersonOutlineIcon sx={iconStyle} />,
+  //   access: [roleEnum.ADMIN, roleEnum.USER],
+  // },
   { name: 'Administration', link: '/admin', icon: <DescriptionOutlinedIcon sx={iconStyle} />, access: [roleEnum.ADMIN] },
   // { name: 'Loved', link: '/loved', icon: <FavoriteBorderIcon sx={iconStyle} />, access: [roleEnum.ADMIN, roleEnum.USER] },
 ];

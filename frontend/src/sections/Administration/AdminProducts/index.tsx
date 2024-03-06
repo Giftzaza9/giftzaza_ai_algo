@@ -13,6 +13,7 @@ import { Waypoint } from 'react-waypoint';
 import { AddNewProductModal } from '../../../components/product/AddNewProductModal';
 import { ScrollToTop } from '../../../components/shared/ScrollToTop';
 import { EditProductModal } from '../../../components/product/EditProductModal';
+import { PreviewModal } from '../../../components/product/PreviewModal';
 
 export const AdminProducts = () => {
   const [page, setPage] = useState<number>(1);
@@ -28,6 +29,8 @@ export const AdminProducts = () => {
   const [addNewModalOpen, setAddNewModalOpen] = useState<boolean>(false);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [editProduct, setEditProduct] = useState<Product | undefined>();
+  const [previewModalOpen, setPreviewModalOpen] = useState<boolean>(false);
+  const [previewProduct, setPreviewProduct] = useState<Product | undefined>();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
@@ -73,6 +76,10 @@ export const AdminProducts = () => {
     if (product) replaceProduct(product);
   };
 
+  const handlePreviewModalClose = async (product?: Product) => {
+    setPreviewModalOpen(false);
+  };
+
   useEffect(() => {
     const queryParams: string[] = [`page=${1}&limit=${productPerPageAdmin}&sort=${sort}`];
     if (filters.length > 0) queryParams.push(`filter=${filters.join(',')}`);
@@ -109,7 +116,7 @@ export const AdminProducts = () => {
   return (
     <Layout>
       {/* TOP-SECTION */}
-      <Grid container justifyContent={'space-between'} wrap='nowrap' my={2} px={2}>
+      <Grid container justifyContent={'space-between'} wrap="nowrap" my={2} px={2}>
         <Grid item id="back-to-top-anchor">
           <Typography pr={2} display={'inline-flex'} variant="h4" fontFamily={'Manrope'}>
             Products
@@ -185,7 +192,19 @@ export const AdminProducts = () => {
           </Grid>
 
           {products?.map((product) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={product?.id}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+              key={product?.id}
+              onClick={() => {
+                setPreviewProduct(product);
+                setPreviewModalOpen(true);
+              }}
+              sx={{ cursor: 'pointer' }}
+            >
               <ProductCard
                 setEditProduct={setEditProduct}
                 setEditModalOpen={setEditModalOpen}
@@ -216,8 +235,8 @@ export const AdminProducts = () => {
       </Grid>
 
       <AddNewProductModal open={addNewModalOpen} onClose={handleAddNewModalClose} />
-
       <EditProductModal product={editProduct!} open={editModalOpen} onClose={handleEditModalClose} />
+      <PreviewModal product={previewProduct!} open={previewModalOpen} onClose={handlePreviewModalClose} />
 
       <ScrollToTop>
         <Fab size="small" aria-label="scroll back to top" color="primary">
