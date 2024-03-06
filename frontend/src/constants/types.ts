@@ -45,6 +45,7 @@ export type Product = {
   rating: number;
   curated: boolean;
   price_currency: string;
+  thumbnails?: string[];
 };
 
 export type ProfileData = {
