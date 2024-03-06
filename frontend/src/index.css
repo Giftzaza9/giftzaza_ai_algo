@@ -39,3 +39,25 @@ a:hover {
 		opacity:1;  
 	}  
  }
+
+ .carousel .control-dots {
+	top: 0!important;
+    margin: 6px 0!important;
+	display: flex!important;
+ }
+
+ .carousel .control-dots .dot {
+	background: rgba(217, 217, 217, 1)!important;
+    border-radius: 16px!important;
+    width: 100%!important;
+    height: 5px!important;
+	margin: 0 4px!important;
+ }
+
+ .carousel .control-dots .dot.selected, .carousel .control-dots .dot:hover {
+	background-color: rgba(221, 110, 63, 1)!important;
+ }
+
+ .carousel .carousel-status {
+	display: none!important;
+ }

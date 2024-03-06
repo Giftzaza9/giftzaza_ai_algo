@@ -9,6 +9,7 @@ import CardSwiperEmptyState from './CardSwiperEmptyState';
 import { CardSwiperLeftActionButton } from './CardSwiperLeftActionButton';
 import CardSwiperRibbons from './CardSwiperRibbons';
 import { CardSwiperRightActionButton } from './CardSwiperRightActionButton';
+import { ProductCard } from '../../../sections/Products/ProductCard';
 
 export const CardSwiper = (props: CardSwiperProps) => {
   const { data, likeButton, dislikeButton, withActionButtons = false, emptyState, onDismiss, onFinish, onEnter } = props;
@@ -29,21 +30,21 @@ export const CardSwiper = (props: CardSwiperProps) => {
   useEffect(() => {
     currentSwiper && handleEnter(currentSwiper.element, currentSwiper.meta, currentSwiper.id);
   }, [currentSwiper]);
-
+  console.log('dynamicData ', dynamicData);
   const CardComponents = useMemo(
     () =>
-      dynamicData.map(({ id, header, src, content, meta }) => (
+      dynamicData.map((product: any) => (
         <div
-          key={id}
-          ref={(ref) => handleNewCardSwiper(ref, id, meta)}
+          key={product?.id}
+          ref={(ref: HTMLDivElement | null) => handleNewCardSwiper(ref, product?.id, product?.meta)}
           className="swipe-card__container"
           id="swipe-card__container"
         >
-          {header && (
+          {/* {header && (
             <div className="swipe-card__header-container" id="swipe-card__header-container">
               <h2 id="swipe-card__header">{header}</h2>
             </div>
-          )}
+          )} */}
           {props.withRibbons && (
             <CardSwiperRibbons
               likeRibbonText={props.likeRibbonText}
@@ -52,12 +53,17 @@ export const CardSwiper = (props: CardSwiperProps) => {
             />
           )}
 
-          <div className="swipe-card__image-container">
+          {/* <div className="swipe-card__image-container">
             <img className="swipe-card__image" src={src} alt={src} id="swipe-card__image" />
-          </div>
-          {content && <div className="swipe-card__content">{content}</div>}
+          </div> */}
+          {/* {content && <div className="swipe-card__content">{content}</div>} */}
+          <ProductCard
+            // ref={(ref: HTMLDivElement | null) => handleNewCardSwiper(ref, product?.id, product?.meta)}
+            productData={product}
+          />
         </div>
       )),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
