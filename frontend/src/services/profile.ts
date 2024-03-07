@@ -10,3 +10,12 @@ export const createProfile = async (payload: ProfileDataWithPrice): Promise<ApiR
     return generateErrorMessage(error);
   }
 };
+
+export const getProfile = async (profileId?: string): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.get(`/profiles/${profileId}`);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};
