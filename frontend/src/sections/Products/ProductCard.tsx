@@ -15,7 +15,7 @@ export const ProductCard = ({ productData }: any) => {
   console.log({ productData });
   const { title, description, source } = productData;
   return (
-    <Card>
+    <Card sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
       <CardActionArea>
         <Box>
           {/* <CardMedia component="img" width={"100%"} height="100%" sx={{ objectFit: "contain" }} image="https://images.bloomingdalesassets.com/is/image/BLM/products/2/optimized/12956852_fpx.tif?op_sharpen=1&wid=700&fit=fit,1&$filtersm$" alt="green iguana" /> */}
@@ -69,11 +69,11 @@ export const ProductCard = ({ productData }: any) => {
                 <Typography sx={{ fontSize: '22px', fontFamily: 'Inter', fontWeight: '700' }}>
                   {ellipsisText(title, 55)}
                 </Typography>
-                <Typography sx={{ fontSize: '16px', fontFamily: 'Inter' }}>{ellipsisText(description, 100)}</Typography>
+                <Typography sx={{ fontSize: '17px', fontFamily: 'Inter' }}>{ellipsisText(description, 135)}</Typography>
                 <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
                   <Typography sx={{ fontSize: '22px', fontFamily: 'Inter', fontWeight: '700' }}>$1121.99</Typography>
                   <StarIcon sx={{ ml: 1, color: '#e1e26c' }} />
-                  <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '600' }}>
+                  <Typography sx={{ fontSize: '17px', fontFamily: 'Inter', fontWeight: '600' }}>
                     4.5 / 5 (2400 ratings)
                   </Typography>
                 </Box>
@@ -83,7 +83,7 @@ export const ProductCard = ({ productData }: any) => {
                   src={require('../../assets/arrow-down.png')}
                   alt="logo"
                   style={{
-                    width: '50px',
+                    width: '40px',
                     cursor: 'pointer',
                   }}
                   // onClick={() => navigate('/')}

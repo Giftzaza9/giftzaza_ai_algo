@@ -6,10 +6,10 @@ import { CardSwiperProps, SwipeAction, SwipeDirection } from '../types/types';
 import { Swiper } from '../utils/swiper';
 import CardSwiperActionButton from './CardSwiperActionButton';
 import CardSwiperEmptyState from './CardSwiperEmptyState';
-import { CardSwiperLeftActionButton } from './CardSwiperLeftActionButton';
 import CardSwiperRibbons from './CardSwiperRibbons';
-import { CardSwiperRightActionButton } from './CardSwiperRightActionButton';
 import { ProductCard } from '../../../sections/Products/ProductCard';
+import CloseIcon from '@mui/icons-material/Close';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 export const CardSwiper = (props: CardSwiperProps) => {
   const { data, likeButton, dislikeButton, withActionButtons = false, emptyState, onDismiss, onFinish, onEnter } = props;
@@ -98,29 +98,50 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 action={SwipeAction.DISLIKE}
                 onClick={handleClickEvents}
                 buttonContent={dislikeButton}
-              />
+              >
+                <CloseIcon sx={{ fontSize: '50px' }} />{' '}
+              </CardSwiperActionButton>
+              <CardSwiperActionButton
+                isCustom
+                direction={SwipeDirection.RIGHT}
+                action={SwipeAction.BUY}
+                onClick={handleClickEvents}
+                buttonContent={likeButton}
+                extraClass={'buyProduct'}
+              >
+                <span style={{ fontSize: '25px', fontFamily: 'Inter', fontWeight: '700' }}>BUY</span>{' '}
+              </CardSwiperActionButton>
               <CardSwiperActionButton
                 isCustom
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.LIKE}
                 onClick={handleClickEvents}
                 buttonContent={likeButton}
-              />
+                extraClass={'loveProduct'}
+              >
+                <FavoriteIcon sx={{ fontSize: '50px' }} />{' '}
+              </CardSwiperActionButton>
             </>
           ) : (
             <>
               <CardSwiperActionButton
+                isCustom
                 direction={SwipeDirection.LEFT}
                 action={SwipeAction.DISLIKE}
                 onClick={handleClickEvents}
-                buttonContent={<CardSwiperLeftActionButton />}
-              />
+                buttonContent={dislikeButton}
+              >
+                <CloseIcon sx={{ fontSize: '50px' }} />{' '}
+              </CardSwiperActionButton>
               <CardSwiperActionButton
+                isCustom
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.LIKE}
                 onClick={handleClickEvents}
-                buttonContent={<CardSwiperRightActionButton />}
-              />
+                buttonContent={likeButton}
+              >
+                <CloseIcon sx={{ fontSize: '50px' }} />{' '}
+              </CardSwiperActionButton>
             </>
           )}
         </div>

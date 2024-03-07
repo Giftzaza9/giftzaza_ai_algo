@@ -48,7 +48,7 @@ export type Product = {
   thumbnails?: string[];
 };
 
-export type ProfileData = {
+export type Profile = {
   styles: string[];
   interests: string[];
   title: string;
@@ -58,4 +58,17 @@ export type ProfileData = {
   occasion: string;
   occasion_date: string;
   budget: string;
+};
+
+export type ProfileDataWithPrice = {
+  styles: string[];
+  interests: string[];
+  title: string;
+  relation: string;
+  age: string;
+  gender: string;
+  occasion: string;
+  occasion_date: string;
+  min_price: number;
+  max_price: number;
 };
