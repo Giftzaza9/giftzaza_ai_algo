@@ -9,6 +9,7 @@ import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
 import TripOriginIcon from '@mui/icons-material/TripOrigin';
 import { MobileMultiSelectChip } from '../../components/shared/MobileMultiSelectChip';
 import { ProfileData } from '../../constants/types';
+import { toast } from 'react-toastify';
 
 const startedChipsStyle = {
   padding: '32px 15px',
@@ -73,17 +74,44 @@ export const Profiles = () => {
       handleCreateProfileData('title', val, 0);
       handleCreateProfileData('relation', 'Parents', 3);
     } else handleCreateProfileData('', val, 1);
-    // setPage((prev) => prev + 1);
   };
 
   const handleArrows = (val: number) => {
+    if (page === 1 && val === 1 && !profileData?.title?.trim()) {
+      toast.warn('Please add name !');
+      return;
+    } else if (page === 2 && val === 1 && !profileData?.relation) {
+      toast.warn('Please select relation !');
+      return;
+    } else if (page === 3 && val === 1 && !profileData?.age) {
+      toast.warn('Please select age !');
+      return;
+    } else if (page === 4 && val === 1 && !profileData?.gender) {
+      toast.warn('Please select gender !');
+      return;
+    } else if (page === 5 && val === 1 && !profileData?.occasion) {
+      toast.warn('Please select occasion !');
+      return;
+    } else if (page === 6 && val === 1 && !profileData?.occasion_date) {
+      toast.warn('Please select occasion date !');
+      return;
+    } else if (page === 7 && val === 1 && !profileData?.budget) {
+      toast.warn('Please select budget !');
+      return;
+    } else if (page === 8 && val === 1 && (profileData?.styles?.length as number) <= 0) {
+      toast.warn('Please select styles !');
+      return;
+    } else if (page === 9 && val === 1 && (profileData?.interests?.length as number) <= 0) {
+      toast.warn('Please select interests !');
+      return;
+    }
+
     setPage((prev) => prev + val);
   };
 
   const handleSingleSelect = (label: string, val: string) => {
     console.log(label + ' ' + val);
     handleCreateProfileData(label, val, 1);
-    // setPage((prev) => prev + 1);
   };
 
   const handleCreateProfileData = (label: string, data: any, page: number) => {
@@ -95,7 +123,7 @@ export const Profiles = () => {
     }
     setPage((prev) => prev + page);
   };
-  console.log({ profileData });
+  // console.log({ profileData });
   return (
     <MobileLayout>
       <Container
@@ -107,6 +135,7 @@ export const Profiles = () => {
           flexGrow: 1,
         }}
       >
+        {/* Progess bar and next & prev arrows */}
         {page !== 10 && (
           <Grid>
             <LinearProgress
@@ -140,7 +169,11 @@ export const Profiles = () => {
                   </Typography>
                 ) : (
                   <ArrowForwardIosIcon
-                    sx={{ cursor: 'pointer', color: 'rgba(221, 110, 63, 1)' }}
+                    sx={{
+                      cursor: 'pointer',
+                      color: 'rgba(221, 110, 63, 1)',
+                      visibility: page === 0 && !profileData?.title ? 'hidden' : 'visible',
+                    }}
                     onClick={() => handleArrows(1)}
                   />
                 )}
@@ -354,26 +387,24 @@ export const Profiles = () => {
           </Grid>
         )}
         {page === 10 && (
-          <Grid display={'flex'} flexDirection={'column'} justifyContent={'center'} textAlign={'center'} sx={animationStyle}>
+          <Grid
+            display={'flex'}
+            flexGrow={1}
+            flexDirection={'column'}
+            justifyContent={'center'}
+            textAlign={'center'}
+            sx={animationStyle}
+          >
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 1 }}>
               Giftzaza recommendations are being generated
             </Typography>
             <CircularProgress
               sx={{
-                width: '150px',
-                height: '150px',
-                position: 'absolute',
-                top: '359px',
-                left: '117px',
-                borderRadius: '50%', // Ensure the border is circular
-                border: '20px solid',
-                borderImageSource:
-                  'conic-gradient(from 180deg at 50% 50%, rgba(221, 110, 63, 0.39) -23.98deg, rgba(221, 110, 63, 0.726318) 50.6deg, #DD6E3F 160.7deg, rgba(221, 110, 63, 0.39) 336.02deg, rgba(221, 110, 63, 0.726318) 410.6deg)',
-                animation: 'spin 2s linear infinite', // Add animation if desired
-                '@keyframes spin': {
-                  from: { transform: 'rotate(0deg)' },
-                  to: { transform: 'rotate(360deg)' },
-                },
+                width: '150px!important',
+                height: '150px!important',
+                color: '#DD6E3F',
+                alignSelf: 'center',
+                margin: '20px auto',
               }}
             />
             <Typography sx={{ fontSize: '26px', fontFamily: 'Inter', fontWeight: '600', mb: 1 }}>Please wait...</Typography>

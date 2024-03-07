@@ -2,6 +2,7 @@ import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
+import { FC, PropsWithChildren } from 'react';
 
 const MobileHeader = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const MobileHeader = () => {
   );
 };
 
-export const MobileLayout = ({ children }: any) => {
+export const MobileLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Grid
       container

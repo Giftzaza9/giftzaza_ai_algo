@@ -1,4 +1,5 @@
 import { SwipeAction, SwipeDirection } from '..'
+import CloseIcon from '@mui/icons-material/Close';
 
 interface ActionButtonProps {
   action: SwipeAction
@@ -13,7 +14,7 @@ function CardSwiperActionButton({ buttonContent, direction, isCustom = false, ac
 
   return (
     <div className={className} id={`swipe-card__${action}-action-button`} onClick={() => onClick(direction)}>
-      {buttonContent}
+      <CloseIcon />
     </div>
   )
 }

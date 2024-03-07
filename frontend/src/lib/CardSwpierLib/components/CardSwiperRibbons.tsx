@@ -1,11 +1,11 @@
 interface CardSwiperRibbonsProps {
   ribbonColors?: {
-    bgLike?: string
-    bgDislike?: string
-    textColor?: string
-  }
-  likeRibbonText?: string
-  dislikeRibbonText?: string
+    bgLike?: string;
+    bgDislike?: string;
+    textColor?: string;
+  };
+  likeRibbonText?: string;
+  dislikeRibbonText?: string;
 }
 
 function CardSwiperRibbons({ ribbonColors, dislikeRibbonText, likeRibbonText }: CardSwiperRibbonsProps) {
@@ -14,19 +14,19 @@ function CardSwiperRibbons({ ribbonColors, dislikeRibbonText, likeRibbonText }: 
       <div
         id="swipe-card__ribbon-like"
         className="swipe-card__ribbon-like"
-        style={{ color: ribbonColors?.textColor, backgroundColor: ribbonColors?.bgLike }}
+        style={{ color: ribbonColors?.bgLike, backgroundColor: 'white', border: '4px solid' }}
       >
         {likeRibbonText || 'LIKE'}
       </div>
       <div
         id="swipe-card__ribbon-dislike"
         className="swipe-card__ribbon-dislike"
-        style={{ color: ribbonColors?.textColor, backgroundColor: ribbonColors?.bgDislike }}
+        style={{ color: ribbonColors?.bgDislike, backgroundColor: 'white', border: '4px solid' }}
       >
         {dislikeRibbonText || 'PASS'}
       </div>
     </div>
-  )
+  );
 }
 
-export default CardSwiperRibbons
+export default CardSwiperRibbons;
