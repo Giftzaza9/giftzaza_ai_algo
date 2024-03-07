@@ -129,3 +129,5 @@ export const dummyProduct: Product = {
 };
 
 export const addNewProductSteps = ['Link', 'Product Info', 'Preview'];
+
+export const bottomNavHidePaths = ['welcome', 'login']
