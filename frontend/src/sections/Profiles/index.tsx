@@ -8,8 +8,10 @@ import { filterObject } from '../../constants/constants';
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
 import TripOriginIcon from '@mui/icons-material/TripOrigin';
 import { MobileMultiSelectChip } from '../../components/shared/MobileMultiSelectChip';
-import { ProfileData } from '../../constants/types';
+import { Profile, ProfileDataWithPrice } from '../../constants/types';
 import { toast } from 'react-toastify';
+import { createProfile } from '../../services/profile';
+import { useNavigate } from 'react-router';
 
 const startedChipsStyle = {
   padding: '32px 15px',
@@ -51,11 +53,24 @@ const animationStyle = {
   animation: 'fadeIn 0.3s ease-in',
 };
 
+const initalProfileData: Profile = {
+  styles: [],
+  interests: [],
+  title: '',
+  relation: '',
+  age: '',
+  gender: '',
+  occasion: '',
+  occasion_date: '',
+  budget: '',
+};
+
 export const Profiles = () => {
+  const navigate = useNavigate();
   const [page, setPage] = useState<number>(0);
   const [styles, setSelectedStyles] = useState<string[]>([]);
   const [interests, setSelectedInterests] = useState<string[]>([]);
-  const [profileData, setProfileData] = useState<ProfileData>();
+  const [profileData, setProfileData] = useState<Profile>(initalProfileData);
 
   useEffect(() => {
     handleCreateProfileData('styles', styles, 0);
@@ -74,6 +89,24 @@ export const Profiles = () => {
       handleCreateProfileData('title', val, 0);
       handleCreateProfileData('relation', 'Parents', 3);
     } else handleCreateProfileData('', val, 1);
+  };
+
+  const handleCreateProfile = async () => {
+    const { budget, ...payloadWithoutBudget } = profileData;
+    const payload: ProfileDataWithPrice = {
+      ...payloadWithoutBudget,
+      min_price: parseInt(budget?.split('-')?.[0]?.slice(1)),
+      max_price: parseInt(budget?.split('-')?.[1]?.slice(1)),
+    };
+    console.log({ payload });
+    const { data, error } = await createProfile(payload!);
+    if (error) {
+      toast.error(error || 'Failed to create profile !');
+    } else {
+      console.log(data);
+      toast.success('Profile Created');
+      navigate(`/profiles/${data?.id}`);
+    }
   };
 
   const handleArrows = (val: number) => {
@@ -106,12 +139,20 @@ export const Profiles = () => {
       return;
     }
 
+    if (page === 9) {
+      console.log({ profileData });
+      handleCreateProfile();
+      return;
+    }
     setPage((prev) => prev + val);
   };
 
   const handleSingleSelect = (label: string, val: string) => {
     console.log(label + ' ' + val);
-    handleCreateProfileData(label, val, 1);
+    if (label === 'age' && profileData?.title === 'Discover gifts for your mom') {
+      handleCreateProfileData(label, val, 0);
+      handleCreateProfileData('gender', 'Female', 2);
+    } else handleCreateProfileData(label, val, 1);
   };
 
   const handleCreateProfileData = (label: string, data: any, page: number) => {
