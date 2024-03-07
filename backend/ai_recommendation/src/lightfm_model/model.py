@@ -242,6 +242,67 @@ class LightFM_cls:
         idf.columns = 'left_' + idf.columns.values
         matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
+    
+    def new_cold_start_similar_items_with_text_sim(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,content_attr=None,test_sample_flag=False):
+        filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        all_soft_attrs = list(itertools.chain(*map(Global_Obj.cat_dict.get,Global_Obj.soft_filters)))
+        # filter_idf['matched_tags'] = filter_idf['tags'].apply(lambda eachList: list(set(eachList) & set(soft_filter_attrs)))
+        filter_idf['matched_tags'] = filter_idf['tags'].apply(lambda eachList: list(set(eachList) & set(all_soft_attrs)))
+        filter_idf['embedding_tags'] = filter_idf['matched_tags'].apply(lambda eachList : [*map(dict(enumerate(self.model.item_embeddings)).get,[*map(self.item_fmapper.get, eachList)])] )
+        filter_idf['embedding_tags'] = filter_idf['embedding_tags'].apply(sum)
+        
+        if test_sample_flag:
+            filter_idf = filter_idf[filter_idf['test_set']==True].copy()
+        filter_idf.reset_index(drop=True,inplace=True)
+        feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
+        i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
+        
+        soft_filter_dict = {}
+        weight_assigner = {}
+        total = 0
+        for i in Global_Obj.soft_filters:
+            common_list = list(set(Global_Obj.cat_dict[i]) & set(soft_filter_attrs))
+            soft_filter_dict.update({i: common_list})
+            if len(common_list)!=0:
+                total += Global_Obj.cat_odata[i]['manual_weights']
+                weight_assigner.update(dict(zip(common_list,[Global_Obj.cat_odata[i]['manual_weights']/len(common_list) for _ in range(len(common_list))])))
+        weight_assigner = {k: v / total for k, v in weight_assigner.items()}
+        
+        summation = 0
+        for idx in range(len(feat_idxs)):
+            summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
+            # summation += (self.model.item_embeddings[feat_idxs[idx]] ) * weight_assigner[self.ritem_fmapper[feat_idxs[idx]]]
+        filter_item_embeddings = np.array(filter_idf['embedding_tags'].to_list())
+        scores = filter_item_embeddings.dot(summation)
+        item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
+        item_vec_norm = np.linalg.norm(summation)
+        scores = np.squeeze(scores / item_norms / item_vec_norm)
+
+        if content_attr:
+            new_item_attr_vec = self.encode_textual_data(content_attr)
+        else:
+            new_item_attr_vec = self.encode_textual_data(" ".join([*soft_filter_attrs,*hard_filter_attrs]))
+        text_similarity_scores = [
+            np.dot(new_item_attr_vec, self.encode_textual_data(desc).T).squeeze()
+            for desc in filter_idf.description
+        ]
+        text_similarity_scores = np.array(text_similarity_scores)
+
+        # Normalize text similarity scores
+        text_similarity_norm = np.linalg.norm(new_item_attr_vec)
+        text_similarity_scores = (
+            text_similarity_scores / text_similarity_norm
+        )
+        # Combining scores
+        scores = 0.6 * scores + 0.4 * text_similarity_scores
+
+        best = np.argsort(-scores)[0 : N]
+        idf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
+        idf = pd.DataFrame(idf,columns=['itemID','score'])
+        idf['all_unique_id'] = idf['itemID'].map(filter_idf['all_unique_id'].to_dict())
+        idf.columns = 'left_' + idf.columns.values
+        matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
+        return matched_item_meta
 
     def Re_Train(self,new_user_meta,new_item_meta,new_user_item_interactions,attr_list,df_users,df_items,df_interactions):
         dataset = Dataset()
