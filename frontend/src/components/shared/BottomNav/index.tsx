@@ -6,7 +6,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import { GoHomeFill } from 'react-icons/go';
 import { userStore } from '../../../store/UserStore';
-import { AdminPanelSettings } from '@mui/icons-material';
+// import { AdminPanelSettings } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import { bottomNavState } from '../../../store/BottomNavState';
 
@@ -45,13 +45,13 @@ export const BottomNav = observer(() => {
       />
       <BottomNavigationAction label="Favorites" value="favorites" icon={<FavoriteIcon style={{ fontSize: '36px' }} />} />
       <BottomNavigationAction label="User" value="user" icon={<PersonRoundedIcon style={{ fontSize: '36px' }} />} />
-      {user?.role === 'admin' && (
+      {/* {user?.role === 'admin' && (
         <BottomNavigationAction
           label="Administration"
           value="administration"
           icon={<AdminPanelSettings style={{ fontSize: '36px' }} />}
         />
-      )}
+      )} */}
     </BottomNavigation>
   );
 });

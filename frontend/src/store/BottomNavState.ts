@@ -1,6 +1,9 @@
 import { action, makeObservable, observable } from 'mobx';
+import { bottomNavHidePaths } from '../constants/constants';
+
+const path = window.location.pathname;
 export class BottomNavState {
-  isVisible: boolean = true;
+  isVisible: boolean = bottomNavHidePaths.some((el) => path.includes(el)) ? false : true;
   constructor() {
     makeObservable(this, {
       isVisible: observable,
