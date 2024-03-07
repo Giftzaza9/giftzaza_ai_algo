@@ -48,6 +48,7 @@ const updateProfile = {
     max_price: Joi.number(),
     styles: Joi.array(),
     interests: Joi.array(),
+    recommended_products: Joi.array(),
   }),
 };
 

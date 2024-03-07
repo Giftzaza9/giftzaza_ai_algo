@@ -1,19 +1,30 @@
 const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
 
+// Schema for RecommendedProduct
+const recommendedProductSchema = new mongoose.Schema({
+  item_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+  },
+  title: String,
+  tags: [String],
+  matching_score: Number,
+});
+
 const profileSchema = new mongoose.Schema(
   {
     title: {
-      type : String,
+      type: String,
     },
     age: {
-      type : String,
+      type: String,
     },
     gender: {
-      type : String,
+      type: String,
     },
     relation: {
-      type : String,
+      type: String,
     },
     occasion: {
       type: String,
@@ -27,24 +38,25 @@ const profileSchema = new mongoose.Schema(
     max_price: {
       type: Number,
     },
-    styles: [{
-      type : String,
-    }],
-    interests: [{
-      type : String,
-    }],
-    preferences: [{
-      type : String,
-    }],
-    profile_preferences: {
-      type : Object,
-    },
-    recommended_products: [
+    styles: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+        type: String,
       },
     ],
+    interests: [
+      {
+        type: String,
+      },
+    ],
+    preferences: [
+      {
+        type: String,
+      },
+    ],
+    profile_preferences: {
+      type: Object,
+    },
+    recommended_products: [recommendedProductSchema],
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

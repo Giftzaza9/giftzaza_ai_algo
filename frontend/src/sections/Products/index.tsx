@@ -4,6 +4,9 @@ import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
 import { SwipeAction } from '../../lib/CardSwpierLib/types/types';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { useParams } from 'react-router';
+import { useEffect, useState } from 'react';
+import { getProfile } from '../../services/profile';
+import { toast } from 'react-toastify';
 
 export const mockData = [
   {
@@ -55,7 +58,27 @@ export const mockData = [
 
 export const Products = () => {
   const { profileId } = useParams();
+  const [profileData, setProfileData] = useState<any>();
   console.log({ profileId });
+
+  useEffect(() => {
+    fetchProfile();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileId])
+
+
+  const fetchProfile = async () => {
+    const {data, error} = await getProfile(profileId as string);
+    if(error) 
+      toast.error(error || "Failed to fetch profile data !");
+    else {
+      console.log({data});
+      setProfileData(data?.recommended_products);
+    }
+  }
+
+console.log("PROFILE DATA ",profileData?.recommended_products);
+
   const handleFinish = (status: SwipeAction) => {
     // if (status) setEvents((prev) => [...prev, `Finish: ${status}`]);
     alert('Finished ');
