@@ -54,6 +54,7 @@ export enum SwipeAction {
   LIKE = 'like',
   DISLIKE = 'dislike',
   FINISHED = 'finished',
+  BUY = 'buy,'
 }
 
 export enum SwipeOperation {

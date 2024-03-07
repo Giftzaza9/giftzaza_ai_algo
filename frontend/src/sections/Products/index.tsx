@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
-import { Box, Card, CardActionArea, CardContent, CardMedia, Chip, Container, Grid, Typography } from '@mui/material';
+import { Container } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
-import { theme } from '../../utils/theme';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
-import { CardEvent, SwipeAction } from '../../lib/CardSwpierLib/types/types';
-import StarIcon from '@mui/icons-material/Star';
+import { SwipeAction } from '../../lib/CardSwpierLib/types/types';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
-import { Carousel } from 'react-responsive-carousel';
-import { ellipsisText } from '../../utils/helperFunctions';
+import { useParams } from 'react-router';
 
 export const mockData = [
   {
@@ -58,25 +54,11 @@ export const mockData = [
 ];
 
 export const Products = () => {
-  const img =
-    'https://images.bloomingdalesassets.com/is/image/BLM/products/2/optimized/12956852_fpx.tif?op_sharpen=1&wid=700&fit=fit,1&$filtersm$';
-  const link = 'https://www.bloomingdales.com/shop/product/sam-edelman-womens-bianka-slingback-kitten-heels?ID=4429494';
-  const title = 'Sam Edelman Womens Bianka Slingback Kitten Heels';
-  const price = 140;
-  const source = 'bloomingdale';
-  const rating = '4.4';
-
-  const [events, setEvents] = useState<string[]>([]);
-
-  const handleSwipe: CardEvent = (_el, meta, id, action, operation) => {
-    setEvents((prev) => [
-      ...prev,
-      `- ID: ${id}, Action: ${action}, Operation: ${operation}, Callback: ${JSON.stringify(meta)}}`,
-    ]);
-  };
-
+  const { profileId } = useParams();
+  console.log({ profileId });
   const handleFinish = (status: SwipeAction) => {
-    if (status) setEvents((prev) => [...prev, `Finish: ${status}`]);
+    // if (status) setEvents((prev) => [...prev, `Finish: ${status}`]);
+    alert('Finished ');
   };
 
   return (
@@ -91,7 +73,7 @@ export const Products = () => {
         <CardSwiper
           data={mockData}
           onFinish={handleFinish}
-          onDismiss={handleSwipe}
+          // onDismiss={handleSwipe}
           withActionButtons={true}
           dislikeButton={<button className="">Dislike</button>}
           likeButton={<button className="">Like</button>}

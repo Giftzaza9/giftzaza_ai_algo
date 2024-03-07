@@ -20,7 +20,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
       <Route path="/" element={<Dashboard />} />
       <Route path="/welcome" element={<Onboarding />} />
       <Route path="/profiles" element={<Profiles />} />
-      <Route path="/products" element={<Products />} />
+      <Route path="/profiles/:profileId" element={<Products />} />
       <Route path="/loved" element={<Loved />} />
     </>
   );

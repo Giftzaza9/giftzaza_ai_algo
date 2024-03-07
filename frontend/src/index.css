@@ -61,3 +61,7 @@ a:hover {
  .carousel .carousel-status {
 	display: none!important;
  }
+
+ .carousel .thumbs-wrapper {
+	margin: 0px!important;
+ }
