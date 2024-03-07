@@ -1,11 +1,19 @@
-import { Grid } from '@mui/material';
+import { Grid, IconButton } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
-import { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren, useState } from 'react';
+import { Tune } from '@mui/icons-material';
+import { EditProfileModal } from '../../profile/EditProfileModal';
+
 
 const MobileHeader = () => {
   const navigate = useNavigate();
+  const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
+  const handleEditProfileModalClose = async () => {
+    setEditProfileModalOpen(false);
+  };
+  
   return (
     <Grid
       container
@@ -14,11 +22,12 @@ const MobileHeader = () => {
         width: '100%',
         alignSelf: 'flex-start',
         p: '20px',
-        flexDirection: 'column',
+        // flexDirection: 'column',
         // borderBottom: '1px solid rgba(221, 110, 63, 1)',
         position: 'fixed',
         top: 0,
         zIndex: 1000,
+        justifyContent: 'space-between',
       }}
     >
       <img
@@ -30,6 +39,12 @@ const MobileHeader = () => {
         }}
         onClick={() => navigate('/')}
       />
+      {true && (
+        <IconButton onClick={() => {setEditProfileModalOpen(true)}}>
+          <Tune fontSize={'large'} />
+        </IconButton>
+      )}
+      <EditProfileModal open={editProfileModalOpen} onClose={handleEditProfileModalClose} />
     </Grid>
   );
 };
