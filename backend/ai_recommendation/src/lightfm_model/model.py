@@ -90,7 +90,7 @@ class LightFM_cls:
         user_norms = np.linalg.norm(filter_user_embeddings, axis=1)
         user_vec_norm = np.linalg.norm(summation)
         scores = np.squeeze(scores / user_norms / user_vec_norm)
-
+        scores = scores.reshape(-1)
         best = np.argsort(-scores)[0 : N]
         udf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
         udf = pd.DataFrame(udf,columns=['userID','score'])
@@ -130,7 +130,7 @@ class LightFM_cls:
         item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
         item_vec_norm = np.linalg.norm(summation)
         scores = np.squeeze(scores / item_norms / item_vec_norm)
-
+        scores = scores.reshape(-1)
         best = np.argsort(-scores)[0 : N]
         idf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
         idf = pd.DataFrame(idf,columns=['itemID','score'])
@@ -159,7 +159,7 @@ class LightFM_cls:
         item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
         item_vec_norm = np.linalg.norm(summation)
         scores = np.squeeze(scores / item_norms / item_vec_norm)
-
+        scores = scores.reshape(-1)
         best = np.argsort(-scores)[0 : N]
         idf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
         idf = pd.DataFrame(idf,columns=['itemID','score'])
@@ -216,7 +216,7 @@ class LightFM_cls:
         item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
         item_vec_norm = np.linalg.norm(summation)
         scores = np.squeeze(scores / item_norms / item_vec_norm)
-
+        scores = scores.reshape(-1)
         if content_attr:
             new_item_attr_vec = self.encode_textual_data(content_attr)
         else:
@@ -277,7 +277,7 @@ class LightFM_cls:
         item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
         item_vec_norm = np.linalg.norm(summation)
         scores = np.squeeze(scores / item_norms / item_vec_norm)
-
+        scores = scores.reshape(-1)
         if content_attr:
             new_item_attr_vec = self.encode_textual_data(content_attr)
         else:
@@ -294,7 +294,7 @@ class LightFM_cls:
             text_similarity_scores / text_similarity_norm
         )
         # Combining scores
-        scores = 0.6 * scores + 0.4 * text_similarity_scores
+        scores = 0.75 * scores + 0.25 * text_similarity_scores
 
         best = np.argsort(-scores)[0 : N]
         idf = sorted(zip(best, scores[best]), key=lambda x: -x[1])

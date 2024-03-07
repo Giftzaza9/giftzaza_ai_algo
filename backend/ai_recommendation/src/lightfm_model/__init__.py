@@ -106,7 +106,7 @@ def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,te
         filter_dict.update({i: common_list})
     soft_filter_attrs = list(set(new_item_attributes).difference(set(hard_filter_attrs)))
 
-    idf = LightFM_Obj.cold_start_similar_items_with_text_sim(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr,test_sample_flag=test_sample_flag)
+    idf = LightFM_Obj.new_cold_start_similar_items_with_text_sim(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr,test_sample_flag=test_sample_flag)
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     
