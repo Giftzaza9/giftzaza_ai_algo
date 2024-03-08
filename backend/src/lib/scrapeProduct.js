@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer-extra');
+// import puppeteer from 'puppeteer-extra';
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 // plugin to use defaults (all tricks to hide puppeteer usage)
@@ -6,6 +7,7 @@ puppeteer.use(StealthPlugin());
 
 // plugin to block all ads and trackers (saves bandwidth)
 const AdBlockerPlugin = require('puppeteer-extra-plugin-adblocker');
+const { cookieSetterBD } = require('../utils/cookieSetterBD');
 puppeteer.use(AdBlockerPlugin({ blockTrackers: true }));
 
 const scrapeProduct = async (productLink, userId) => {
@@ -118,10 +120,12 @@ async function AmazonScraper(product_link, userId) {
 }
 
 const bloomingdaleScrapeProduct = async (product_link, userId) => {
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox']});
   try {
-    const page = await browser.newPage();
+    let page = await browser.newPage();
     await page.goto(product_link, { waitUntil: 'load', timeout: 0 });
+    page = await cookieSetterBD(page);
+
     const textgetter = async (tagname) => {
       const element = await page.$(tagname);
       return (await element?.evaluate((el) => el.textContent.trim())) ?? null;
