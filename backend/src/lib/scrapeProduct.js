@@ -103,7 +103,8 @@ async function AmazonScraper(product_link, userId) {
       link: product_link,
       rating: Number(product_rating?.split(' ')?.[0]?.trim()),
       price: Number(product_price?.replace('$', '')?.trim()) || Number(product_price?.replace('US$', '')?.trim()) || -1,
-      description: product_description
+      description: product_description,
+      content: product_description
         ?.replace(/\s+/g, ' ')
         ?.replace(/[^\w\s]/g, '')
         ?.replace(/\n/g, '')
@@ -111,6 +112,7 @@ async function AmazonScraper(product_link, userId) {
         ?.trim(),
       price_currency: product_price_currency,
       added_by: userId,
+      thumbnails: [] // UNABLE TO ADD thumbnails
     };
   } catch (error) {
     console.error(error);
@@ -188,7 +190,8 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
       image: product_image,
       link: product_link,
       rating: Number(product_rating?.split(' ')[0]?.trim()),
-      description: (product_title + ' ' + product_details)
+      description: product_details,
+      content: (product_title + ' ' + product_details)
         .replace(/\s+/g, ' ')
         .replace(/[^\w\s]/g, '')
         .replace(/\n/g, '')
@@ -295,6 +298,10 @@ const NodestormScraper = async (product_link) => {
       link: product_link,
       rating: product_rating,
       description: product_description,
+      content: product_description,
+      addedBy: '',
+      thumbnails: [],
+      price_currency: '',
     };
   } catch (error) {
     console.error(error);

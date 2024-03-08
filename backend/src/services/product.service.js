@@ -58,19 +58,17 @@ const scrapeAndAddProduct = async (productBody) => {
   if (product_link.includes('bloomingdale')) product_link = bloomingdaleUrlCleaner(product_link) || product_link;
 
   const productDB = await Product.findOne({ link: product_link });
-  const scrapedProduct = await scrapeProduct(product_link, user_id);
-  console.log('🚀 ~ scrapeAndAddProduct ~ scrapedProduct:', scrapedProduct)
+  const {content: AIContent, ...scrapedProduct} = await scrapeProduct(product_link, user_id);
 
-  if (!scrapedProduct || !scrapedProduct.description) {
+  if (!scrapedProduct || !AIContent) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
 
-  const gptData = await GPTbasedTagging(scrapedProduct.description);
+  const gptData = await GPTbasedTagging(AIContent);
   scrapedProduct.tags = gptData.preferenceData;
   scrapedProduct.gptTagging = gptData.JSON_response;
   scrapedProduct.curated = false;
   scrapedProduct.hil = false;
-  console.log('🚀 ~ scrapeAndAddProduct ~ scrapedProduct:', scrapedProduct)
   const product = productDB
     ? await Product.findByIdAndUpdate(productDB?._id, scrapedProduct, { new: true, useFindAndModify: false })
     : await Product.create(scrapedProduct);
@@ -110,16 +108,23 @@ const createProduct = async (productBody) => {
 const updateProductById = async (productId, updateBody) => {
   const { tags, curated } = updateBody;
   const product = await Product.findById(productId);
-  const product_data = await scrapeProduct(product.link);
+  const { title, price, image, link, rating, description, thumbnails, price_currency } = await scrapeProduct(product.link);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
 
+  // From User
   product.tags = tags;
-  product.title = product_data.title;
-  product.price = product_data.price;
-  product.image = product_data.image;
   if (curated !== undefined) product.curated = !!curated;
-  product.description = product_data.description;
-  product.rating = product_data.rating;
+  
+  // From scraping
+  product.title = title;
+  product.price = price;
+  product.image = image;
+  product.thumbnails = thumbnails;
+  product.description = description;
+  product.rating = rating;
+  product.link = link;
+  product.price_currency = price_currency;
+
   await product.save();
   return product;
 };
