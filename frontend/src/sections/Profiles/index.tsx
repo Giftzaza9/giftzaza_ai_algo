@@ -87,7 +87,7 @@ export const Profiles = () => {
     if (val === 'Discover gifts for your spouse') handleCreateProfileData('title', val, 2);
     else if (val === 'Discover gifts for your mom') {
       handleCreateProfileData('title', val, 0);
-      handleCreateProfileData('relation', 'Parents', 3);
+      handleCreateProfileData('relation', 'Parent', 3);
     } else handleCreateProfileData('', val, 1);
   };
 

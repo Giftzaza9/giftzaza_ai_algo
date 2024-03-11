@@ -35,8 +35,8 @@ export const CardSwiper = (props: CardSwiperProps) => {
     () =>
       dynamicData.map((product: any) => (
         <div
-          key={product?.id}
-          ref={(ref: HTMLDivElement | null) => handleNewCardSwiper(ref, product?.id, product?.meta)}
+          key={product?._id}
+          ref={(ref: HTMLDivElement | null) => handleNewCardSwiper(ref, product?._id, product?.matching_score)}
           className="swipe-card__container"
           id="swipe-card__container"
         >
