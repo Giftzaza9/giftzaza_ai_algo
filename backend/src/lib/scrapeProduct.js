@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer-extra');
+// import puppeteer from 'puppeteer-extra';
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 // plugin to use defaults (all tricks to hide puppeteer usage)
@@ -6,6 +7,7 @@ puppeteer.use(StealthPlugin());
 
 // plugin to block all ads and trackers (saves bandwidth)
 const AdBlockerPlugin = require('puppeteer-extra-plugin-adblocker');
+const { cookieSetterBD } = require('../utils/cookieSetterBD');
 puppeteer.use(AdBlockerPlugin({ blockTrackers: true }));
 
 const scrapeProduct = async (productLink, userId) => {
@@ -101,7 +103,8 @@ async function AmazonScraper(product_link, userId) {
       link: product_link,
       rating: Number(product_rating?.split(' ')?.[0]?.trim()),
       price: Number(product_price?.replace('$', '')?.trim()) || Number(product_price?.replace('US$', '')?.trim()) || -1,
-      description: product_description
+      description: product_description,
+      content: product_description
         ?.replace(/\s+/g, ' ')
         ?.replace(/[^\w\s]/g, '')
         ?.replace(/\n/g, '')
@@ -109,6 +112,7 @@ async function AmazonScraper(product_link, userId) {
         ?.trim(),
       price_currency: product_price_currency,
       added_by: userId,
+      thumbnails: [] // UNABLE TO ADD thumbnails
     };
   } catch (error) {
     console.error(error);
@@ -118,10 +122,12 @@ async function AmazonScraper(product_link, userId) {
 }
 
 const bloomingdaleScrapeProduct = async (product_link, userId) => {
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox']});
   try {
-    const page = await browser.newPage();
+    let page = await browser.newPage();
     await page.goto(product_link, { waitUntil: 'load', timeout: 0 });
+    page = await cookieSetterBD(page);
+
     const textgetter = async (tagname) => {
       const element = await page.$(tagname);
       return (await element?.evaluate((el) => el.textContent.trim())) ?? null;
@@ -184,7 +190,8 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
       image: product_image,
       link: product_link,
       rating: Number(product_rating?.split(' ')[0]?.trim()),
-      description: (product_title + ' ' + product_details)
+      description: product_details,
+      content: (product_title + ' ' + product_details)
         .replace(/\s+/g, ' ')
         .replace(/[^\w\s]/g, '')
         .replace(/\n/g, '')
@@ -291,6 +298,10 @@ const NodestormScraper = async (product_link) => {
       link: product_link,
       rating: product_rating,
       description: product_description,
+      content: product_description,
+      addedBy: '',
+      thumbnails: [],
+      price_currency: '',
     };
   } catch (error) {
     console.error(error);
