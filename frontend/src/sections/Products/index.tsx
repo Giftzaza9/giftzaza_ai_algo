@@ -7,6 +7,7 @@ import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import { getProfile } from '../../services/profile';
 import { toast } from 'react-toastify';
+import { Profile } from '../../constants/types';
 
 export const mockData = [
   {
@@ -58,13 +59,8 @@ export const mockData = [
 
 export const Products = () => {
   const { profileId } = useParams();
-  const [profileData, setProfileData] = useState<any>();
-  console.log({ profileId });
-
-  useEffect(() => {
-    fetchProfile();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileId])
+  const [recommendedProducts, setRecommendedProducts] = useState<any[]>([]);
+  const [profile, setProfile] = useState<Profile | undefined>();
 
 
   const fetchProfile = async () => {
@@ -73,11 +69,16 @@ export const Products = () => {
       toast.error(error || "Failed to fetch profile data !");
     else {
       console.log({data});
-      setProfileData(data?.recommended_products);
+      setProfile(data);
+      setRecommendedProducts(data?.recommended_products);
     }
   }
 
-console.log("PROFILE DATA ",profileData?.recommended_products);
+  useEffect(() => {
+    fetchProfile();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileId])
+
 
   const handleFinish = (status: SwipeAction) => {
     // if (status) setEvents((prev) => [...prev, `Finish: ${status}`]);
@@ -85,7 +86,7 @@ console.log("PROFILE DATA ",profileData?.recommended_products);
   };
 
   return (
-    <MobileLayout>
+    <MobileLayout profile={profile} >
       <Container
         sx={{
           display: 'flex',
