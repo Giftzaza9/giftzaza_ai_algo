@@ -7,9 +7,11 @@ interface Props {
   selectedTags: string[];
   setSelectedTags: Dispatch<SetStateAction<string[]>>;
   small?: boolean;
+  greyText?: boolean;
+  sort?: boolean;
 }
 
-export const MobileMultiSelectChip: FC<Props> = ({ items, setSelectedTags, selectedTags, small }) => {
+export const MobileMultiSelectChip: FC<Props> = ({ items, setSelectedTags, selectedTags, small, greyText, sort }) => {
   const classes = useStyles();
 
   const handleChipClick = (item: string) => {
@@ -23,8 +25,8 @@ export const MobileMultiSelectChip: FC<Props> = ({ items, setSelectedTags, selec
 
   return (
     <>
-      <Grid container gap={1} mb={2}>
-        {items?.map((item, number) => {
+      <Grid container gap={'4px'} mb={2}>
+        {(sort ? items?.sort((a, b) => a?.length - b?.length) : items)?.map((item, number) => {
           const isSelected = selectedTags?.includes(item);
           return (
             <Grid item key={item}>
@@ -42,7 +44,7 @@ export const MobileMultiSelectChip: FC<Props> = ({ items, setSelectedTags, selec
                         fontFamily: 'Inter',
                         fontWeight: 500,
                         lineHeight: '21px',
-                        color: isSelected ? 'white' : 'rgba(96, 113, 132, 1)',
+                        color: isSelected ? 'white' : greyText ? 'rgba(96, 113, 132, 1)' : 'black',
                       }}
                     >
                       {item}

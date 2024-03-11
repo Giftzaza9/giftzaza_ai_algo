@@ -38,7 +38,7 @@ const genderChipsStyle = {
   display: 'flex',
   flexDirection: 'row-reverse',
   justifyContent: 'space-between',
-  padding: '32px 15px',
+  padding: '25px 10px',
   borderRadius: '32px',
   backgroundColor: 'white',
   color: 'rgba(0, 0, 0, 1)',
@@ -189,7 +189,6 @@ export const Profiles = () => {
                 },
               }}
             />
-            {
               <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} my={2}>
                 <ArrowBackIosIcon
                   sx={{ cursor: 'pointer', color: 'rgba(221, 110, 63, 1)', visibility: page === 0 ? 'hidden' : 'visible' }}
@@ -219,7 +218,7 @@ export const Profiles = () => {
                   />
                 )}
               </Box>
-            }
+            
           </Grid>
         )}
         {page === 0 && (
@@ -285,6 +284,8 @@ export const Profiles = () => {
               How are you related?
             </Typography>
             <MobileSingleSelectChip
+              sort
+              small
               title={'relation'}
               items={filterObject.relationship}
               selectedTag={profileData?.relation as string}
@@ -298,6 +299,7 @@ export const Profiles = () => {
               What’s their age?
             </Typography>
             <MobileSingleSelectChip
+              small
               title={'age'}
               items={filterObject.age_category}
               selectedTag={profileData?.age as string}
@@ -339,20 +341,6 @@ export const Profiles = () => {
                 label="Female"
                 onClick={() => handleCreateProfileData('gender', 'Female', 1)}
               />
-              <Chip
-                variant="outlined"
-                color="primary"
-                icon={
-                  profileData?.gender === 'Other' ? (
-                    <TripOriginIcon style={{ marginRight: '1px', fontSize: '36px' }} />
-                  ) : (
-                    <PanoramaFishEyeIcon style={{ marginRight: '5px', fontSize: '30px' }} />
-                  )
-                }
-                sx={genderChipsStyle}
-                label="Other"
-                onClick={() => handleCreateProfileData('gender', 'Other', 1)}
-              />
             </Box>
           </Grid>
         )}
@@ -362,6 +350,8 @@ export const Profiles = () => {
               What’s the occasion?
             </Typography>
             <MobileSingleSelectChip
+              small
+              sort
               title={'occasion'}
               items={filterObject.occasion}
               selectedTag={profileData?.occasion as string}
@@ -379,8 +369,12 @@ export const Profiles = () => {
                 type="Date"
                 variant="outlined"
                 placeholder="Name"
+                size="small"
                 InputProps={{
-                  style: { ...startedChipsStyle, padding: '0 6px' },
+                  style: {
+                    ...startedChipsStyle,
+                    padding: '6px',
+                  },
                 }}
                 value={profileData?.occasion_date as string}
                 onChange={(e) => handleSingleSelect('occasion_date', e.target.value)}
@@ -394,6 +388,7 @@ export const Profiles = () => {
               What’s the budget?
             </Typography>
             <MobileSingleSelectChip
+              small
               title={'budget'}
               items={filterObject.budget}
               selectedTag={profileData?.budget as string}
@@ -409,7 +404,13 @@ export const Profiles = () => {
             <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '600', mb: 2 }}>
               Choose as many as you want
             </Typography>
-            <MobileMultiSelectChip items={filterObject.style} selectedTags={styles} setSelectedTags={setSelectedStyles} />
+            <MobileMultiSelectChip
+              small
+              sort
+              items={filterObject.style}
+              selectedTags={styles}
+              setSelectedTags={setSelectedStyles}
+            />
           </Grid>
         )}
         {page === 9 && (
@@ -421,6 +422,8 @@ export const Profiles = () => {
               Choose as many as you want
             </Typography>
             <MobileMultiSelectChip
+              small
+              sort
               items={filterObject.interest}
               selectedTags={interests}
               setSelectedTags={setSelectedInterests}
