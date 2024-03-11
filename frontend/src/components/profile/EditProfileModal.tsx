@@ -92,7 +92,19 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
 
   const handleDone = async () => {
     try {
-      console.log({ id: profile?.id, age, gender, relation, occasion, budget, minPrice, maxPrice, styles, interests });
+      console.log({
+        id: profile?.id,
+        age,
+        gender,
+        relation,
+        occasion,
+        budget,
+        minPrice,
+        maxPrice,
+        styles,
+        interests,
+        title,
+      });
       onClose();
     } catch (error) {
       console.error(error);
