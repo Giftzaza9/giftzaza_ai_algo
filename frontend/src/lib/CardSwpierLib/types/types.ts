@@ -5,7 +5,7 @@ export interface SwiperProps extends CardEvents {
 }
 
 export interface CardSwiperProps extends CardEvents {
-  data: CardData[]
+  data: any
   likeButton?: React.JSX.Element
   dislikeButton?: React.JSX.Element
   withActionButtons?: boolean

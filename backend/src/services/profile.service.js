@@ -27,14 +27,32 @@ const queryProfiles = async (options) => {
 };
 
 const getRecommendedProducts = async (payload) => {
+  // const tempPayload = {
+  //   "user_id": "65cf5cb4f60c8e8584a52a3a",
+  //   "new_attributes": [
+  //     "female",
+  //     "18 - 25",
+  //     "girlfriend",
+  //     "birthdays",
+  //     "classic and timeless",
+  //     "comfortable yet stylish",
+  //     "premium brands",
+  //     "fitness and wellness",
+  //     "tech and gadgets",
+  //     "fashion and accessories"
+  //   ],
+  //   "top_n": 10
+  // }
   console.log('PAYLOAD ', payload);
+  // console.log('TEMP PAYLOAD ', tempPayload);
   try {
     const { data, status } = await axiosInstance.post(`/create_recommendation`, payload);
-    console.log('RESPONSEE ', data, status);
-    return { data, status, error: null };
+    console.log('RESPONSEE ', data);
+    return data;
   } catch (error) {
-    console.log('ERROR IN RECOMMENDATION ', error);
-    return console.log('ERROR IN RECOMMENDATION MSG ', error.message);
+    // console.log('ERROR IN RECOMMENDATION ', error);
+    console.log('ERROR IN RECOMMENDATION MSG ', error.message);
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Faild in product recommendation');
   }
 };
 
@@ -56,7 +74,9 @@ const createProfile = async (profileBody) => {
   // console.log({profile_preferences})
   const preferences = Object.values(profile_preferences)
     .flat()
-    .filter((item) => item !== undefined);
+    .filter((item) => item !== undefined)
+    .map((item) => item.toLowerCase());
+
   profileBody.profile_preferences = profile_preferences;
   profileBody.preferences = preferences;
   const payload = {
@@ -66,12 +86,15 @@ const createProfile = async (profileBody) => {
   };
   try {
     profileBody.recommended_products = await getRecommendedProducts(payload);
+    // profileBody.user_id = '"'+profileBody.user_id+'"';
+    // console.log({ profileBody });
+    return await Profile.create(profileBody);
   } catch (err) {
-    return console.log('ERROR IN RECOMMENDATION RES ', err);
-    return err;
+    console.log('ERROR IN RECOMMENDATION RES ', err);
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Something went wrong!');
   }
-  console.log({ profileBody });
-  return await Profile.create(profileBody);
+  // console.log({ profileBody });
+  // return await Profile.create(profileBody);
 
   // await profile.save();
   // return profile;

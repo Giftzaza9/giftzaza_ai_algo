@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
 import StarIcon from '@mui/icons-material/Star';
-import { ellipsisText } from '../../utils/helperFunctions';
+import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
 
 // interface ContentProps {
 //     title: string;
@@ -12,13 +12,12 @@ import { ellipsisText } from '../../utils/helperFunctions';
 // }
 
 export const ProductCard = ({ productData }: any) => {
-  console.log({ productData });
-  const { title, description, source } = productData;
+  console.log('PRODUCT CARD ', productData);
+  const { title, description, source, thumbnails, image, price_currency, price, rating } = productData?.item_id;
   return (
     <Card sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
       <CardActionArea>
-        <Box>
-          {/* <CardMedia component="img" width={"100%"} height="100%" sx={{ objectFit: "contain" }} image="https://images.bloomingdalesassets.com/is/image/BLM/products/2/optimized/12956852_fpx.tif?op_sharpen=1&wid=700&fit=fit,1&$filtersm$" alt="green iguana" /> */}
+        {thumbnails?.length > 1 ? (
           <Carousel>
             <Box sx={{ width: '100%', height: '400px', marginTop: '20px' }}>
               <CardMedia
@@ -51,7 +50,18 @@ export const ProductCard = ({ productData }: any) => {
               />
             </Box>
           </Carousel>
-        </Box>
+        ) : (
+          <Box sx={{ width: '100%', height: '400px', marginTop: '20px' }}>
+            <CardMedia
+              component="img"
+              width={'100%'}
+              height="100%"
+              sx={{ objectFit: 'contain' }}
+              image={image}
+              alt="green iguana"
+            />
+          </Box>
+        )}
         <CardContent>
           <Grid sx={{ p: 2, pt: 0 }}>
             <Chip
@@ -71,11 +81,18 @@ export const ProductCard = ({ productData }: any) => {
                 </Typography>
                 <Typography sx={{ fontSize: '17px', fontFamily: 'Inter' }}>{ellipsisText(description, 135)}</Typography>
                 <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-                  <Typography sx={{ fontSize: '22px', fontFamily: 'Inter', fontWeight: '700' }}>$1121.99</Typography>
-                  <StarIcon sx={{ ml: 1, color: '#e1e26c' }} />
-                  <Typography sx={{ fontSize: '17px', fontFamily: 'Inter', fontWeight: '600' }}>
-                    4.5 / 5 (2400 ratings)
+                  <Typography sx={{ fontSize: '22px', fontFamily: 'Inter', fontWeight: '700' }}>
+                    {getCurrencySymbol(price_currency)}
+                    {price}
                   </Typography>
+                  {rating - 0 > 0 && (
+                    <>
+                      <StarIcon sx={{ ml: 1, color: '#e1e26c' }} />
+                      <Typography sx={{ fontSize: '17px', fontFamily: 'Inter', fontWeight: '600' }}>
+                        {rating} / 5 (2400 ratings)
+                      </Typography>
+                    </>
+                  )}
                 </Box>
               </Box>
               <Box>
