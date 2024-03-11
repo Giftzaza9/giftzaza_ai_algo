@@ -1,8 +1,21 @@
 import { generateErrorMessage } from '../utils/helperFunctions';
-import { ApiResponse, ProfileDataWithPrice } from '../constants/types';
+import { ApiResponse } from '../constants/types';
 import axiosInstance from './axiosInstance';
 
-export const createProfile = async (payload: ProfileDataWithPrice): Promise<ApiResponse> => {
+export interface CreateProfileBody {
+  styles: string[];
+  interests: string[];
+  title: string;
+  relation: string;
+  age: string;
+  gender: string;
+  occasion: string;
+  occasion_date: string;
+  min_price: number;
+  max_price: number;
+}
+
+export const createProfile = async (payload: CreateProfileBody): Promise<ApiResponse> => {
   try {
     const { data, status } = await axiosInstance.post(`/profiles`, payload);
     return { data, status, error: null };

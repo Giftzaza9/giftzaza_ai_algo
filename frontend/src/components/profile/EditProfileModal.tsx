@@ -1,16 +1,19 @@
 import { Box, Button, Grid, InputAdornment, Modal, Stack, TextField, Typography } from '@mui/material';
-import { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren, useEffect, useState } from 'react';
 import { theme } from '../../utils/theme';
 import { ArrowBackIos } from '@mui/icons-material';
 import { MobileSingleSelectChip } from '../shared/MobileSingleSelectChip';
-import { filterObject } from '../../constants/constants';
+import { budgetMap, filterObject } from '../../constants/constants';
+import { MobileMultiSelectChip } from '../shared/MobileMultiSelectChip';
+import { Profile } from '../../constants/types';
+import _ from 'lodash';
 
 interface _Props extends PropsWithChildren {
-    title: string;
-    subtitle?: string;
+  title: string;
+  multiSelect?: boolean;
 }
 
-const EditProfileInputWrapper: FC<_Props> = ({ title, children, subtitle }) => {
+const EditProfileInputWrapper: FC<_Props> = ({ title, children, multiSelect }) => {
   return (
     <Grid item p={'12px 0px'}>
       <Stack gap={'12px'}>
@@ -20,9 +23,27 @@ const EditProfileInputWrapper: FC<_Props> = ({ title, children, subtitle }) => {
             fontFamily: 'Inter',
             fontWeight: 500,
             lineHeight: '27px',
+            display: 'inline-block',
           }}
         >
-          {title}
+          {title}{' '}
+          {multiSelect ? (
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: '11px',
+                fontFamily: 'Inter',
+                fontWeight: 500,
+                lineHeight: '18.5px',
+                color: 'rgba(125, 132, 143, 1)',
+                display: 'inline-block',
+              }}
+            >
+              ( multi-select )
+            </Typography>
+          ) : (
+            ''
+          )}
         </Typography>
         <Box>{children}</Box>
       </Stack>
@@ -33,9 +54,49 @@ const EditProfileInputWrapper: FC<_Props> = ({ title, children, subtitle }) => {
 interface Props {
   open: boolean;
   onClose: () => void;
+  profile: Profile;
 }
 
-export const EditProfileModal: FC<Props> = ({ onClose, open }) => {
+export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
+  const [age, setAge] = useState<string>(profile?.age);
+  const [gender, setGender] = useState<string>(profile?.gender);
+  const [relation, setRelation] = useState<string>(profile?.relation);
+  const [occasion, setOccasion] = useState<string>(profile?.occasion);
+  const [budget, setBudget] = useState<string>(
+    _.findKey(budgetMap, (val) => val.min === profile?.min_price && val.max === profile?.max_price) as string
+  );
+  const [minPrice, setMinPrice] = useState<number>(profile?.min_price);
+  const [maxPrice, setMaxPrice] = useState<number>(profile?.max_price);
+  const [styles, setStyles] = useState<string[]>(profile?.styles);
+  const [interests, setInterests] = useState<string[]>(profile?.interests);
+
+  useEffect(() => {
+    setAge(profile?.age);
+    setGender(profile?.gender);
+    setRelation(profile?.relation);
+    setOccasion(profile?.occasion);
+    setBudget(_.findKey(budgetMap, (val) => val.min === profile?.min_price && val.max === profile?.max_price) as string);
+    setMinPrice(profile?.min_price);
+    setMaxPrice(profile?.max_price);
+    setStyles(profile?.styles);
+    setInterests(profile?.interests);
+  }, [profile]);
+
+  const handleBudgetChange = (budget: string) => {
+    setMinPrice(budgetMap[budget as keyof typeof budgetMap]?.min);
+    setMaxPrice(budgetMap[budget as keyof typeof budgetMap]?.max);
+    setBudget(budget);
+  };
+
+  const handleDone = async () => {
+    try {
+      console.log({ id: profile?.id, age, gender, relation, occasion, budget, minPrice, maxPrice, styles, interests });
+      onClose();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Modal
       open={open}
@@ -91,7 +152,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open }) => {
                 lineHeight: '33px',
               }}
             >
-              Edit
+              Edit Profile
             </Typography>
           </Grid>
           <Grid item>
@@ -99,6 +160,9 @@ export const EditProfileModal: FC<Props> = ({ onClose, open }) => {
               variant="contained"
               size="small"
               sx={{ bgcolor: 'rgba(221, 110, 63, 1)', color: 'white', height: '34px', width: '78px', borderRadius: '67px' }}
+              onClick={() => {
+                handleDone();
+              }}
             >
               <Typography
                 sx={{
@@ -117,12 +181,13 @@ export const EditProfileModal: FC<Props> = ({ onClose, open }) => {
         <Grid
           container
           flexDirection={'column'}
+          flexWrap={'nowrap'}
           flexGrow={1}
           overflow={'auto'}
           pb={'75px'}
           px={'12px'}
           mt={'66px'}
-        //   gap={'12px'}
+          //   gap={'12px'}
           bgcolor={'white'}
         >
           <EditProfileInputWrapper title="Buying for">
@@ -139,20 +204,84 @@ export const EditProfileModal: FC<Props> = ({ onClose, open }) => {
                         lineHeight: '21px',
                       }}
                     >
-                      Friend
+                      {relation}
                     </Typography>
                   </InputAdornment>
                 ),
               }}
             />
           </EditProfileInputWrapper>
-          
+
+          <EditProfileInputWrapper title="Gender">
+            <MobileSingleSelectChip
+              small
+              title={'gender'}
+              items={[...filterObject.gender]}
+              selectedTag={gender}
+              handleSelect={(label: string, val: string) => {
+                setGender(val);
+              }}
+            />
+          </EditProfileInputWrapper>
+
           <EditProfileInputWrapper title="Age">
-          <MobileSingleSelectChip
+            <MobileSingleSelectChip
+              small
               title={'age'}
               items={filterObject.age_category}
-              selectedTag={'18 - 25'}
-              handleSelect={(label: string, val: string) => {}}
+              selectedTag={age}
+              handleSelect={(label: string, val: string) => {
+                setAge(val);
+              }}
+            />
+          </EditProfileInputWrapper>
+
+          <EditProfileInputWrapper title="Relationship">
+            <MobileSingleSelectChip
+              small
+              title={'relationship'}
+              items={filterObject.relationship}
+              selectedTag={relation}
+              handleSelect={(label: string, val: string) => {
+                setRelation(val);
+              }}
+            />
+          </EditProfileInputWrapper>
+
+          <EditProfileInputWrapper title="Occasion">
+            <MobileSingleSelectChip
+              small
+              title={'occasion'}
+              items={filterObject.occasion}
+              selectedTag={occasion}
+              handleSelect={(label: string, val: string) => {
+                setOccasion(val);
+              }}
+            />
+          </EditProfileInputWrapper>
+
+          <EditProfileInputWrapper title="Budget">
+            <MobileSingleSelectChip
+              small
+              title={'budget'}
+              items={filterObject.budget}
+              selectedTag={budget}
+              handleSelect={(label: string, val: string) => {
+                handleBudgetChange(val);
+              }}
+            />
+          </EditProfileInputWrapper>
+
+          <EditProfileInputWrapper title="Style" multiSelect>
+            <MobileMultiSelectChip small items={filterObject.style} selectedTags={styles} setSelectedTags={setStyles} />
+          </EditProfileInputWrapper>
+
+          <EditProfileInputWrapper title="Interests" multiSelect>
+            <MobileMultiSelectChip
+              small
+              items={filterObject.interest}
+              selectedTags={interests}
+              setSelectedTags={setInterests}
             />
           </EditProfileInputWrapper>
         </Grid>
