@@ -139,7 +139,7 @@ export const Profiles = () => {
       return;
     }
 
-    if (page === 9) {
+    if (page === 9 && val === 1) {
       console.log({ profileData });
       handleCreateProfile();
       return;

@@ -4,6 +4,7 @@ const ApiError = require('../utils/ApiError');
 const { scrapeProduct } = require('../lib/scrapeProduct');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
 const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleaners');
+const axiosInstance = require('../utils/axiosInstance');
 
 /**
  * Query for products
@@ -95,6 +96,12 @@ const createProduct = async (productBody) => {
     },
     { new: true, useFindAndModify: false }
   );
+
+  try {
+    axiosInstance.post(`/model_retrain`, {});
+  } catch (e) {
+    console.error(e)
+  }
 
   return product;
 };
