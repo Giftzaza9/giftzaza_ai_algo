@@ -1,5 +1,5 @@
 import { Box, Button, Grid, InputAdornment, Modal, Stack, TextField, Typography } from '@mui/material';
-import { FC, PropsWithChildren, useState } from 'react';
+import { FC, PropsWithChildren, useEffect, useState } from 'react';
 import { theme } from '../../utils/theme';
 import { ArrowBackIos } from '@mui/icons-material';
 import { MobileSingleSelectChip } from '../shared/MobileSingleSelectChip';
@@ -69,6 +69,18 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
   const [maxPrice, setMaxPrice] = useState<number>(profile?.max_price);
   const [styles, setStyles] = useState<string[]>(profile?.styles);
   const [interests, setInterests] = useState<string[]>(profile?.interests);
+
+  useEffect(() => {
+    setAge(profile?.age);
+    setGender(profile?.gender);
+    setRelation(profile?.relation);
+    setOccasion(profile?.occasion);
+    setBudget(_.findKey(budgetMap, (val) => val.min === profile?.min_price && val.max === profile?.max_price) as string);
+    setMinPrice(profile?.min_price);
+    setMaxPrice(profile?.max_price);
+    setStyles(profile?.styles);
+    setInterests(profile?.interests);
+  }, [profile]);
 
   const handleBudgetChange = (budget: string) => {
     setMinPrice(budgetMap[budget as keyof typeof budgetMap]?.min);
