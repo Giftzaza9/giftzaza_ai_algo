@@ -4,13 +4,13 @@ import { MobileLayout } from '../../components/shared/MobileLayout';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { MobileSingleSelectChip } from '../../components/shared/MobileSingleSelectChip';
-import { filterObject } from '../../constants/constants';
+import { budgetMap, filterObject } from '../../constants/constants';
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
 import TripOriginIcon from '@mui/icons-material/TripOrigin';
 import { MobileMultiSelectChip } from '../../components/shared/MobileMultiSelectChip';
-import { Profile, ProfileDataWithPrice } from '../../constants/types';
+import { Profile } from '../../constants/types';
 import { toast } from 'react-toastify';
-import { createProfile } from '../../services/profile';
+import { CreateProfileBody, createProfile } from '../../services/profile';
 import { useNavigate } from 'react-router';
 
 const startedChipsStyle = {
@@ -53,7 +53,7 @@ const animationStyle = {
   animation: 'fadeIn 0.3s ease-in',
 };
 
-const initalProfileData: Profile = {
+const initialProfileData: Partial<Profile> = {
   styles: [],
   interests: [],
   title: '',
@@ -70,7 +70,7 @@ export const Profiles = () => {
   const [page, setPage] = useState<number>(0);
   const [styles, setSelectedStyles] = useState<string[]>([]);
   const [interests, setSelectedInterests] = useState<string[]>([]);
-  const [profileData, setProfileData] = useState<Profile>(initalProfileData);
+  const [profileData, setProfileData] = useState<Profile>(initialProfileData as Profile);
 
   useEffect(() => {
     handleCreateProfileData('styles', styles, 0);
@@ -93,10 +93,10 @@ export const Profiles = () => {
 
   const handleCreateProfile = async () => {
     const { budget, ...payloadWithoutBudget } = profileData;
-    const payload: ProfileDataWithPrice = {
+    const payload: CreateProfileBody = {
       ...payloadWithoutBudget,
-      min_price: parseInt(budget?.split('-')?.[0]?.slice(1)),
-      max_price: parseInt(budget?.split('-')?.[1]?.slice(1)),
+      min_price: budgetMap[budget as keyof typeof budgetMap]?.min,
+      max_price: budgetMap[budget as keyof typeof budgetMap]?.max,
     };
     console.log({ payload });
     const { data, error } = await createProfile(payload!);

@@ -48,19 +48,15 @@ export type Product = {
   thumbnails?: string[];
 };
 
-export type Profile = {
-  styles: string[];
-  interests: string[];
+interface RecommendedProduct {
+  item_id: string;
   title: string;
-  relation: string;
-  age: string;
-  gender: string;
-  occasion: string;
-  occasion_date: string;
-  budget: string;
-};
+  tags: string[];
+  matching_score: number;
+}
 
-export type ProfileDataWithPrice = {
+export type Profile = {
+  id: string;
   styles: string[];
   interests: string[];
   title: string;
@@ -69,6 +65,11 @@ export type ProfileDataWithPrice = {
   gender: string;
   occasion: string;
   occasion_date: string;
+  preferences: string[];
   min_price: number;
   max_price: number;
+  user_id: string;
+  profile_preferences: Record<string, string[]>;
+  recommended_products: RecommendedProduct[];
+  budget: string;
 };

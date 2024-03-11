@@ -5,15 +5,22 @@ import { theme } from '../../../utils/theme';
 import { FC, PropsWithChildren, useState } from 'react';
 import { Tune } from '@mui/icons-material';
 import { EditProfileModal } from '../../profile/EditProfileModal';
+import { Profile } from '../../../constants/types';
 
+interface _Props {
+  profile?: Profile;
+}
 
-const MobileHeader = () => {
+const MobileHeader: FC<_Props> = ({ profile }) => {
   const navigate = useNavigate();
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
+  const [profileToUpdate, setProfileToUpdate] = useState<Profile | undefined>();
+  
   const handleEditProfileModalClose = async () => {
+    setProfileToUpdate(undefined);
     setEditProfileModalOpen(false);
   };
-  
+
   return (
     <Grid
       container
@@ -39,17 +46,26 @@ const MobileHeader = () => {
         }}
         onClick={() => navigate('/')}
       />
-      {true && (
-        <IconButton onClick={() => {setEditProfileModalOpen(true)}}>
+      {profile && (
+        <IconButton
+          onClick={() => {
+            setProfileToUpdate(profile);
+            setEditProfileModalOpen(true);
+          }}
+        >
           <Tune fontSize={'large'} />
         </IconButton>
       )}
-      <EditProfileModal open={editProfileModalOpen} onClose={handleEditProfileModalClose} />
+      <EditProfileModal profile={profileToUpdate!} open={editProfileModalOpen} onClose={handleEditProfileModalClose} />
     </Grid>
   );
 };
 
-export const MobileLayout: FC<PropsWithChildren> = ({ children }) => {
+interface Props extends PropsWithChildren {
+  profile?: Profile;
+}
+
+export const MobileLayout: FC<Props> = ({ children, profile }) => {
   return (
     <Grid
       container
@@ -62,7 +78,7 @@ export const MobileLayout: FC<PropsWithChildren> = ({ children }) => {
         position: 'relative',
       }}
     >
-      <MobileHeader />
+      <MobileHeader profile={profile} />
       <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: '75px', marginTop: '85px' }}>{children}</Box>
     </Grid>
   );
