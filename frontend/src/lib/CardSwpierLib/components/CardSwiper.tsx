@@ -9,10 +9,23 @@ import CardSwiperEmptyState from './CardSwiperEmptyState';
 import CardSwiperRibbons from './CardSwiperRibbons';
 import { ProductCard } from '../../../sections/Products/ProductCard';
 import CloseIcon from '@mui/icons-material/Close';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import { GradientClose } from '../../../components/shared/Icons/GradientClose';
+import { Love } from '../../../components/shared/Icons/Love';
+import { Similar } from '../../../components/shared/Icons/Similar';
+import { Save } from '../../../components/shared/Icons/Save';
 
 export const CardSwiper = (props: CardSwiperProps) => {
-  const { data, likeButton, dislikeButton, withActionButtons = false, emptyState, onDismiss, onFinish, onEnter } = props;
+  const {
+    data,
+    likeButton,
+    dislikeButton,
+    withActionButtons = false,
+    emptyState,
+    onDismiss,
+    onFinish,
+    onEnter,
+    actionHandler,
+  } = props;
   const { handleEnter, handleClickEvents, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, swiperElements } =
     useCardSwiper({
       onDismiss,
@@ -30,7 +43,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
   useEffect(() => {
     currentSwiper && handleEnter(currentSwiper.element, currentSwiper.meta, currentSwiper.id);
   }, [currentSwiper]);
-  console.log('dynamicData ', dynamicData);
+
   const CardComponents = useMemo(
     () =>
       dynamicData.map((product: any) => (
@@ -94,32 +107,48 @@ export const CardSwiper = (props: CardSwiperProps) => {
             <>
               <CardSwiperActionButton
                 isCustom
+                direction={SwipeDirection.SIMILAR}
+                action={SwipeAction.SIMILAR}
+                onClick={actionHandler}
+                extraClass="similarProduct"
+              >
+                <Similar />
+              </CardSwiperActionButton>
+              <CardSwiperActionButton
+                isCustom
                 direction={SwipeDirection.LEFT}
                 action={SwipeAction.DISLIKE}
                 onClick={handleClickEvents}
-                buttonContent={dislikeButton}
+                extraClass="dislikeProduct"
               >
-                <CloseIcon sx={{ fontSize: '50px' }} />{' '}
+                <GradientClose />
               </CardSwiperActionButton>
               <CardSwiperActionButton
                 isCustom
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.BUY}
                 onClick={handleClickEvents}
-                buttonContent={likeButton}
                 extraClass={'buyProduct'}
               >
-                <span style={{ fontSize: '25px', fontFamily: 'Inter', fontWeight: '700' }}>BUY</span>{' '}
+                <span style={{ fontSize: '21px', fontFamily: 'Inter', fontWeight: '700' }}>BUY</span>{' '}
               </CardSwiperActionButton>
               <CardSwiperActionButton
                 isCustom
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.LIKE}
                 onClick={handleClickEvents}
-                buttonContent={likeButton}
                 extraClass={'loveProduct'}
               >
-                <FavoriteIcon sx={{ fontSize: '50px' }} />{' '}
+                <Love />
+              </CardSwiperActionButton>
+              <CardSwiperActionButton
+                isCustom
+                direction={SwipeDirection.RIGHT}
+                action={SwipeAction.LIKE}
+                onClick={handleClickEvents}
+                extraClass="saveProduct"
+              >
+                <Save />
               </CardSwiperActionButton>
             </>
           ) : (
@@ -129,7 +158,6 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 direction={SwipeDirection.LEFT}
                 action={SwipeAction.DISLIKE}
                 onClick={handleClickEvents}
-                buttonContent={dislikeButton}
               >
                 <CloseIcon sx={{ fontSize: '50px' }} />{' '}
               </CardSwiperActionButton>
@@ -138,7 +166,6 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.LIKE}
                 onClick={handleClickEvents}
-                buttonContent={likeButton}
               >
                 <CloseIcon sx={{ fontSize: '50px' }} />{' '}
               </CardSwiperActionButton>

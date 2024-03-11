@@ -44,7 +44,7 @@ export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data }: UseCardSwi
     swiperElements.current.pop()
   }
 
-  const handleClickEvents = (direction: SwipeDirection) => {
+  const handleClickEvents = (direction: SwipeDirection, action: SwipeAction) => {
     if (swiperIndex) {
       const swiper = swiperElements.current[swiperIndex - 1]
       swiper?.dismissById(direction)

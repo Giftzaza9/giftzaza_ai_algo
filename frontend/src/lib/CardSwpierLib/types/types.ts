@@ -14,6 +14,7 @@ export interface CardSwiperProps extends CardEvents {
   likeRibbonText?: string
   dislikeRibbonText?: string
   ribbonColors?: CardRibbonColors
+  actionHandler?: any
 }
 
 export interface CardEvents {
@@ -48,13 +49,15 @@ export interface CardRibbonColors {
 export enum SwipeDirection {
   LEFT = -1,
   RIGHT = 1,
+  SIMILAR = 1,
 }
 
 export enum SwipeAction {
   LIKE = 'like',
   DISLIKE = 'dislike',
   FINISHED = 'finished',
-  BUY = 'buy,'
+  BUY = 'buy',
+  SIMILAR = 'similar',
 }
 
 export enum SwipeOperation {

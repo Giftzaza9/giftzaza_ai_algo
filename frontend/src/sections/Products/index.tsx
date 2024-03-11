@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
-import { SwipeAction } from '../../lib/CardSwpierLib/types/types';
+import { SwipeAction, SwipeDirection } from '../../lib/CardSwpierLib/types/types';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
@@ -34,6 +34,10 @@ export const Products = () => {
     alert('Finished ');
   };
 
+  const handleProductAction = (direction: SwipeDirection, action: SwipeAction) => {
+    alert(action);
+  }
+
   return (
     <MobileLayout>
       <Container
@@ -47,6 +51,7 @@ export const Products = () => {
           <CardSwiper
             data={profileData?.recommended_products}
             onFinish={handleFinish}
+            actionHandler={handleProductAction}
             // onDismiss={handleSwipe}
             withActionButtons={true}
             dislikeButton={<button className="">Dislike</button>}
