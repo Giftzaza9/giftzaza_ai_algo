@@ -58,6 +58,7 @@ interface Props {
 }
 
 export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
+  const [title, setTitle] = useState<string>(profile?.title);
   const [age, setAge] = useState<string>(profile?.age);
   const [gender, setGender] = useState<string>(profile?.gender);
   const [relation, setRelation] = useState<string>(profile?.relation);
@@ -71,6 +72,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
   const [interests, setInterests] = useState<string[]>(profile?.interests);
 
   useEffect(() => {
+    setTitle(profile?.title);
     setAge(profile?.age);
     setGender(profile?.gender);
     setRelation(profile?.relation);
@@ -193,6 +195,8 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
           <EditProfileInputWrapper title="Buying for">
             <TextField
               fullWidth
+              value={title}
+              onChange={(e) => {setTitle(e.target.value)}}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
