@@ -15,8 +15,8 @@ const axiosInstance = require('../utils/axiosInstance');
 const queryProducts = async (queryObject) => {
   const { sort, search = '', filter = '', page = 1, limit = 12 } = queryObject;
   const filterObject = {
-    // is_active: true,
-    //  hil: true
+    is_active: true,
+    // hil: true,
   };
   const optionsObject = { page, limit, sort: { createdAt: -1 } };
   if (sort) {
@@ -60,7 +60,7 @@ const scrapeAndAddProduct = async (productBody) => {
   if (product_link.includes('bloomingdale')) product_link = bloomingdaleUrlCleaner(product_link) || product_link;
 
   const productDB = await Product.findOne({ link: product_link });
-  const {content: AIContent, ...scrapedProduct} = await scrapeProduct(product_link, user_id);
+  const { content: AIContent, ...scrapedProduct } = await scrapeProduct(product_link, user_id);
 
   if (!scrapedProduct || !AIContent) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
@@ -79,9 +79,9 @@ const scrapeAndAddProduct = async (productBody) => {
 
 function convertToObjectId(itemIds) {
   // console.log({ itemIds });
-  return itemIds?.map(item => ({
+  return itemIds?.map((item) => ({
     ...item,
-    _id: mongoose.Types.ObjectId(item.item_id)
+    _id: mongoose.Types.ObjectId(item.item_id),
   }));
 }
 
@@ -91,19 +91,20 @@ function convertToObjectId(itemIds) {
  * @returns {Promise<Product>}
  */
 const similarProducts = async (productBody) => {
-  await axiosInstance.post(`/get_similar_item`, productBody)
-  .then(async (res) => {
-    const objectIds = convertToObjectId(res?.data);
-    // console.log("objectIds ", objectIds)
-    const products = await Product.find({ _id: { $in: objectIds } });
-    console.log({products});
-    return products;
-  })
-  .catch((error) => {
-    console.log('ERROR IN RECOMMENDATION MSG ', error.message);
-    throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in product recommendation');
-  })
-}
+  await axiosInstance
+    .post(`/get_similar_item`, productBody)
+    .then(async (res) => {
+      const objectIds = convertToObjectId(res?.data);
+      // console.log("objectIds ", objectIds)
+      const products = await Product.find({ _id: { $in: objectIds } });
+      console.log({ products });
+      return products;
+    })
+    .catch((error) => {
+      console.log('ERROR IN RECOMMENDATION MSG ', error.message);
+      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in product recommendation');
+    });
+};
 
 /**
  * Create a product
@@ -129,7 +130,7 @@ const createProduct = async (productBody) => {
   try {
     axiosInstance.post(`/model_retrain`, {});
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
 
   return product;
@@ -144,22 +145,22 @@ const createProduct = async (productBody) => {
 const updateProductById = async (productId, updateBody) => {
   const { tags, curated } = updateBody;
   const product = await Product.findById(productId);
-  const { title, price, image, link, rating, description, thumbnails, price_currency } = await scrapeProduct(product.link);
+  // const { title, price, image, link, rating, description, thumbnails, price_currency } = await scrapeProduct(product.link);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
 
   // From User
   product.tags = tags;
   if (curated !== undefined) product.curated = !!curated;
-  
+
   // From scraping
-  product.title = title;
-  product.price = price;
-  product.image = image;
-  product.thumbnails = thumbnails;
-  product.description = description;
-  product.rating = rating;
-  product.link = link;
-  product.price_currency = price_currency;
+  // product.title = title;
+  // product.price = price;
+  // product.image = image;
+  // product.thumbnails = thumbnails;
+  // product.description = description;
+  // product.rating = rating;
+  // product.link = link;
+  // product.price_currency = price_currency;
 
   await product.save();
   return product;
