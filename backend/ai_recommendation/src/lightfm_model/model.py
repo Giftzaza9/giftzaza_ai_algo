@@ -313,7 +313,10 @@ class LightFM_cls:
 
         item_features = dataset.build_item_features([(x,y) for x,y in zip(new_item_meta['itemID'],new_item_meta['item_attr_list'])], normalize=True)
         user_features = dataset.build_user_features([(x,y) for x,y in zip(new_user_meta['userID'],new_user_meta['user_attr_list'])], normalize=True)
-        (interactions, weights) = dataset.build_interactions((x, y) for x,y in zip(new_user_item_interactions['userID'],new_user_item_interactions['itemID']))
+        if True:
+            (interactions, weights) = dataset.build_interactions((x, y, w) for x,y,w in zip(new_user_item_interactions['userID'],new_user_item_interactions['itemID'],new_user_item_interactions['weight']))
+        else:
+            (interactions, weights) = dataset.build_interactions((x, y) for x,y in zip(new_user_item_interactions['userID'],new_user_item_interactions['itemID']))
         n_components = 30
         loss = 'warp'
         epoch = 30

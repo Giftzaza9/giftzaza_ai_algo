@@ -32,6 +32,8 @@ class Global_cls:
                 if i not in self.hard_filters: ### Hard Filters removed from the model parameters
                         self.attr_list.extend(keys)
                         self.attr_weights.update(dict(zip(keys,[self.cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
+        with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "useractivity.json"),'r') as fr:
+            self.user_activity_types = json.load(fr)
 
 LightFM_Obj = LightFM_cls()
 Mongodb_Obj = Mongodb_cls()
@@ -125,6 +127,26 @@ def train_with_mongodb():
                     else:
                         preference_dict[i] = list(np.random.choice(Global_Obj.cat_dict[i],np.random.randint(1, 4),replace=False))
                 return preference_dict
+            
+            def get_profile_interactions(attributes,profile_id,user_id):
+                try:
+                    temp_df = pd.DataFrame(create_recommendation(user_id,attributes))
+                    temp_dict = {}
+                    temp_dict["dislike"] = list(np.random.choice(temp_df["item_id"].to_list()[5:],np.random.randint(1,3)))
+                    temp_dict["liked"] = list(np.random.choice(temp_df["item_id"].to_list(),np.random.randint(1,8)))
+                    temp_dict["loved"] = list(np.random.choice(temp_df["item_id"].to_list()[:7],np.random.randint(1,5)))
+                    temp_dict["saved"] = list(np.random.choice(temp_df["item_id"].to_list()[:5],np.random.randint(1,5)))
+                    temp_dict["bought"] = list(np.random.choice(temp_df["item_id"].to_list()[:3],1))
+                    temp_list = list(itertools.chain(*[ list(zip([k]*len(v),[Global_Obj.user_activity_types[k]]*len(v),v)) for k,v in temp_dict.items()]))
+                    tdf = pd.DataFrame(temp_list,columns = ["activity_type","weight","productId"])
+                    tdf['profileId'] = profile_id
+                    tdf['userId'] = user_id
+                    tdf['_id'] = "temp_activity_id"
+                    return tdf
+                except Exception as e:
+                    print(e)
+                    return np.nan
+                
 
             df_items = Mongodb_Obj.get_collection_as_dataframe("test","products")
             # df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
@@ -132,13 +154,19 @@ def train_with_mongodb():
                                     columns = ['_id', 'recommended_products', '__v','profile_preferences','userId'])
             df_users['tags'] = df_users['profile_preferences'].apply(lambda preferences : list(itertools.chain(*list(preferences.values()))))
             # df_interactions = Mongodb_Obj.get_collection_as_dataframe("test","useractivities")
-            df_interactions = pd.DataFrame(data = [["test_activity_id1",'65b369606932958a4f56f4d2',"test_user_id1",np.random.randint(10),'test_profile_id1']],
-                                        columns = ['_id', 'productId', 'userId', '__v', 'profileId'] )
+            list_interactions_df = df_users.apply(lambda row : get_profile_interactions(row['tags'],row['_id'],row['userId']) , axis=1)
+            list_interactions_df = list_interactions_df.dropna()
+            df_interactions = pd.concat(list_interactions_df.tolist(),ignore_index=True)
+            # df_interactions = pd.DataFrame(data = [["test_activity_id1",'65b369606932958a4f56f4d2',"test_user_id1",np.random.randint(10),'test_profile_id1']],
+            #                             columns = ['_id', 'productId', 'userId', '__v', 'profileId'] )
         except Exception as e:
             raise Exception(f"Error in Connection to Mongodb : {e}")
-
-        rdf_interactions = df_interactions[['profileId','productId']].copy()
+        if True:
+            rdf_interactions = df_interactions[['profileId','productId','activity_type','weight']].copy()
+        else:
+            rdf_interactions = df_interactions[['profileId','productId']].copy()
         rdf_interactions = rdf_interactions.astype(str)
+        rdf_interactions = rdf_interactions.astype({'weight': 'float32'})
 
         rdf_items = df_items[['_id','tags']].copy()
         rdf_items['_id'] = rdf_items['_id'].astype(str)
