@@ -1,9 +1,11 @@
 const httpStatus = require('http-status');
+const mongoose = require('mongoose');
 const { Product } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { scrapeProduct } = require('../lib/scrapeProduct');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
 const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleaners');
+const axiosInstance = require('../utils/axiosInstance');
 
 /**
  * Query for products
@@ -75,6 +77,34 @@ const scrapeAndAddProduct = async (productBody) => {
   return product;
 };
 
+function convertToObjectId(itemIds) {
+  // console.log({ itemIds });
+  return itemIds?.map(item => ({
+    ...item,
+    _id: mongoose.Types.ObjectId(item.item_id)
+  }));
+}
+
+/**
+ * Find similar products
+ * @param {Object} productBody
+ * @returns {Promise<Product>}
+ */
+const similarProducts = async (productBody) => {
+  await axiosInstance.post(`/get_similar_item`, productBody)
+  .then(async (res) => {
+    const objectIds = convertToObjectId(res?.data);
+    // console.log("objectIds ", objectIds)
+    const products = await Product.find({ _id: { $in: objectIds } });
+    console.log({products});
+    return products;
+  })
+  .catch((error) => {
+    console.log('ERROR IN RECOMMENDATION MSG ', error.message);
+    throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in product recommendation');
+  })
+}
+
 /**
  * Create a product
  * @param {Object} productBody
@@ -143,6 +173,7 @@ const deleteProductById = async (productId) => {
 module.exports = {
   queryProducts,
   scrapeAndAddProduct,
+  similarProducts,
   createProduct,
   deleteProductById,
   updateProductById,

@@ -13,6 +13,12 @@ const scrapeProduct = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(product);
 });
 
+const similarProducts = catchAsync(async (req, res) => {
+  const products = await productService.similarProducts(req.body);
+  console.log({products})
+  res.status(httpStatus.OK).send(products);
+});
+
 const createProduct = catchAsync(async (req, res) => {
   req.body.user_id = req.user._id;
   const product = await productService.createProduct(req.body);
@@ -32,6 +38,7 @@ const updateProduct = catchAsync(async (req, res) => {
 module.exports = {
   getProducts,
   scrapeProduct,
+  similarProducts,
   createProduct,
   deleteProduct,
   updateProduct,

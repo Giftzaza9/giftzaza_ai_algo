@@ -1,16 +1,18 @@
 import { Container } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
-import { SwipeAction } from '../../lib/CardSwpierLib/types/types';
+import { SwipeAction, SwipeDirection } from '../../lib/CardSwpierLib/types/types';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import { getProfile } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { Profile } from '../../constants/types';
+import { SimilarProductBody, getSimilarProducts } from '../../services/product';
 
 export const Products = () => {
   const { profileId } = useParams();
+  const [products, setProducts] = useState<any>([]);
   const [profile, setProfile] = useState<Profile | undefined>();
 
   const fetchProfile = async () => {
@@ -19,6 +21,7 @@ export const Products = () => {
     else {
       console.log({ data });
       setProfile(data);
+      setProducts(data?.recommended_products);
     }
   };
 
@@ -32,6 +35,27 @@ export const Products = () => {
     alert('Finished ');
   };
 
+  const handleProductAction = (direction: SwipeDirection, action: SwipeAction) => {
+    if (action === SwipeAction.SIMILAR) {
+      fetchSimilarProducts();
+    }
+  };
+
+  const fetchSimilarProducts = async () => {
+    const payload: SimilarProductBody = {
+      item_id: '65b7e78b71d8394e325feefa',
+      top_n: 10,
+    };
+    const { data, error } = await getSimilarProducts(payload);
+    console.log({ data });
+    if (error) toast.error(error || 'Faild to get similar products !');
+    else {
+      setProducts(data);
+    }
+  };
+
+  console.log({ products });
+
   return (
     <MobileLayout profile={profile}>
       <Container
@@ -41,10 +65,11 @@ export const Products = () => {
           flexGrow: 1,
         }}
       >
-        {profile?.recommended_products !== undefined && profile?.recommended_products?.length > 0 && (
+        {products !== undefined && products?.length > 0 && (
           <CardSwiper
-            data={profile?.recommended_products}
+            data={products}
             onFinish={handleFinish}
+            actionHandler={handleProductAction}
             // onDismiss={handleSwipe}
             withActionButtons={true}
             dislikeButton={<button className="">Dislike</button>}

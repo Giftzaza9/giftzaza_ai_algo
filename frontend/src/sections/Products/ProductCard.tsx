@@ -63,32 +63,32 @@ export const ProductCard = ({ productData }: any) => {
           </Box>
         )}
         <CardContent>
-          <Grid sx={{ p: 2, pt: 0 }}>
+          <Grid>
             <Chip
               label={source}
               sx={{
                 padding: '10px 4 px',
                 color: 'rgba(221, 110, 63, 1)',
                 backgroundColor: 'rgba(247, 227, 141, 0.42)',
-                fontSize: '16px',
+                fontSize: '14px',
                 fontWeight: '700',
               }}
             />
             <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
               <Box display={'flex'} flexDirection={'column'} rowGap={1} mt={1}>
-                <Typography sx={{ fontSize: '22px', fontFamily: 'Inter', fontWeight: '700' }}>
-                  {ellipsisText(title, 55)}
+                <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>
+                  {ellipsisText(title, 42)}
                 </Typography>
-                <Typography sx={{ fontSize: '17px', fontFamily: 'Inter' }}>{ellipsisText(description, 135)}</Typography>
+                <Typography sx={{ fontSize: '12px', fontFamily: 'Inter' }}>{ellipsisText(description, 95)}</Typography>
                 <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-                  <Typography sx={{ fontSize: '22px', fontFamily: 'Inter', fontWeight: '700' }}>
+                  <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>
                     {getCurrencySymbol(price_currency)}
                     {price}
                   </Typography>
                   {rating - 0 > 0 && (
                     <>
                       <StarIcon sx={{ ml: 1, color: '#e1e26c' }} />
-                      <Typography sx={{ fontSize: '17px', fontFamily: 'Inter', fontWeight: '600' }}>
+                      <Typography sx={{ fontSize: '12px', fontFamily: 'Inter', fontWeight: '600' }}>
                         {rating} / 5 (2400 ratings)
                       </Typography>
                     </>
@@ -100,7 +100,7 @@ export const ProductCard = ({ productData }: any) => {
                   src={require('../../assets/arrow-down.png')}
                   alt="logo"
                   style={{
-                    width: '40px',
+                    width: '30px',
                     cursor: 'pointer',
                   }}
                   // onClick={() => navigate('/')}
