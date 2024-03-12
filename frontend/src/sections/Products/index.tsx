@@ -8,9 +8,11 @@ import { useEffect, useState } from 'react';
 import { getProfile } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { Profile } from '../../constants/types';
+import { SimilarProductBody, getSimilarProducts } from '../../services/product';
 
 export const Products = () => {
   const { profileId } = useParams();
+  const [products, setProducts] = useState<any>([]);
   const [profile, setProfile] = useState<Profile | undefined>();
 
   const fetchProfile = async () => {
@@ -19,6 +21,7 @@ export const Products = () => {
     else {
       console.log({ data });
       setProfile(data);
+      setProducts(data?.recommended_products);
     }
   };
 
@@ -33,8 +36,25 @@ export const Products = () => {
   };
 
   const handleProductAction = (direction: SwipeDirection, action: SwipeAction) => {
-    alert(action);
-  }
+    if (action === SwipeAction.SIMILAR) {
+      fetchSimilarProducts();
+    }
+  };
+
+  const fetchSimilarProducts = async () => {
+    const payload: SimilarProductBody = {
+      item_id: '65b7e78b71d8394e325feefa',
+      top_n: 10,
+    };
+    const { data, error } = await getSimilarProducts(payload);
+    console.log({ data });
+    if (error) toast.error(error || 'Faild to get similar products !');
+    else {
+      setProducts(data);
+    }
+  };
+
+  console.log({ products });
 
   return (
     <MobileLayout profile={profile}>
@@ -45,9 +65,9 @@ export const Products = () => {
           flexGrow: 1,
         }}
       >
-        {profile?.recommended_products !== undefined && profile?.recommended_products?.length > 0 && (
+        {products !== undefined && products?.length > 0 && (
           <CardSwiper
-            data={profile?.recommended_products}
+            data={products}
             onFinish={handleFinish}
             actionHandler={handleProductAction}
             // onDismiss={handleSwipe}

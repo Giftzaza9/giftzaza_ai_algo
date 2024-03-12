@@ -9,8 +9,10 @@ import { userStore } from '../../../store/UserStore';
 // import { AdminPanelSettings } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import { bottomNavState } from '../../../store/BottomNavState';
+import { useNavigate } from 'react-router-dom';
 
 export const BottomNav = observer(() => {
+  const navigate = useNavigate();
   const { isVisible } = bottomNavState;
   const { user } = userStore;
   const [value, setValue] = React.useState('home');
@@ -37,7 +39,7 @@ export const BottomNav = observer(() => {
         height: '75px',
       }}
     >
-      <BottomNavigationAction label="Home" value="home" icon={<GoHomeFill style={{ fontSize: '36px' }} />} />
+      <BottomNavigationAction label="Home" value="home" icon={<GoHomeFill style={{ fontSize: '36px' }} />} onClick={() => navigate('/profiles')} />
       <BottomNavigationAction
         label="Profiles"
         value="profiles"

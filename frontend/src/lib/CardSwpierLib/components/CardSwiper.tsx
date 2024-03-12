@@ -26,6 +26,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
     onEnter,
     actionHandler,
   } = props;
+
   const { handleEnter, handleClickEvents, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, swiperElements } =
     useCardSwiper({
       onDismiss,
@@ -46,8 +47,8 @@ export const CardSwiper = (props: CardSwiperProps) => {
 
   const CardComponents = useMemo(
     () =>
-      dynamicData.map((product: any) => (
-        <div
+    dynamicData && dynamicData?.length > 0 && dynamicData?.map((product: any) => (
+      product && <div
           key={product?._id}
           ref={(ref: HTMLDivElement | null) => handleNewCardSwiper(ref, product?._id, product?.matching_score)}
           className="swipe-card__container"
@@ -77,7 +78,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
         </div>
       )),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [dynamicData]
   );
 
   useEffect(() => {

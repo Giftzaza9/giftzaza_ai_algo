@@ -18,6 +18,13 @@ const scrapeProduct = {
   }),
 };
 
+const similarProducts = {
+  body: Joi.object().keys({
+    item_id: Joi.string(),
+    top_n: Joi.number().integer()
+  }),
+};
+
 const createProduct = {
   body: Joi.object().keys({
     product_id: Joi.string().custom(objectId).required(),
@@ -55,6 +62,7 @@ const updateProduct = {
 module.exports = {
   getProducts,
   scrapeProduct,
+  similarProducts,
   createProduct,
   deleteProduct,
   updateProduct,
