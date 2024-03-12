@@ -1,5 +1,5 @@
 import { Box, Button, Grid, InputAdornment, Modal, Stack, TextField, Typography } from '@mui/material';
-import { Dispatch, FC, PropsWithChildren, SetStateAction, useEffect, useState } from 'react';
+import { FC, PropsWithChildren, useEffect, useState } from 'react';
 import { theme } from '../../utils/theme';
 import { ArrowBackIos } from '@mui/icons-material';
 import { MobileSingleSelectChip } from '../shared/MobileSingleSelectChip';
@@ -55,12 +55,11 @@ const EditProfileInputWrapper: FC<_Props> = ({ title, children, multiSelect }) =
 
 interface Props {
   open: boolean;
-  onClose: () => Promise<void>;
-  setProfile: Dispatch<SetStateAction<Profile | undefined>>
+  onClose: (refetch?: boolean) => void;
   profile: Profile;
 }
 
-export const EditProfileModal: FC<Props> = ({ onClose, open, profile, setProfile }) => {
+export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
   const [title, setTitle] = useState<string>(profile?.title);
   const [age, setAge] = useState<string>(profile?.age);
   const [gender, setGender] = useState<string>(profile?.gender);
@@ -95,8 +94,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile, setProfile
 
   const handleDone = async () => {
     try {
-      
-      const { data, error } = await updateProfile(profile?.id, {
+      const { error } = await updateProfile(profile?.id, {
         age,
         gender,
         relation,
@@ -111,11 +109,10 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile, setProfile
       if (error) {
         console.error(error);
       } else {
-        setProfile(data);
         toast.success('Profile updated successfully !');
       }
 
-      onClose();
+      onClose(true);
     } catch (error) {
       console.error(error);
     }

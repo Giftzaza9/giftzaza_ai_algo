@@ -57,7 +57,7 @@ export const Products = () => {
   console.log({ products });
 
   return (
-    <MobileLayout profile={profile}>
+    <MobileLayout profile={profile} fetchProfile={fetchProfile}>
       <Container
         sx={{
           display: 'flex',

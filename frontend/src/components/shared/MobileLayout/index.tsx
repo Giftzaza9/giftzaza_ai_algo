@@ -2,24 +2,27 @@ import { Grid, IconButton } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
-import { Dispatch, FC, PropsWithChildren, SetStateAction, useState } from 'react';
+import { FC, PropsWithChildren, useState } from 'react';
 import { Tune } from '@mui/icons-material';
 import { EditProfileModal } from '../../profile/EditProfileModal';
 import { Profile } from '../../../constants/types';
 
 interface _Props {
-  setProfile?: Dispatch<SetStateAction<Profile | undefined>>
+  fetchProfile?: () => Promise<void>;
   profile?: Profile;
 }
 
-const MobileHeader: FC<_Props> = ({ profile, setProfile }) => {
+const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
   const navigate = useNavigate();
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
   const [profileToUpdate, setProfileToUpdate] = useState<Profile | undefined>();
-  
-  const handleEditProfileModalClose = async () => {
+
+  const handleEditProfileModalClose = async (refetch?: boolean) => {
     setProfileToUpdate(undefined);
     setEditProfileModalOpen(false);
+    if (refetch && typeof fetchProfile === 'function') {
+      await fetchProfile();
+    }
   };
 
   return (
@@ -30,7 +33,7 @@ const MobileHeader: FC<_Props> = ({ profile, setProfile }) => {
         width: '100%',
         alignSelf: 'flex-start',
         p: '20px',
-        backgroundColor: theme.palette.secondary.main ,
+        backgroundColor: theme.palette.secondary.main,
         position: 'fixed',
         top: 0,
         zIndex: 1000,
@@ -56,17 +59,17 @@ const MobileHeader: FC<_Props> = ({ profile, setProfile }) => {
           <Tune fontSize={'large'} />
         </IconButton>
       )}
-      <EditProfileModal setProfile={setProfile!} profile={profileToUpdate!} open={editProfileModalOpen} onClose={handleEditProfileModalClose} />
+      <EditProfileModal profile={profileToUpdate!} open={editProfileModalOpen} onClose={handleEditProfileModalClose} />
     </Grid>
   );
 };
 
 interface Props extends PropsWithChildren {
-  setProfile?: Dispatch<SetStateAction<Profile | undefined>>
+  fetchProfile?: () => Promise<void>;
   profile?: Profile;
 }
 
-export const MobileLayout: FC<Props> = ({ children, profile, setProfile }) => {
+export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => {
   return (
     <Grid
       container
@@ -79,7 +82,7 @@ export const MobileLayout: FC<Props> = ({ children, profile, setProfile }) => {
         position: 'relative',
       }}
     >
-      <MobileHeader profile={profile} setProfile={setProfile} />
+      <MobileHeader profile={profile} fetchProfile={fetchProfile} />
       <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: '75px', marginTop: '85px' }}>{children}</Box>
     </Grid>
   );
