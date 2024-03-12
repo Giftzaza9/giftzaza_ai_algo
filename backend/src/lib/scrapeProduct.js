@@ -24,7 +24,7 @@ const scrapeProduct = async (productLink, userId) => {
 };
 
 async function AmazonScraper(product_link, userId) {
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
 

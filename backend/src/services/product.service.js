@@ -15,8 +15,8 @@ const axiosInstance = require('../utils/axiosInstance');
 const queryProducts = async (queryObject) => {
   const { sort, search = '', filter = '', page = 1, limit = 12 } = queryObject;
   const filterObject = {
-    // is_active: true,
-    //  hil: true
+    is_active: true,
+    // hil: true,
   };
   const optionsObject = { page, limit, sort: { createdAt: -1 } };
   if (sort) {
@@ -133,6 +133,12 @@ const createProduct = async (productBody) => {
     { new: true, useFindAndModify: false }
   );
 
+  try {
+    axiosInstance.post(`/model_retrain`, {});
+  } catch (e) {
+    console.error(e);
+  }
+
   return product;
 };
 
@@ -145,7 +151,7 @@ const createProduct = async (productBody) => {
 const updateProductById = async (productId, updateBody) => {
   const { tags, curated } = updateBody;
   const product = await Product.findById(productId);
-  const { title, price, image, link, rating, description, thumbnails, price_currency } = await scrapeProduct(product.link);
+  // const { title, price, image, link, rating, description, thumbnails, price_currency } = await scrapeProduct(product.link);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
 
   // From User
@@ -153,14 +159,14 @@ const updateProductById = async (productId, updateBody) => {
   if (curated !== undefined) product.curated = !!curated;
 
   // From scraping
-  product.title = title;
-  product.price = price;
-  product.image = image;
-  product.thumbnails = thumbnails;
-  product.description = description;
-  product.rating = rating;
-  product.link = link;
-  product.price_currency = price_currency;
+  // product.title = title;
+  // product.price = price;
+  // product.image = image;
+  // product.thumbnails = thumbnails;
+  // product.description = description;
+  // product.rating = rating;
+  // product.link = link;
+  // product.price_currency = price_currency;
 
   await product.save();
   return product;

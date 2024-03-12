@@ -1,4 +1,4 @@
-import { Grid, IconButton } from '@mui/material';
+import { Grid, IconButton, useMediaQuery } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
@@ -8,17 +8,22 @@ import { EditProfileModal } from '../../profile/EditProfileModal';
 import { Profile } from '../../../constants/types';
 
 interface _Props {
+  fetchProfile?: () => Promise<void>;
   profile?: Profile;
 }
 
-const MobileHeader: FC<_Props> = ({ profile }) => {
+const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
+  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
   const navigate = useNavigate();
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
   const [profileToUpdate, setProfileToUpdate] = useState<Profile | undefined>();
-  
-  const handleEditProfileModalClose = async () => {
+
+  const handleEditProfileModalClose = async (refetch?: boolean) => {
     setProfileToUpdate(undefined);
     setEditProfileModalOpen(false);
+    if (refetch && typeof fetchProfile === 'function') {
+      await fetchProfile();
+    }
   };
 
   return (
@@ -28,9 +33,9 @@ const MobileHeader: FC<_Props> = ({ profile }) => {
         display: 'flex',
         width: '100%',
         alignSelf: 'flex-start',
-        p: '20px',
-        // flexDirection: 'column',
-        // borderBottom: '1px solid rgba(221, 110, 63, 1)',
+        px: '20px',
+        py: isSmallScreen ? '10px' : '20px',
+        backgroundColor: theme.palette.secondary.main,
         position: 'fixed',
         top: 0,
         zIndex: 1000,
@@ -41,7 +46,7 @@ const MobileHeader: FC<_Props> = ({ profile }) => {
         src={require('../../../assets/giftzaza-logo.png')}
         alt="logo"
         style={{
-          width: '150px',
+          width: isSmallScreen ? '100px' : '150px',
           cursor: 'pointer',
         }}
         onClick={() => navigate('/')}
@@ -62,10 +67,12 @@ const MobileHeader: FC<_Props> = ({ profile }) => {
 };
 
 interface Props extends PropsWithChildren {
+  fetchProfile?: () => Promise<void>;
   profile?: Profile;
 }
 
-export const MobileLayout: FC<Props> = ({ children, profile }) => {
+export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => {
+  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
   return (
     <Grid
       container
@@ -74,12 +81,12 @@ export const MobileLayout: FC<Props> = ({ children, profile }) => {
         backgroundColor: theme.palette.secondary.main,
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh',
+        height: '100vh',
         position: 'relative',
       }}
     >
-      <MobileHeader profile={profile} />
-      <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: '75px', marginTop: '85px' }}>{children}</Box>
+      <MobileHeader profile={profile} fetchProfile={fetchProfile} />
+      <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: isSmallScreen ? '32px' : '40px', marginTop: isSmallScreen ? '56px' : '85px', flexDirection: 'column' }}>{children}</Box>
     </Grid>
   );
 };

@@ -7,6 +7,8 @@ import { budgetMap, filterObject } from '../../constants/constants';
 import { MobileMultiSelectChip } from '../shared/MobileMultiSelectChip';
 import { Profile } from '../../constants/types';
 import _ from 'lodash';
+import { updateProfile } from '../../services/profile';
+import { toast } from 'react-toastify';
 
 interface _Props extends PropsWithChildren {
   title: string;
@@ -53,7 +55,7 @@ const EditProfileInputWrapper: FC<_Props> = ({ title, children, multiSelect }) =
 
 interface Props {
   open: boolean;
-  onClose: () => void;
+  onClose: (refetch?: boolean) => void;
   profile: Profile;
 }
 
@@ -92,20 +94,25 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
 
   const handleDone = async () => {
     try {
-      console.log({
-        id: profile?.id,
+      const { error } = await updateProfile(profile?.id, {
         age,
         gender,
         relation,
         occasion,
-        budget,
-        minPrice,
-        maxPrice,
+        min_price: minPrice,
+        max_price: maxPrice,
         styles,
         interests,
         title,
       });
-      onClose();
+
+      if (error) {
+        console.error(error);
+      } else {
+        toast.success('Profile updated successfully !');
+      }
+
+      onClose(true);
     } catch (error) {
       console.error(error);
     }
@@ -208,7 +215,9 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
             <TextField
               fullWidth
               value={title}
-              onChange={(e) => {setTitle(e.target.value)}}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -230,6 +239,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
 
           <EditProfileInputWrapper title="Gender">
             <MobileSingleSelectChip
+              greyText
               small
               title={'gender'}
               items={[...filterObject.gender]}
@@ -242,6 +252,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
 
           <EditProfileInputWrapper title="Age">
             <MobileSingleSelectChip
+              greyText
               small
               title={'age'}
               items={filterObject.age_category}
@@ -254,6 +265,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
 
           <EditProfileInputWrapper title="Relationship">
             <MobileSingleSelectChip
+              greyText
               small
               title={'relationship'}
               items={filterObject.relationship}
@@ -266,6 +278,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
 
           <EditProfileInputWrapper title="Occasion">
             <MobileSingleSelectChip
+              greyText
               small
               title={'occasion'}
               items={filterObject.occasion}
@@ -278,6 +291,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
 
           <EditProfileInputWrapper title="Budget">
             <MobileSingleSelectChip
+              greyText
               small
               title={'budget'}
               items={filterObject.budget}
@@ -289,11 +303,18 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
           </EditProfileInputWrapper>
 
           <EditProfileInputWrapper title="Style" multiSelect>
-            <MobileMultiSelectChip small items={filterObject.style} selectedTags={styles} setSelectedTags={setStyles} />
+            <MobileMultiSelectChip
+              greyText
+              small
+              items={filterObject.style}
+              selectedTags={styles}
+              setSelectedTags={setStyles}
+            />
           </EditProfileInputWrapper>
 
           <EditProfileInputWrapper title="Interests" multiSelect>
             <MobileMultiSelectChip
+              greyText
               small
               items={filterObject.interest}
               selectedTags={interests}
