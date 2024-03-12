@@ -27,24 +27,7 @@ const queryProfiles = async (options) => {
 };
 
 const getRecommendedProducts = async (payload) => {
-  // const tempPayload = {
-  //   "user_id": "65cf5cb4f60c8e8584a52a3a",
-  //   "new_attributes": [
-  //     "female",
-  //     "18 - 25",
-  //     "girlfriend",
-  //     "birthdays",
-  //     "classic and timeless",
-  //     "comfortable yet stylish",
-  //     "premium brands",
-  //     "fitness and wellness",
-  //     "tech and gadgets",
-  //     "fashion and accessories"
-  //   ],
-  //   "top_n": 10
-  // }
   console.log('PAYLOAD ', payload);
-  // console.log('TEMP PAYLOAD ', tempPayload);
   try {
     const { data, status } = await axiosInstance.post(`/create_recommendation`, payload);
     console.log('RESPONSEE ', data);
@@ -62,7 +45,6 @@ const getRecommendedProducts = async (payload) => {
  * @returns {Promise<Profile>}
  */
 const createProfile = async (profileBody) => {
-  // const profile = await Profile.create({});
   const profile_preferences = {
     gender: [profileBody.gender],
     age: [profileBody.age],
@@ -71,7 +53,6 @@ const createProfile = async (profileBody) => {
     styles: profileBody.styles,
     interests: profileBody.interests,
   };
-  // console.log({profile_preferences})
   const preferences = Object.values(profile_preferences)
     .flat()
     .filter((item) => item !== undefined)
@@ -86,18 +67,11 @@ const createProfile = async (profileBody) => {
   };
   try {
     profileBody.recommended_products = await getRecommendedProducts(payload);
-    // profileBody.user_id = '"'+profileBody.user_id+'"';
-    // console.log({ profileBody });
     return await Profile.create(profileBody);
   } catch (err) {
     console.log('ERROR IN RECOMMENDATION RES ', err);
     throw new ApiError(httpStatus.BAD_REQUEST, 'Something went wrong!');
   }
-  // console.log({ profileBody });
-  // return await Profile.create(profileBody);
-
-  // await profile.save();
-  // return profile;
 };
 
 /**
@@ -121,19 +95,6 @@ const deleteProfileById = async (profileId) => {
  * @returns {Promise<Profile>}
  */
 const updateProfile = async (profileBody, profileId) => {
-  // const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } });
-
-  // for (const product of products) {
-  //   product.similarity = await calculateSimilarity(profileBody.preferences, product.tags);
-  // }
-
-  // products.sort((a, b) => b.similarity - a.similarity);
-
-  // if (products.length > 30) {
-  //   profile.recommended_products = products.slice(0, 30);
-  // } else {
-  //   profile.recommended_products = products;
-  // }
   const profile_preferences = {
     gender: [profileBody.gender],
     age: [profileBody.age],
@@ -144,11 +105,24 @@ const updateProfile = async (profileBody, profileId) => {
   };
   const preferences = Object.values(profile_preferences)
     .flat()
-    .filter((item) => item !== undefined);
+    .filter((item) => item !== undefined)
+    .map((item) => item.toLowerCase());
+
   profileBody.profile_preferences = profile_preferences;
   profileBody.preferences = preferences;
 
-  return await Profile.findOneAndUpdate({ _id: profileId }, profileBody, { new: true });
+  const payload = {
+    user_id: profileBody?.user_id,
+    new_attributes: preferences,
+    top_n: 10,
+  };
+  try {
+    profileBody.recommended_products = await getRecommendedProducts(payload);
+    return await Profile.findByIdAndUpdate(profileId, profileBody, { new: true, useFindAndModify: false, populate: 'recommended_products.item_id' });
+  } catch (err) {
+    console.log('ERROR IN RECOMMENDATION RES ', err);
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Something went wrong!');
+  }
 };
 
 module.exports = {

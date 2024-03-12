@@ -1,5 +1,5 @@
 import { Box, Button, Grid, InputAdornment, Modal, Stack, TextField, Typography } from '@mui/material';
-import { FC, PropsWithChildren, useEffect, useState } from 'react';
+import { Dispatch, FC, PropsWithChildren, SetStateAction, useEffect, useState } from 'react';
 import { theme } from '../../utils/theme';
 import { ArrowBackIos } from '@mui/icons-material';
 import { MobileSingleSelectChip } from '../shared/MobileSingleSelectChip';
@@ -7,6 +7,8 @@ import { budgetMap, filterObject } from '../../constants/constants';
 import { MobileMultiSelectChip } from '../shared/MobileMultiSelectChip';
 import { Profile } from '../../constants/types';
 import _ from 'lodash';
+import { updateProfile } from '../../services/profile';
+import { toast } from 'react-toastify';
 
 interface _Props extends PropsWithChildren {
   title: string;
@@ -53,11 +55,12 @@ const EditProfileInputWrapper: FC<_Props> = ({ title, children, multiSelect }) =
 
 interface Props {
   open: boolean;
-  onClose: () => void;
+  onClose: () => Promise<void>;
+  setProfile: Dispatch<SetStateAction<Profile | undefined>>
   profile: Profile;
 }
 
-export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
+export const EditProfileModal: FC<Props> = ({ onClose, open, profile, setProfile }) => {
   const [title, setTitle] = useState<string>(profile?.title);
   const [age, setAge] = useState<string>(profile?.age);
   const [gender, setGender] = useState<string>(profile?.gender);
@@ -92,19 +95,26 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
 
   const handleDone = async () => {
     try {
-      console.log({
-        id: profile?.id,
+      
+      const { data, error } = await updateProfile(profile?.id, {
         age,
         gender,
         relation,
         occasion,
-        budget,
-        minPrice,
-        maxPrice,
+        min_price: minPrice,
+        max_price: maxPrice,
         styles,
         interests,
         title,
       });
+
+      if (error) {
+        console.error(error);
+      } else {
+        setProfile(data);
+        toast.success('Profile updated successfully !');
+      }
+
       onClose();
     } catch (error) {
       console.error(error);

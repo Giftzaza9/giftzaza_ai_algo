@@ -2,16 +2,17 @@ import { Grid, IconButton } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
-import { FC, PropsWithChildren, useState } from 'react';
+import { Dispatch, FC, PropsWithChildren, SetStateAction, useState } from 'react';
 import { Tune } from '@mui/icons-material';
 import { EditProfileModal } from '../../profile/EditProfileModal';
 import { Profile } from '../../../constants/types';
 
 interface _Props {
+  setProfile?: Dispatch<SetStateAction<Profile | undefined>>
   profile?: Profile;
 }
 
-const MobileHeader: FC<_Props> = ({ profile }) => {
+const MobileHeader: FC<_Props> = ({ profile, setProfile }) => {
   const navigate = useNavigate();
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
   const [profileToUpdate, setProfileToUpdate] = useState<Profile | undefined>();
@@ -55,16 +56,17 @@ const MobileHeader: FC<_Props> = ({ profile }) => {
           <Tune fontSize={'large'} />
         </IconButton>
       )}
-      <EditProfileModal profile={profileToUpdate!} open={editProfileModalOpen} onClose={handleEditProfileModalClose} />
+      <EditProfileModal setProfile={setProfile!} profile={profileToUpdate!} open={editProfileModalOpen} onClose={handleEditProfileModalClose} />
     </Grid>
   );
 };
 
 interface Props extends PropsWithChildren {
+  setProfile?: Dispatch<SetStateAction<Profile | undefined>>
   profile?: Profile;
 }
 
-export const MobileLayout: FC<Props> = ({ children, profile }) => {
+export const MobileLayout: FC<Props> = ({ children, profile, setProfile }) => {
   return (
     <Grid
       container
@@ -77,7 +79,7 @@ export const MobileLayout: FC<Props> = ({ children, profile }) => {
         position: 'relative',
       }}
     >
-      <MobileHeader profile={profile} />
+      <MobileHeader profile={profile} setProfile={setProfile} />
       <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: '75px', marginTop: '85px' }}>{children}</Box>
     </Grid>
   );

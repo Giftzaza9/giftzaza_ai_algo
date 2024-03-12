@@ -3,6 +3,7 @@ const pick = require('../utils/pick');
 const catchAsync = require('../utils/catchAsync');
 const ApiError = require('../utils/ApiError');
 const { profileService } = require('../services');
+const { Profile } = require('../models');
 
 const getProfile = catchAsync(async (req, res) => {
   const profile = await profileService.getProfileById(req.params.profileId);
@@ -31,12 +32,11 @@ const deleteProfile = catchAsync(async (req, res) => {
 });
 
 const updateProfile = catchAsync(async (req, res) => {
-  let profile = await profileService.getProfileById(req.params.profileId);
+  req.body.user_id = req.user._id;
+  let profile = await Profile.findById(req.params.profileId);
   if (!profile) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
   }
-
-  
   profile = await profileService.updateProfile(req.body, req.params.profileId);
   res.status(httpStatus.CREATED).send(profile);
 });
