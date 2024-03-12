@@ -16,10 +16,17 @@ interface UseCardSwiper extends CardEvents {
 }
 
 export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data }: UseCardSwiper) => {
+
   const swiperElements = useRef<Swiper[]>([])
   const [swiperIndex, setSwiperIndex] = useState(data.length)
-  const [dynamicData, setDynamicData] = useState(data)
+  const [dynamicData, setDynamicData] = useState(data.map((item) => ({ ...item })).reverse())
   const [isFinish, setIsFinish] = useState(false)
+
+  useEffect(() => {
+    // Update dynamicData when data changes
+    if(data && data?.length > 0)
+      setDynamicData(data?.map(item => ({ ...item })).reverse());
+  }, [data]); 
 
   const handleNewCardSwiper = (ref: HTMLDivElement | null, id: CardId, meta: CardMetaData) => {
     if (ref) {
@@ -44,7 +51,7 @@ export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data }: UseCardSwi
     swiperElements.current.pop()
   }
 
-  const handleClickEvents = (direction: SwipeDirection) => {
+  const handleClickEvents = (direction: SwipeDirection, action: SwipeAction) => {
     if (swiperIndex) {
       const swiper = swiperElements.current[swiperIndex - 1]
       swiper?.dismissById(direction)

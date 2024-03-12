@@ -17,6 +17,10 @@ router
   .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.scrapeProduct), productController.scrapeProduct);
 
 router
+  .route('/similar-products')
+  .post(validate(productValidation.similarProducts), productController.similarProducts)
+
+  router
   .route('/')
   .get(validate(productValidation.getProducts), productController.getProducts)
   .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.createProduct), productController.createProduct);

@@ -104,7 +104,10 @@
   bottom: 0;
   display: flex;
   justify-content: center;
-  gap: inherit;
+  gap: 12px;
+  align-items: center;
+  position: absolute;
+  bottom: 73px;
   margin-bottom: 22px;
   width: 100%;
   transition: all .7s ease;
@@ -153,8 +156,8 @@
 
 .swipe-card__custom-action-button {
   display: flex;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   background: linear-gradient(180deg, #EA4080 0%, #EE805F 68.16%);
   align-items: center;
   z-index: 1;
@@ -164,9 +167,25 @@
 }
 
 .loveProduct {
-  background: linear-gradient(180deg, #6DE5B5 0%, #73ECDD 100%);
+  border: 2px solid #6de5b7;
+  background: white;
 }
 
-.buyProduct {
-  background: rgba(238, 128, 95, 1);
+.dislikeProduct {
+  background: white;
+  border: 2px solid #eb5475;
+}
+
+.similarProduct {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #85c6e2;
+  background: white;
+}
+
+.saveProduct {
+  width: 40px;
+  height: 40px;
+  border: 2px solid yellowgreen;
+  background: white;
 }
