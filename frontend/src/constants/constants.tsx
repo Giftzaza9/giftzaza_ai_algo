@@ -59,23 +59,23 @@ export const filterObject = {
     'Weddings',
     'Newborns',
     'Retirements',
-    'Housewarmings',
-    'Graduations',
-    "Valentine's Day",
     'Appreciation',
     'Get Well Soon',
-    'Thank You Gifts',
+    'Graduations',
     'Apologies',
+    'Housewarmings',
+    "Valentine's Day",
+    'Thank You Gifts',
   ],
   relationship: ['Spouse or Significant Other', 'Girlfriend', 'Child', 'Parent', 'Grand Parent', 'Friend', 'Colleague'],
   style: [
     'Classic and Timeless',
-    'Comfortable Yet Stylish',
-    'Premium Brands',
     'Minimalistic',
-    'Practical',
-    'Chill',
+    'Comfortable Yet Stylish',
     'Bougie',
+    'Premium Brands',
+    'Chill',
+    'Practical',
   ],
   budget: ['< $200', '$200-$400', '$400-$600', '$600-$800', '$800-$1000', '$1000+'],
 };
@@ -140,3 +140,5 @@ export const dummyProduct: Product = {
 export const addNewProductSteps = ['Link', 'Product Info', 'Preview'];
 
 export const bottomNavHidePaths = ['welcome', 'login']
+
+export const getStartedChips = ['Discover gifts for your spouse','Discover gifts for your mom', 'Create a new giftee profile', 'View existing giftee profiles', 'Surprise me']

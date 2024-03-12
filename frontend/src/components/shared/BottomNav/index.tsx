@@ -10,8 +10,10 @@ import { userStore } from '../../../store/UserStore';
 import { observer } from 'mobx-react-lite';
 import { bottomNavState } from '../../../store/BottomNavState';
 import { useNavigate } from 'react-router-dom';
+import { useMediaQuery } from '@mui/material';
 
 export const BottomNav = observer(() => {
+  const isSmallScreen = useMediaQuery('(max-width: 400px) and (max-height: 700px)');
   const navigate = useNavigate();
   const { isVisible } = bottomNavState;
   const { user } = userStore;
@@ -36,22 +38,22 @@ export const BottomNav = observer(() => {
         bottom: 0,
         width: '100%',
         zIndex: 1000,
-        height: '75px',
+        height: isSmallScreen ? '50px' : '60px',
       }}
     >
-      <BottomNavigationAction label="Home" value="home" icon={<GoHomeFill style={{ fontSize: '36px' }} />} onClick={() => navigate('/profiles')} />
+      <BottomNavigationAction label="Home" value="home" icon={<GoHomeFill style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} onClick={() => navigate('/profiles')} />
       <BottomNavigationAction
         label="Profiles"
         value="profiles"
-        icon={<GridViewRoundedIcon style={{ fontSize: '36px' }} />}
-      />
-      <BottomNavigationAction label="Favorites" value="favorites" icon={<FavoriteIcon style={{ fontSize: '36px' }} />} />
-      <BottomNavigationAction label="User" value="user" icon={<PersonRoundedIcon style={{ fontSize: '36px' }} />} />
+        icon={<GridViewRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
+      /> 
+      <BottomNavigationAction label="Favorites" value="favorites" icon={<FavoriteIcon style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} />
+      <BottomNavigationAction label="User" value="user" icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} />
       {/* {user?.role === 'admin' && (
         <BottomNavigationAction
           label="Administration"
           value="administration"
-          icon={<AdminPanelSettings style={{ fontSize: '36px' }} />}
+          icon={<AdminPanelSettings style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />}
         />
       )} */}
     </BottomNavigation>
