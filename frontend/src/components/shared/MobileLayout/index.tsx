@@ -8,17 +8,21 @@ import { EditProfileModal } from '../../profile/EditProfileModal';
 import { Profile } from '../../../constants/types';
 
 interface _Props {
+  fetchProfile?: () => Promise<void>;
   profile?: Profile;
 }
 
-const MobileHeader: FC<_Props> = ({ profile }) => {
+const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
   const navigate = useNavigate();
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
   const [profileToUpdate, setProfileToUpdate] = useState<Profile | undefined>();
-  
-  const handleEditProfileModalClose = async () => {
+
+  const handleEditProfileModalClose = async (refetch?: boolean) => {
     setProfileToUpdate(undefined);
     setEditProfileModalOpen(false);
+    if (refetch && typeof fetchProfile === 'function') {
+      await fetchProfile();
+    }
   };
 
   return (
@@ -29,8 +33,7 @@ const MobileHeader: FC<_Props> = ({ profile }) => {
         width: '100%',
         alignSelf: 'flex-start',
         p: '20px',
-        // flexDirection: 'column',
-        // borderBottom: '1px solid rgba(221, 110, 63, 1)',
+        backgroundColor: theme.palette.secondary.main,
         position: 'fixed',
         top: 0,
         zIndex: 1000,
@@ -62,10 +65,11 @@ const MobileHeader: FC<_Props> = ({ profile }) => {
 };
 
 interface Props extends PropsWithChildren {
+  fetchProfile?: () => Promise<void>;
   profile?: Profile;
 }
 
-export const MobileLayout: FC<Props> = ({ children, profile }) => {
+export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => {
   return (
     <Grid
       container
@@ -78,7 +82,7 @@ export const MobileLayout: FC<Props> = ({ children, profile }) => {
         position: 'relative',
       }}
     >
-      <MobileHeader profile={profile} />
+      <MobileHeader profile={profile} fetchProfile={fetchProfile} />
       <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: '75px', marginTop: '85px' }}>{children}</Box>
     </Grid>
   );

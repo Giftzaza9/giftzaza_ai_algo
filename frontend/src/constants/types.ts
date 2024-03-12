@@ -48,8 +48,8 @@ export type Product = {
   thumbnails?: string[];
 };
 
-interface RecommendedProduct {
-  item_id: string;
+export interface RecommendedProduct {
+  item_id: string | Product;
   title: string;
   tags: string[];
   matching_score: number;

@@ -8,9 +8,11 @@ interface Props {
   selectedTag: string;
   handleSelect: any;
   small?: boolean;
+  greyText?: boolean;
+  sort?: boolean;
 }
 
-export const MobileSingleSelectChip: FC<Props> = ({ title, items, selectedTag, handleSelect, small }) => {
+export const MobileSingleSelectChip: FC<Props> = ({ title, items, selectedTag, handleSelect, small, greyText, sort }) => {
   const classes = useStyles();
 
   const handleChipClick = (val: string) => {
@@ -19,8 +21,8 @@ export const MobileSingleSelectChip: FC<Props> = ({ title, items, selectedTag, h
 
   return (
     <>
-      <Grid container gap={1} mb={2}>
-        {items?.map((item, number) => {
+      <Grid container gap={'4px'} mb={2}>
+        {(sort ? items?.sort((a, b) => a?.length - b?.length) : items)?.map((item, number) => {
           const isSelected = selectedTag === item;
           return (
             <Grid item key={number + '~singleSelectChip'}>
@@ -34,11 +36,11 @@ export const MobileSingleSelectChip: FC<Props> = ({ title, items, selectedTag, h
                   small ? (
                     <Typography
                       sx={{
-                        fontSize: '14px',
+                        fontSize: '16px',
                         fontFamily: 'Inter',
                         fontWeight: 500,
-                        lineHeight: '21px',
-                        color: isSelected ? 'white' : 'rgba(96, 113, 132, 1)',
+                        lineHeight: '24px',
+                        color: isSelected ? 'white' : greyText ? 'rgba(96, 113, 132, 1)' : 'black',
                       }}
                     >
                       {item}

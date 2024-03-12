@@ -37,6 +37,9 @@ const createProfile = {
 };
 
 const updateProfile = {
+  params: Joi.object().keys({
+    profileId: Joi.string(),
+  }),
   body: Joi.object().keys({
     title: Joi.string(),
     age: Joi.string(),
