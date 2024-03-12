@@ -139,6 +139,10 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
         )}
         <Tooltip title={_.capitalize(product?.source)} followCursor color="primary">
           <Box
+            component={'a'}
+            href={product?.link}
+            target='_blank'
+            onClick={(e) => e.stopPropagation()}
             sx={{
               position: 'absolute',
               top: '4px',
