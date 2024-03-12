@@ -1,4 +1,4 @@
-import { Grid, IconButton } from '@mui/material';
+import { Grid, IconButton, useMediaQuery } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
@@ -13,6 +13,7 @@ interface _Props {
 }
 
 const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
+  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
   const navigate = useNavigate();
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
   const [profileToUpdate, setProfileToUpdate] = useState<Profile | undefined>();
@@ -32,7 +33,8 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
         display: 'flex',
         width: '100%',
         alignSelf: 'flex-start',
-        p: '20px',
+        px: '20px',
+        py: isSmallScreen ? '10px' : '20px',
         backgroundColor: theme.palette.secondary.main,
         position: 'fixed',
         top: 0,
@@ -44,7 +46,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
         src={require('../../../assets/giftzaza-logo.png')}
         alt="logo"
         style={{
-          width: '150px',
+          width: isSmallScreen ? '100px' : '150px',
           cursor: 'pointer',
         }}
         onClick={() => navigate('/')}
@@ -70,6 +72,7 @@ interface Props extends PropsWithChildren {
 }
 
 export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => {
+  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
   return (
     <Grid
       container
@@ -78,12 +81,12 @@ export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => 
         backgroundColor: theme.palette.secondary.main,
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh',
+        height: '100vh',
         position: 'relative',
       }}
     >
       <MobileHeader profile={profile} fetchProfile={fetchProfile} />
-      <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: '75px', marginTop: '85px' }}>{children}</Box>
+      <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: isSmallScreen ? '32px' : '40px', marginTop: isSmallScreen ? '56px' : '85px', flexDirection: 'column' }}>{children}</Box>
     </Grid>
   );
 };

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Container, Grid, Box, Chip, TextField, LinearProgress, CircularProgress } from '@mui/material';
+import { Typography, Container, Grid, Box, Chip, TextField, LinearProgress, CircularProgress, Button, useMediaQuery } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { MobileSingleSelectChip } from '../../components/shared/MobileSingleSelectChip';
-import { budgetMap, filterObject } from '../../constants/constants';
+import { budgetMap, filterObject, getStartedChips } from '../../constants/constants';
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
 import TripOriginIcon from '@mui/icons-material/TripOrigin';
 import { MobileMultiSelectChip } from '../../components/shared/MobileMultiSelectChip';
@@ -12,46 +12,7 @@ import { Profile } from '../../constants/types';
 import { toast } from 'react-toastify';
 import { CreateProfileBody, createProfile } from '../../services/profile';
 import { useNavigate } from 'react-router';
-
-const startedChipsStyle = {
-  padding: '32px 15px',
-  borderRadius: '32px',
-  backgroundColor: 'white',
-  color: 'rgba(0, 0, 0, 1)',
-  fontSize: '18px',
-  fontWeight: '600',
-  fontFamily: 'Inter',
-  cursor: 'pointer',
-  width: '-webkit-fill-available',
-  justifyContent: 'flex-start',
-  '&:hover': {
-    backgroundColor: 'rgba(221, 110, 63, 1)!important',
-    color: 'white',
-  },
-  '&:active': {
-    backgroundColor: 'rgba(221, 110, 63, 1)!important',
-    color: 'white',
-  },
-};
-
-const genderChipsStyle = {
-  display: 'flex',
-  flexDirection: 'row-reverse',
-  justifyContent: 'space-between',
-  padding: '25px 10px',
-  borderRadius: '32px',
-  backgroundColor: 'white',
-  color: 'rgba(0, 0, 0, 1)',
-  fontSize: '18px',
-  fontWeight: '600',
-  fontFamily: 'Inter',
-  cursor: 'pointer',
-  width: '-webkit-fill-available',
-};
-
-const animationStyle = {
-  animation: 'fadeIn 0.3s ease-in',
-};
+import { animationStyle, forwardButtonStyle, genderChipsStyle, startedChipsStyle } from './styles';
 
 const initialProfileData: Partial<Profile> = {
   styles: [],
@@ -66,6 +27,7 @@ const initialProfileData: Partial<Profile> = {
 };
 
 export const Profiles = () => {
+  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(0);
   const [styles, setSelectedStyles] = useState<string[]>([]);
@@ -189,36 +151,30 @@ export const Profiles = () => {
                 },
               }}
             />
-              <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} my={2}>
-                <ArrowBackIosIcon
-                  sx={{ cursor: 'pointer', color: 'rgba(221, 110, 63, 1)', visibility: page === 0 ? 'hidden' : 'visible' }}
-                  onClick={() => handleArrows(-1)}
+            <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} my={2}>
+              <ArrowBackIosIcon
+                sx={{ cursor: 'pointer', color: 'rgba(221, 110, 63, 1)', visibility: page === 0 ? 'hidden' : 'visible' }}
+                onClick={() => handleArrows(-1)}
+              />
+              {page === 9 ? (
+                <Button sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
+                  Done
+                </Button>
+              ) : page === 8 ? (
+                <Button sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
+                  Next
+                </Button>
+              ) : (
+                <ArrowForwardIosIcon
+                  sx={{
+                    cursor: 'pointer',
+                    color: 'rgba(221, 110, 63, 1)',
+                    visibility: page === 0 && !profileData?.title ? 'hidden' : 'visible',
+                  }}
+                  onClick={() => handleArrows(1)}
                 />
-                {page === 9 ? (
-                  <Typography
-                    sx={{
-                      cursor: 'pointer',
-                      color: 'rgba(221, 110, 63, 1)',
-                      fontSize: '18px',
-                      fontFamily: 'Inter',
-                      fontWeight: '700',
-                    }}
-                    onClick={() => handleArrows(1)}
-                  >
-                    Done
-                  </Typography>
-                ) : (
-                  <ArrowForwardIosIcon
-                    sx={{
-                      cursor: 'pointer',
-                      color: 'rgba(221, 110, 63, 1)',
-                      visibility: page === 0 && !profileData?.title ? 'hidden' : 'visible',
-                    }}
-                    onClick={() => handleArrows(1)}
-                  />
-                )}
-              </Box>
-            
+              )}
+            </Box>
           </Grid>
         )}
         {page === 0 && (
@@ -226,37 +182,20 @@ export const Profiles = () => {
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
               Let’s get started
             </Typography>
-            <Box display={'flex'} flexDirection={'column'} rowGap={1}>
-              <Chip
-                variant="outlined"
-                onClick={(e: any) => handleStarted(e.target.textContent)}
-                label={'Discover gifts for your spouse'}
-                sx={startedChipsStyle}
-              />
-              <Chip
-                variant="outlined"
-                onClick={(e: any) => handleStarted(e.target.textContent)}
-                label={'Discover gifts for your mom'}
-                sx={startedChipsStyle}
-              />
-              <Chip
-                variant="outlined"
-                onClick={(e: any) => handleStarted(e.target.textContent)}
-                label={'Create a new giftee profile'}
-                sx={startedChipsStyle}
-              />
-              <Chip
-                variant="outlined"
-                onClick={(e: any) => handleStarted(e.target.textContent)}
-                label={'View existing giftee profiles'}
-                sx={startedChipsStyle}
-              />
-              <Chip
-                variant="outlined"
-                onClick={(e: any) => handleStarted(e.target.textContent)}
-                label={'Surprise me'}
-                sx={startedChipsStyle}
-              />
+            <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
+              {getStartedChips.map((el, index) => (
+                <Chip
+                  key={index}
+                  variant="outlined"
+                  onClick={(e: any) => handleStarted(e.target.textContent)}
+                  label={el}
+                  sx={{
+                    ...startedChipsStyle,
+                    padding: isSmallScreen ? '24px 12px' : startedChipsStyle.padding,
+                    fontSize: isSmallScreen ? '16px' : startedChipsStyle.fontSize,
+                  }}
+                />
+              ))}
             </Box>
           </Grid>
         )}
@@ -265,7 +204,7 @@ export const Profiles = () => {
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
               Who is this gift for?
             </Typography>
-            <Box display={'flex'} flexDirection={'column'} rowGap={1}>
+            <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
               <TextField
                 variant="outlined"
                 placeholder="Name"
@@ -284,7 +223,6 @@ export const Profiles = () => {
               How are you related?
             </Typography>
             <MobileSingleSelectChip
-              sort
               small
               title={'relation'}
               items={filterObject.relationship}
@@ -312,7 +250,7 @@ export const Profiles = () => {
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
               Gender
             </Typography>
-            <Box display={'flex'} flexDirection={'column'} rowGap={1}>
+            <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
               <Chip
                 variant="outlined"
                 color="primary"
@@ -351,7 +289,6 @@ export const Profiles = () => {
             </Typography>
             <MobileSingleSelectChip
               small
-              sort
               title={'occasion'}
               items={filterObject.occasion}
               selectedTag={profileData?.occasion as string}
@@ -364,7 +301,7 @@ export const Profiles = () => {
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
               When’s the occasion?
             </Typography>
-            <Box display={'flex'} flexDirection={'column'} rowGap={1}>
+            <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
               <TextField
                 type="Date"
                 variant="outlined"
@@ -406,7 +343,6 @@ export const Profiles = () => {
             </Typography>
             <MobileMultiSelectChip
               small
-              sort
               items={filterObject.style}
               selectedTags={styles}
               setSelectedTags={setSelectedStyles}
@@ -422,8 +358,8 @@ export const Profiles = () => {
               Choose as many as you want
             </Typography>
             <MobileMultiSelectChip
+              // centerAligned
               small
-              sort
               items={filterObject.interest}
               selectedTags={interests}
               setSelectedTags={setSelectedInterests}

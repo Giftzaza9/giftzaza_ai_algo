@@ -10,9 +10,10 @@ interface Props {
   small?: boolean;
   greyText?: boolean;
   sort?: boolean;
+  centerAligned?: boolean;
 }
 
-export const MobileSingleSelectChip: FC<Props> = ({ title, items, selectedTag, handleSelect, small, greyText, sort }) => {
+export const MobileSingleSelectChip: FC<Props> = ({ title, items, selectedTag, handleSelect, small, greyText, sort, centerAligned }) => {
   const classes = useStyles();
 
   const handleChipClick = (val: string) => {
@@ -21,13 +22,13 @@ export const MobileSingleSelectChip: FC<Props> = ({ title, items, selectedTag, h
 
   return (
     <>
-      <Grid container gap={'4px'} mb={2}>
+      <Grid container gap={'4px'} mb={2} justifyContent={centerAligned ? 'center' : 'start'}>
         {(sort ? items?.sort((a, b) => a?.length - b?.length) : items)?.map((item, number) => {
           const isSelected = selectedTag === item;
           return (
             <Grid item key={number + '~singleSelectChip'}>
               <Chip
-                sx={small ? { height: '40px!important', padding: '22px 8px!important' } : {}}
+                sx={small ? { height: '40px!important', padding: '8px 4px!important' } : {}}
                 variant="outlined"
                 onClick={(e) => {
                   handleChipClick(item);
