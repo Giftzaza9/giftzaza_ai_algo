@@ -33,6 +33,14 @@ export const getProfile = async (profileId?: string): Promise<ApiResponse> => {
   }
 };
 
+export const getProfiles = async (): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.get(`/profiles`);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};
 export interface UpdateProfileBody {
   title: string;
   age: string;
@@ -54,4 +62,3 @@ export const updateProfile = async (profileId: string, body: UpdateProfileBody):
     return generateErrorMessage(error);
   }
 };
-

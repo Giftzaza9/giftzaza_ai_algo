@@ -91,14 +91,20 @@ function convertToObjectId(itemIds) {
  * @returns {Promise<Product>}
  */
 const similarProducts = async (productBody) => {
-  await axiosInstance
+  return await axiosInstance
     .post(`/get_similar_item`, productBody)
     .then(async (res) => {
       const objectIds = convertToObjectId(res?.data);
       // console.log("objectIds ", objectIds)
       const products = await Product.find({ _id: { $in: objectIds } });
-      console.log({ products });
-      return products;
+      // console.log({products});
+
+      const products_detail = objectIds.map((obj) => {
+        const productDetails = products.find((product) => product._id == obj?.item_id);
+        return { ...obj, item_id: productDetails };
+      });
+      // console.log({products_detail})
+      return products_detail;
     })
     .catch((error) => {
       console.log('ERROR IN RECOMMENDATION MSG ', error.message);

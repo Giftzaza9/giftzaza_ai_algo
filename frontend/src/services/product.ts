@@ -31,7 +31,7 @@ export interface SimilarProductBody {
 
 export const getSimilarProducts = async (payload: SimilarProductBody): Promise<ApiResponse> => {
   try {
-    const { data, status } = await axiosInstance.post(`/similar-products`, payload);
+    const { data, status } = await axiosInstance.post(`/products/similar-products`, payload);
     return { data, status, error: null };
   } catch (error) {
     return generateErrorMessage(error);

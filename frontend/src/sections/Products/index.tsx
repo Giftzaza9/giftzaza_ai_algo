@@ -19,9 +19,8 @@ export const Products = () => {
     const { data, error } = await getProfile(profileId as string);
     if (error) toast.error(error || 'Failed to fetch profile data !');
     else {
-      console.log({ data });
       setProfile(data);
-      setProducts(data?.recommended_products);
+      setProducts(data?.recommended_products?.map((item: any) => ({ ...item })).reverse());
     }
   };
 
@@ -35,22 +34,26 @@ export const Products = () => {
     alert('Finished ');
   };
 
-  const handleProductAction = (direction: SwipeDirection, action: SwipeAction) => {
+  const handleProductAction = (direction: SwipeDirection, action: SwipeAction, currentID: string) => {
     if (action === SwipeAction.SIMILAR) {
-      fetchSimilarProducts();
+      fetchSimilarProducts(currentID);
     }
   };
 
-  const fetchSimilarProducts = async () => {
+  const fetchSimilarProducts = async (productId: string) => {
     const payload: SimilarProductBody = {
-      item_id: '65b7e78b71d8394e325feefa',
+      item_id: productId,
       top_n: 10,
     };
     const { data, error } = await getSimilarProducts(payload);
     console.log({ data });
     if (error) toast.error(error || 'Faild to get similar products !');
     else {
-      setProducts(data);
+      setProducts((prev: any) => [
+        ...prev,
+        ...data,
+        // ...data?.map((item: any) => ({ ...item })).reverse()
+      ]);
     }
   };
 
