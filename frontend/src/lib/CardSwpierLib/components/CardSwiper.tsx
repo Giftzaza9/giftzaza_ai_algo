@@ -36,6 +36,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
     });
   const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(swiperElements.current[swiperIndex]);
   const [hideActionButtons, setHideActionButtons] = useState('');
+  const [currentID, setCurrentID] = useState<string>('');
 
   useEffect(() => {
     setCurrentSwiper(swiperElements.current[swiperIndex - 1]);
@@ -45,38 +46,37 @@ export const CardSwiper = (props: CardSwiperProps) => {
     currentSwiper && handleEnter(currentSwiper.element, currentSwiper.meta, currentSwiper.id);
   }, [currentSwiper]);
 
+  useEffect(() => {
+    if (swiperElements?.current) {
+      setCurrentID(swiperElements.current[swiperIndex - 1]?.id as unknown as string);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swiperElements?.current, swiperIndex]);
+
   const CardComponents = useMemo(
     () =>
-    dynamicData && dynamicData?.length > 0 && dynamicData?.map((product: any) => (
-      product && <div
-          key={product?._id}
-          ref={(ref: HTMLDivElement | null) => handleNewCardSwiper(ref, product?._id, product?.matching_score)}
-          className="swipe-card__container"
-          id="swipe-card__container"
-        >
-          {/* {header && (
-            <div className="swipe-card__header-container" id="swipe-card__header-container">
-              <h2 id="swipe-card__header">{header}</h2>
+      dynamicData &&
+      dynamicData?.length > 0 &&
+      dynamicData?.map(
+        (product: any, index: number) =>
+          product && (
+            <div
+              key={product?._id + '~' + index}
+              ref={(ref: HTMLDivElement | null) => handleNewCardSwiper(ref, product?.item_id?.id, product?.matching_score)}
+              className="swipe-card__container"
+              id="swipe-card__container"
+            >
+              {props.withRibbons && (
+                <CardSwiperRibbons
+                  likeRibbonText={props.likeRibbonText}
+                  dislikeRibbonText={props.dislikeRibbonText}
+                  ribbonColors={props.ribbonColors}
+                />
+              )}
+              <ProductCard productData={product} />
             </div>
-          )} */}
-          {props.withRibbons && (
-            <CardSwiperRibbons
-              likeRibbonText={props.likeRibbonText}
-              dislikeRibbonText={props.dislikeRibbonText}
-              ribbonColors={props.ribbonColors}
-            />
-          )}
-
-          {/* <div className="swipe-card__image-container">
-            <img className="swipe-card__image" src={src} alt={src} id="swipe-card__image" />
-          </div> */}
-          {/* {content && <div className="swipe-card__content">{content}</div>} */}
-          <ProductCard
-            // ref={(ref: HTMLDivElement | null) => handleNewCardSwiper(ref, product?.id, product?.meta)}
-            productData={product}
-          />
-        </div>
-      )),
+          )
+      ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dynamicData]
   );
@@ -112,6 +112,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 action={SwipeAction.SIMILAR}
                 onClick={actionHandler}
                 extraClass="similarProduct"
+                currentID={currentID}
               >
                 <Similar />
               </CardSwiperActionButton>
@@ -120,6 +121,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 direction={SwipeDirection.LEFT}
                 action={SwipeAction.DISLIKE}
                 onClick={handleClickEvents}
+                currentID={currentID}
                 extraClass="dislikeProduct"
               >
                 <GradientClose />
@@ -129,6 +131,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.BUY}
                 onClick={handleClickEvents}
+                currentID={currentID}
                 extraClass={'buyProduct'}
               >
                 <span style={{ fontSize: '21px', fontFamily: 'Inter', fontWeight: '700' }}>BUY</span>{' '}
@@ -138,6 +141,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.LIKE}
                 onClick={handleClickEvents}
+                currentID={currentID}
                 extraClass={'loveProduct'}
               >
                 <Love />
@@ -147,6 +151,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.LIKE}
                 onClick={handleClickEvents}
+                currentID={currentID}
                 extraClass="saveProduct"
               >
                 <Save />
@@ -159,6 +164,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 direction={SwipeDirection.LEFT}
                 action={SwipeAction.DISLIKE}
                 onClick={handleClickEvents}
+                currentID={currentID}
               >
                 <CloseIcon sx={{ fontSize: '50px' }} />{' '}
               </CardSwiperActionButton>
@@ -167,6 +173,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.LIKE}
                 onClick={handleClickEvents}
+                currentID={currentID}
               >
                 <CloseIcon sx={{ fontSize: '50px' }} />{' '}
               </CardSwiperActionButton>

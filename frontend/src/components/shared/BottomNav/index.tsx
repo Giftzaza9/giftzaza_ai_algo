@@ -43,7 +43,9 @@ export const BottomNav = observer(() => {
       <BottomNavigationAction
         label="Profiles"
         value="profiles"
-        icon={<GridViewRoundedIcon style={{ fontSize: '36px' }} />}
+        icon={<GridViewRoundedIcon style={{ fontSize: '36px' }} 
+        onClick={() => navigate('/profile')} 
+        />}
       />
       <BottomNavigationAction label="Favorites" value="favorites" icon={<FavoriteIcon style={{ fontSize: '36px' }} />} />
       <BottomNavigationAction label="User" value="user" icon={<PersonRoundedIcon style={{ fontSize: '36px' }} />} />

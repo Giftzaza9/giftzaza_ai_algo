@@ -12,7 +12,6 @@ import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
 // }
 
 export const ProductCard = ({ productData }: any) => {
-  console.log('PRODUCT CARD ', productData);
   const { title, description, source, thumbnails, image, price_currency, price, rating } = productData?.item_id;
   return (
     <Card sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>

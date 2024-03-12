@@ -2,6 +2,7 @@ export interface SwiperProps extends CardEvents {
   id: CardId
   meta: CardMetaData
   element: HTMLDivElement
+  swiperElements: any
 }
 
 export interface CardSwiperProps extends CardEvents {
@@ -21,6 +22,7 @@ export interface CardEvents {
   onFinish?: (status: SwipeAction.FINISHED) => void
   onDismiss?: CardEvent
   onEnter?: CardEnterEvent
+  swiperElements?: any
 }
 
 export interface CardData {

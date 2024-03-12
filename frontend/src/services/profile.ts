@@ -32,3 +32,12 @@ export const getProfile = async (profileId?: string): Promise<ApiResponse> => {
     return generateErrorMessage(error);
   }
 };
+
+export const getProfiles = async (): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.get(`/profiles`);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};

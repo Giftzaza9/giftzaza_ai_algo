@@ -60,7 +60,7 @@ const scrapeAndAddProduct = async (productBody) => {
   if (product_link.includes('bloomingdale')) product_link = bloomingdaleUrlCleaner(product_link) || product_link;
 
   const productDB = await Product.findOne({ link: product_link });
-  const {content: AIContent, ...scrapedProduct} = await scrapeProduct(product_link, user_id);
+  const { content: AIContent, ...scrapedProduct } = await scrapeProduct(product_link, user_id);
 
   if (!scrapedProduct || !AIContent) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
@@ -79,9 +79,9 @@ const scrapeAndAddProduct = async (productBody) => {
 
 function convertToObjectId(itemIds) {
   // console.log({ itemIds });
-  return itemIds?.map(item => ({
+  return itemIds?.map((item) => ({
     ...item,
-    _id: mongoose.Types.ObjectId(item.item_id)
+    _id: mongoose.Types.ObjectId(item.item_id),
   }));
 }
 
@@ -91,19 +91,26 @@ function convertToObjectId(itemIds) {
  * @returns {Promise<Product>}
  */
 const similarProducts = async (productBody) => {
-  await axiosInstance.post(`/get_similar_item`, productBody)
-  .then(async (res) => {
-    const objectIds = convertToObjectId(res?.data);
-    // console.log("objectIds ", objectIds)
-    const products = await Product.find({ _id: { $in: objectIds } });
-    console.log({products});
-    return products;
-  })
-  .catch((error) => {
-    console.log('ERROR IN RECOMMENDATION MSG ', error.message);
-    throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in product recommendation');
-  })
-}
+  return await axiosInstance
+    .post(`/get_similar_item`, productBody)
+    .then(async (res) => {
+      const objectIds = convertToObjectId(res?.data);
+      // console.log("objectIds ", objectIds)
+      const products = await Product.find({ _id: { $in: objectIds } });
+      // console.log({products});
+
+      const products_detail = objectIds.map((obj) => {
+        const productDetails = products.find((product) => product._id == obj?.item_id);
+        return { ...obj, item_id: productDetails };
+      });
+      // console.log({products_detail})
+      return products_detail;
+    })
+    .catch((error) => {
+      console.log('ERROR IN RECOMMENDATION MSG ', error.message);
+      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in product recommendation');
+    });
+};
 
 /**
  * Create a product
@@ -144,7 +151,7 @@ const updateProductById = async (productId, updateBody) => {
   // From User
   product.tags = tags;
   if (curated !== undefined) product.curated = !!curated;
-  
+
   // From scraping
   product.title = title;
   product.price = price;
