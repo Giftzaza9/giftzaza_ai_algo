@@ -62,7 +62,7 @@ const scrapeAndAddProduct = async (productBody) => {
   const productDB = await Product.findOne({ link: product_link });
   const scrapedProduct = await scrapeProduct(product_link, user_id);
 
-  if (!scrapedProduct || !AIContent) {
+  if (!scrapedProduct || !scrapedProduct.title || !scrapedProduct.description) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
 
