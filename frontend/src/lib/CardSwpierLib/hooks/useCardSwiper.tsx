@@ -5,11 +5,12 @@ import {
   CardEvents,
   CardId,
   CardMetaData,
-  SwipeAction,
   SwipeDirection,
   SwipeOperation,
 } from '../types/types';
 import { Swiper } from '../utils/swiper';
+import { SwipeAction } from '../../../constants/constants';
+import { Product } from '../../../constants/types';
 
 interface UseCardSwiper extends CardEvents {
   data: CardData[];
@@ -32,9 +33,9 @@ export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data }: UseCardSwi
     }
   }, [data]);
 
-  const handleNewCardSwiper = (ref: HTMLDivElement | null, id: CardId, meta: CardMetaData) => {
+  const handleNewCardSwiper = (ref: HTMLDivElement | null, id: CardId, meta: CardMetaData, product: Product) => {
     if (ref) {
-      const currentSwiper = new Swiper({ element: ref, id, meta, onDismiss: handleDismiss, swiperElements });
+      const currentSwiper = new Swiper({ element: ref, id, meta, onDismiss: handleDismiss, swiperElements, product });
       swiperElements.current.push(currentSwiper);
     }
   };

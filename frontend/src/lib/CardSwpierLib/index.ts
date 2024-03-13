@@ -1,7 +1,6 @@
 export { CardSwiper } from './components/CardSwiper'
 
 export {
-  SwipeAction,
   SwipeDirection,
   SwipeOperation,
   type CardData,

@@ -1,21 +1,21 @@
 import { String } from 'lodash';
-import { SwipeAction, SwipeDirection } from '..';
+import { SwipeDirection } from '..';
+import { SwipeAction } from '../../../constants/constants';
 
 interface ActionButtonProps {
   action: SwipeAction;
   isCustom?: boolean;
   direction: SwipeDirection;
-  onClick: (direction: SwipeDirection, action: SwipeAction, currentID: string) => void;
+  onClick: (direction: SwipeDirection, action: SwipeAction) => void;
   extraClass?: string;
   children: any;
-  currentID: string
 }
 
-function CardSwiperActionButton({ direction, isCustom = false, extraClass, action, onClick, children, currentID }: ActionButtonProps) {
+function CardSwiperActionButton({ direction, isCustom = false, extraClass, action, onClick, children }: ActionButtonProps) {
   const className = `swipe-card__${isCustom ? 'custom-' : ''}action-button ${extraClass}`;
 
   return (
-    <div className={className} id={`swipe-card__${action}-action-button`} onClick={() => onClick(direction, action, currentID)}>
+    <div className={className} id={`swipe-card__${action}-action-button`} onClick={() => onClick(direction, action)}>
       {children}
     </div>
   );

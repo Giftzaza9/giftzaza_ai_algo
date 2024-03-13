@@ -1,4 +1,6 @@
-import { CardEnterEvent, CardEvent, CardId, CardMetaData, SwipeAction, SwipeOperation, SwiperProps } from '../types/types';
+import { SwipeAction } from '../../../constants/constants';
+import { Product } from '../../../constants/types';
+import { CardEnterEvent, CardEvent, CardId, CardMetaData, SwipeOperation, SwiperProps } from '../types/types';
 
 interface StartPoint {
   x: number;
@@ -8,16 +10,18 @@ interface StartPoint {
 export class Swiper implements SwiperProps {
   element: HTMLDivElement;
   id: CardId;
+  product: Product;
   meta: CardMetaData;
   onDismiss?: CardEvent;
   swiperElements: any;
 
-  constructor({ element, id, meta, onDismiss, swiperElements }: SwiperProps) {
+  constructor({ element, id, meta, onDismiss, swiperElements, product }: SwiperProps) {
     this.id = id;
     this.meta = meta;
     this.element = element;
     this.onDismiss = onDismiss;
     this.swiperElements = swiperElements;
+    this.product = product;
 
     this.init();
   }
@@ -141,16 +145,6 @@ export class Swiper implements SwiperProps {
     this.hideRibbons();
   };
 
-  private removeFromSwiperElements = () => {
-    const index = this.swiperElements.current.findIndex((swiper: any) => swiper.id === this.id);
-    if (index !== -1) {
-      const removedSwiper = this.swiperElements.current.splice(index, 1)[0]; // Remove and retrieve the removed swiper
-      if (removedSwiper) {
-        removedSwiper.element.remove(); // Remove the element from the DOM
-      }
-    }
-  };
-
   private dismiss = (direction: number, swipeOperation: SwipeOperation = SwipeOperation.SWIPE) => {
     this.startPoint = null;
     document.removeEventListener('mouseup', this.handleMoveUp);
@@ -169,7 +163,6 @@ export class Swiper implements SwiperProps {
       this.onDismiss(this.element, this.meta, this.id, swipeDirection, swipeOperation);
     }
 
-    this.removeFromSwiperElements();
   };
 
   dismissById = (direction: number) => {

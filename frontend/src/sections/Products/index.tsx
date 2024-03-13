@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
-import { SwipeAction, SwipeDirection } from '../../lib/CardSwpierLib/types/types';
+import { SwipeDirection } from '../../lib/CardSwpierLib/types/types';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
@@ -9,6 +9,8 @@ import { getProfile } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { Profile } from '../../constants/types';
 import { SimilarProductBody, getSimilarProducts } from '../../services/product';
+import { SwipeAction } from '../../constants/constants';
+import { storeUserActivity, userActivityBody } from '../../services/user';
 
 export const Products = () => {
   const { profileId } = useParams();
@@ -38,6 +40,8 @@ export const Products = () => {
     if (action === SwipeAction.SIMILAR) {
       fetchSimilarProducts(currentID);
     }
+    else 
+      saveUserActivity(currentID, action);
   };
 
   const fetchSimilarProducts = async (productId: string) => {
@@ -55,6 +59,16 @@ export const Products = () => {
         // ...data?.map((item: any) => ({ ...item })).reverse()
       ]);
     }
+  };
+
+  const saveUserActivity = async (product_id: string, activity: SwipeAction) => {
+    const payload: userActivityBody = {
+      product_id,
+      activity,
+      profile_id: profileId!,
+    };
+    const { data, error } = await storeUserActivity(payload);
+    console.log({ data, error });
   };
 
   console.log({ products });
