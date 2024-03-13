@@ -33,16 +33,6 @@ const createProduct = {
   }),
 };
 
-const userActivity = {
-  body: Joi.object().keys({
-    productId: Joi.string().custom(objectId),
-    userId: Joi.string().custom(objectId),
-    activity_type: Joi.string(),
-    activity_time: Joi.date(),
-    profile_id: Joi.string().custom(objectId),
-  }),
-};
-
 const deleteProduct = {
   params: Joi.object().keys({
     productId: Joi.string().custom(objectId),
@@ -66,5 +56,4 @@ module.exports = {
   createProduct,
   deleteProduct,
   updateProduct,
-  userActivity,
 };
