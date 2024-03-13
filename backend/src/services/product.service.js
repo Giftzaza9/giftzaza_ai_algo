@@ -163,6 +163,13 @@ const updateProductById = async (productId, updateBody) => {
   // product.price_currency = price_currency;
 
   await product.save();
+
+  try {
+    axiosInstance.post(`/model_retrain`, {});
+  } catch (e) {
+    console.error(e);
+  }
+  
   return product;
 };
 
