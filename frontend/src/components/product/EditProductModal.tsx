@@ -16,8 +16,8 @@ export const EditProductModal: FC<Props> = ({ onClose, open, product }) => {
   const [updateProductBody, setUpdateProductBody] = useState<UpdateProductBody | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleEditProductChange = (tags: string[], curated: boolean) => {
-    setUpdateProductBody({ curated, tags });
+  const handleEditProductChange = (tags: string[], curated: boolean, scrape?: boolean) => {
+    setUpdateProductBody({ curated, tags, scrape: !!scrape });
   };
   const handleSave = async () => {
     if (!updateProductBody) return;

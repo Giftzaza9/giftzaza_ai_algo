@@ -85,6 +85,7 @@ export const Products = () => {
         {products !== undefined && products?.length > 0 && (
           <CardSwiper
             data={products}
+            profile={profile}
             onFinish={handleFinish}
             actionHandler={handleProductAction}
             // onDismiss={handleSwipe}

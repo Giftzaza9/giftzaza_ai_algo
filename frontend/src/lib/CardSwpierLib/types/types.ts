@@ -1,5 +1,5 @@
 import { SwipeAction } from "../../../constants/constants"
-import { Product } from "../../../constants/types"
+import { Product, Profile } from "../../../constants/types"
 
 export interface SwiperProps extends CardEvents {
   id: CardId
@@ -20,6 +20,7 @@ export interface CardSwiperProps extends CardEvents {
   dislikeRibbonText?: string
   ribbonColors?: CardRibbonColors
   actionHandler?: any
+  profile?: Profile
 }
 
 export interface CardEvents {

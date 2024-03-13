@@ -46,6 +46,7 @@ const updateProduct = {
   body: Joi.object().keys({
     tags: Joi.array(),
     curated: Joi.boolean(),
+    scrape: Joi.boolean().default(false),
   }),
 };
 

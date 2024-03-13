@@ -34,7 +34,7 @@ const deleteProfile = catchAsync(async (req, res) => {
 const updateProfile = catchAsync(async (req, res) => {
   req.body.user_id = req.user._id;
   let profile = await Profile.findById(req.params.profileId);
-  if (!profile) {
+  if (!profile || profile.user_id?.toString() !== req.user._id.toString()) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
   }
   profile = await profileService.updateProfile(req.body, req.params.profileId);

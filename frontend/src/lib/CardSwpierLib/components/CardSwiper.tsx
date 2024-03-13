@@ -11,10 +11,10 @@ import { ProductCard } from '../../../components/product/ProductCardUser';
 import CloseIcon from '@mui/icons-material/Close';
 import { GradientClose } from '../../../components/shared/Icons/GradientClose';
 import { Love } from '../../../components/shared/Icons/Love';
-import { Similar } from '../../../components/shared/Icons/Similar';
 import { Save } from '../../../components/shared/Icons/Save';
 import { SwipeAction } from '../../../constants/constants';
 import { Product } from '../../../constants/types';
+import _ from 'lodash';
 
 export const CardSwiper = (props: CardSwiperProps) => {
   const {
@@ -27,6 +27,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
     onFinish,
     onEnter,
     actionHandler,
+    profile,
   } = props;
 
   const { handleEnter, handleClickEvents, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, swiperElements } =
@@ -89,7 +90,15 @@ export const CardSwiper = (props: CardSwiperProps) => {
                   ribbonColors={props.ribbonColors}
                 />
               )}
-              <ProductCard productData={product} handleSave={handleSave} matchingScore={product?.matching_score} />
+              <ProductCard
+                matches={_.intersection(
+                  product?.item_id?.tags?.map((el: string) => el?.toLowerCase()),
+                  profile?.preferences
+                )}
+                productData={product}
+                handleSave={handleSave}
+                matchingScore={product?.matching_score}
+              />
             </div>
           )
       ),

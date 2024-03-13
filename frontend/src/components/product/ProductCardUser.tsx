@@ -1,4 +1,4 @@
-import { Card, CardActionArea, CardMedia, CardContent, Grid, Chip, Typography } from '@mui/material';
+import { Card, CardActionArea, CardMedia, CardContent, Grid, Chip, Typography, useMediaQuery } from '@mui/material';
 import { Box } from '@mui/system';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
@@ -13,10 +13,12 @@ import { Save } from '../shared/Icons/Save';
 interface Props {
   productData: RecommendedProduct;
   handleSave: any;
+  matches: string[];
   matchingScore: string;
 }
 
-export const ProductCard: FC<Props> = ({ productData, handleSave, matchingScore }) => {
+export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore }) => {
+  const isSmallScreen = useMediaQuery('(max-width: 400px) and (max-height: 700px)');
   const { title, description, source, thumbnails, image, price_currency, price, rating } = productData?.item_id as Product;
 
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -48,39 +50,21 @@ export const ProductCard: FC<Props> = ({ productData, handleSave, matchingScore 
         <CardActionArea>
           {thumbnails && thumbnails?.length > 1 ? (
             <Carousel>
-              <Box sx={{ width: '100%', height: '400px', marginTop: '20px' }}>
-                <CardMedia
-                  component="img"
-                  width={'100%'}
-                  height="100%"
-                  sx={{ objectFit: 'contain' }}
-                  image="https://images.bloomingdalesassets.com/is/image/BLM/products/2/optimized/12956852_fpx.tif?op_sharpen=1&wid=700&fit=fit,1&$filtersm$"
-                  alt="green iguana"
-                />
-              </Box>
-              <Box sx={{ width: '100%', height: '400px', marginTop: '20px' }}>
-                <CardMedia
-                  component="img"
-                  width={'100%'}
-                  height="100%"
-                  sx={{ objectFit: 'contain' }}
-                  image="https://images.bloomingdalesassets.com/is/image/BLM/products/0/optimized/10977650_fpx.tif?op_sharpen=1&wid=700&fit=fit,1&$filtersm$"
-                  alt="green iguana"
-                />
-              </Box>
-              <Box sx={{ width: '100%', height: '400px', marginTop: '20px' }}>
-                <CardMedia
-                  component="img"
-                  width={'100%'}
-                  height="100%"
-                  sx={{ objectFit: 'contain' }}
-                  image="https://images.bloomingdalesassets.com/is/image/BLM/products/6/optimized/13129996_fpx.tif?op_sharpen=1&wid=700&fit=fit,1&$filtersm$"
-                  alt="green iguana"
-                />
-              </Box>
+              {thumbnails?.map((thumb) => (
+                <Box sx={{ width: '100%', height: isSmallScreen ? '220px' : '400px', marginTop: '20px' }}>
+                  <CardMedia
+                    component="img"
+                    width={'100%'}
+                    height="100%"
+                    sx={{ objectFit: 'contain' }}
+                    image={thumb}
+                    alt="green iguana"
+                  />
+                </Box>
+              ))}
             </Carousel>
           ) : (
-            <Box sx={{ width: '100%', height: '400px', marginTop: '20px' }}>
+            <Box sx={{ width: '100%', height: isSmallScreen ? '220px' : '400px', marginTop: '20px' }}>
               <CardMedia
                 component="img"
                 width={'100%'}
@@ -150,6 +134,7 @@ export const ProductCard: FC<Props> = ({ productData, handleSave, matchingScore 
         }}
         open={previewOpen}
         product={productData?.item_id as Product}
+        matches={matches}
       />
     </>
   );
