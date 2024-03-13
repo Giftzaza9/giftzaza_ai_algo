@@ -104,12 +104,6 @@ async function AmazonScraper(product_link, userId) {
       rating: Number(product_rating?.split(' ')?.[0]?.trim()),
       price: Number(product_price?.replace('$', '')?.trim()) || Number(product_price?.replace('US$', '')?.trim()) || -1,
       description: product_description,
-      content: product_description
-        ?.replace(/\s+/g, ' ')
-        ?.replace(/[^\w\s]/g, '')
-        ?.replace(/\n/g, '')
-        ?.toLowerCase()
-        ?.trim(),
       price_currency: product_price_currency,
       added_by: userId,
       thumbnails: [] // UNABLE TO ADD thumbnails
@@ -122,7 +116,7 @@ async function AmazonScraper(product_link, userId) {
 }
 
 const bloomingdaleScrapeProduct = async (product_link, userId) => {
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox']});
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   try {
     let page = await browser.newPage();
     await page.goto(product_link, { waitUntil: 'load', timeout: 0 });
@@ -191,12 +185,6 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
       link: product_link,
       rating: Number(product_rating?.split(' ')[0]?.trim()),
       description: product_details,
-      content: (product_title + ' ' + product_details)
-        .replace(/\s+/g, ' ')
-        .replace(/[^\w\s]/g, '')
-        .replace(/\n/g, '')
-        .toLowerCase()
-        .trim(),
       price_currency: product_price_currency,
       added_by: userId,
       thumbnails: thumbnails
