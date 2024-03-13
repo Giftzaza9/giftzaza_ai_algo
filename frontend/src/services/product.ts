@@ -56,6 +56,7 @@ export const createProduct = async (body: CreateProductBody): Promise<ApiRespons
 export interface UpdateProductBody {
   tags: string[];
   curated: boolean;
+  scrape?: boolean;
 }
 
 export const updateProduct = async (product_id: string, body: UpdateProductBody): Promise<ApiResponse> => {
