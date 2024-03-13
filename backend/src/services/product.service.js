@@ -149,24 +149,26 @@ const createProduct = async (productBody) => {
  * @returns {Promise<Product>}
  */
 const updateProductById = async (productId, updateBody) => {
-  const { tags, curated } = updateBody;
+  const { tags, curated, scrape } = updateBody;
   const product = await Product.findById(productId);
-  // const { title, price, image, link, rating, description, thumbnails, price_currency } = await scrapeProduct(product.link);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-
+  
   // From User
   product.tags = tags;
   if (curated !== undefined) product.curated = !!curated;
-
+  
   // From scraping
-  // product.title = title;
-  // product.price = price;
-  // product.image = image;
-  // product.thumbnails = thumbnails;
-  // product.description = description;
-  // product.rating = rating;
-  // product.link = link;
-  // product.price_currency = price_currency;
+  if (scrape) {
+    const { title, price, image, link, rating, description, thumbnails, price_currency } = await scrapeProduct(product.link);
+    product.title = title;
+    product.price = price;
+    product.image = image;
+    product.thumbnails = thumbnails;
+    product.description = description;
+    product.rating = rating;
+    product.link = link;
+    product.price_currency = price_currency;
+  }
 
   await product.save();
 

@@ -20,9 +20,9 @@ router
   .route('/similar-products')
   .post(validate(productValidation.similarProducts), productController.similarProducts)
 
-  router
+router
   .route('/')
-  .get(validate(productValidation.getProducts), productController.getProducts)
+  .get(auth(), validate(productValidation.getProducts), productController.getProducts)
   .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.createProduct), productController.createProduct);
 
 module.exports = router;

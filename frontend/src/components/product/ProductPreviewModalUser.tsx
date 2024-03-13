@@ -1,12 +1,12 @@
-import { Box, CardMedia, Dialog, Grid, IconButton, Slide, Stack, Typography } from '@mui/material';
+import { Box, CardMedia, Chip, Dialog, Grid, IconButton, Rating, Slide, Stack, Typography } from '@mui/material';
 import React, { FC, PropsWithChildren } from 'react';
 import { theme } from '../../utils/theme';
 import { Product } from '../../constants/types';
 import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
 import { TransitionProps } from '@mui/material/transitions';
-import { Carousel } from 'react-responsive-carousel';
 import _ from 'lodash';
-import { ArrowForwardIos, Star } from '@mui/icons-material';
+import { ArrowForwardIos } from '@mui/icons-material';
+import { Carousal } from '../shared/Carousal';
 
 const modalContainerStyles = {
   boxShadow: 24,
@@ -36,6 +36,7 @@ const modalHeaderStyles = {
   zIndex: 1000,
   justifyContent: 'space-between',
   backgroundColor: theme.palette.secondary.main,
+  flexWrap: 'nowrap',
 };
 
 const contentContainerStyles = {
@@ -50,6 +51,27 @@ const contentContainerStyles = {
 };
 
 const itemStyles = { backgroundColor: 'white', borderRadius: '8px', padding: '14px' };
+
+const selectedChipStyle = {
+  padding: '16px 8px',
+  borderRadius: '32px',
+  color: 'white',
+  backgroundColor: 'rgba(107, 60, 102, 1)',
+  fontSize: '12px',
+  fontWeight: '500',
+  fontFamily: 'Inter',
+  cursor: 'pointer',
+  width: '-webkit-fill-available',
+  justifyContent: 'flex-start',
+  '&:hover': {
+    backgroundColor: 'rgba(107, 60, 102, 1)!important',
+    color: 'white!important',
+  },
+  '&:active': {
+    backgroundColor: 'rgba(107, 60, 102, 1)!important',
+    color: 'white!important',
+  },
+};
 
 const ContentWrapper: FC<{ title: string } & PropsWithChildren> = ({ title, children }) => {
   return (
@@ -85,9 +107,10 @@ interface Props {
   open: boolean;
   onClose: () => void;
   product: Product;
+  matches: string[];
 }
 
-export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product }) => {
+export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, matches }) => {
   const { title, description, source, thumbnails, image, price_currency, price, rating, link } = product;
 
   return (
@@ -107,7 +130,7 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product }) =
             <Stack gap={'8px'}>
               <Typography
                 sx={{
-                  fontSize: '18px',
+                  fontSize: '16px',
                   fontFamily: 'Inter',
                   fontWeight: '600',
                   lineHeight: '24px',
@@ -150,20 +173,7 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product }) =
         <Grid container sx={contentContainerStyles}>
           <Grid item sx={itemStyles}>
             {thumbnails && thumbnails?.length > 1 ? (
-              <Carousel>
-                {thumbnails?.map((thumb, index) => (
-                  <Box sx={{ width: '100%', height: '400px' }}>
-                    <CardMedia
-                      component="img"
-                      width={'100%'}
-                      height="100%"
-                      sx={{ objectFit: 'contain' }}
-                      image={thumb}
-                      alt={`thumb-${index}`}
-                    />
-                  </Box>
-                ))}
-              </Carousel>
+              <Carousal images={thumbnails} />
             ) : (
               <Box sx={{ width: '100%', height: '400px' }}>
                 <CardMedia
@@ -218,22 +228,34 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product }) =
           </ContentWrapper>
 
           <ContentWrapper title="Reviews">
-            <Grid container alignItems={'center'}>
-              <Star sx={{ height: '16px', color: 'gold' }} />
-              <Typography
-                variant="caption"
-                sx={{
-                  fontSize: '12px',
-                  fontFamily: 'Inter',
-                  fontWeight: '600',
-                  lineHeight: '18px',
-                  color: 'rgba(93, 94, 97, 1)',
-                }}
-              >{`${rating} / 5 ( 2400 ratings )`}</Typography>
+            <Grid container alignItems={'center'} gap={1}>
+              <Grid item>
+                <Rating size="small" value={rating} precision={0.1} />
+              </Grid>
+              <Grid item>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: '12px',
+                    fontFamily: 'Inter',
+                    fontWeight: '600',
+                    lineHeight: '18px',
+                    color: 'rgba(93, 94, 97, 1)',
+                  }}
+                >{`${rating} / 5`}</Typography>
+              </Grid>
             </Grid>
           </ContentWrapper>
 
-          <ContentWrapper title="Matches"></ContentWrapper>
+          <ContentWrapper title="Matches">
+            <Grid container gap={'4px'}>
+              {matches?.map((el) => (
+                <Grid item key={el}>
+                  <Chip variant="outlined" label={_.capitalize(el)} sx={selectedChipStyle} />
+                </Grid>
+              ))}
+            </Grid>
+          </ContentWrapper>
 
           <ContentWrapper title="Description">
             <Typography
