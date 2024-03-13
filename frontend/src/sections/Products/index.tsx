@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
-import { SwipeAction, SwipeDirection } from '../../lib/CardSwpierLib/types/types';
+import { SwipeDirection } from '../../lib/CardSwpierLib/types/types';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { useParams } from 'react-router';
 import { useEffect, useState } from 'react';
@@ -9,6 +9,8 @@ import { getProfile } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { Profile } from '../../constants/types';
 import { SimilarProductBody, getSimilarProducts } from '../../services/product';
+import { SwipeAction } from '../../constants/constants';
+import { storeUserActivity, userActivityBody } from '../../services/user';
 
 export const Products = () => {
   const { profileId } = useParams();
@@ -19,9 +21,8 @@ export const Products = () => {
     const { data, error } = await getProfile(profileId as string);
     if (error) toast.error(error || 'Failed to fetch profile data !');
     else {
-      console.log({ data });
       setProfile(data);
-      setProducts(data?.recommended_products);
+      setProducts(data?.recommended_products?.map((item: any) => ({ ...item })).reverse());
     }
   };
 
@@ -35,23 +36,39 @@ export const Products = () => {
     alert('Finished ');
   };
 
-  const handleProductAction = (direction: SwipeDirection, action: SwipeAction) => {
+  const handleProductAction = (direction: SwipeDirection, action: SwipeAction, currentID: string) => {
     if (action === SwipeAction.SIMILAR) {
-      fetchSimilarProducts();
+      fetchSimilarProducts(currentID);
     }
+    else 
+      saveUserActivity(currentID, action);
   };
 
-  const fetchSimilarProducts = async () => {
+  const fetchSimilarProducts = async (productId: string) => {
     const payload: SimilarProductBody = {
-      item_id: '65b7e78b71d8394e325feefa',
+      item_id: productId,
       top_n: 10,
     };
     const { data, error } = await getSimilarProducts(payload);
     console.log({ data });
     if (error) toast.error(error || 'Faild to get similar products !');
     else {
-      setProducts(data);
+      setProducts((prev: any) => [
+        ...prev,
+        ...data,
+        // ...data?.map((item: any) => ({ ...item })).reverse()
+      ]);
     }
+  };
+
+  const saveUserActivity = async (product_id: string, activity: SwipeAction) => {
+    const payload: userActivityBody = {
+      product_id,
+      activity,
+      profile_id: profileId!,
+    };
+    const { data, error } = await storeUserActivity(payload);
+    console.log({ data, error });
   };
 
   console.log({ products });

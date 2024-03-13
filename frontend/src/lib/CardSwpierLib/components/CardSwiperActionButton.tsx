@@ -1,5 +1,6 @@
 import { String } from 'lodash';
-import { SwipeAction, SwipeDirection } from '..';
+import { SwipeDirection } from '..';
+import { SwipeAction } from '../../../constants/constants';
 
 interface ActionButtonProps {
   action: SwipeAction;

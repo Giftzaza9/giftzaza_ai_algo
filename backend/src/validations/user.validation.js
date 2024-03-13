@@ -47,7 +47,13 @@ const deleteUser = {
   }),
 };
 
-
+const userActivity = {
+  body: Joi.object().keys({
+    product_id: Joi.string().custom(objectId),
+    activity: Joi.string(),
+    profile_id: Joi.string().custom(objectId),
+  }),
+};
 
 module.exports = {
   createUser,
@@ -55,4 +61,5 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
+  userActivity
 };

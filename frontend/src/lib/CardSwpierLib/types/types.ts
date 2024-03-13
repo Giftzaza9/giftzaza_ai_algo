@@ -1,7 +1,12 @@
+import { SwipeAction } from "../../../constants/constants"
+import { Product } from "../../../constants/types"
+
 export interface SwiperProps extends CardEvents {
   id: CardId
   meta: CardMetaData
   element: HTMLDivElement
+  swiperElements: any
+  product: Product
 }
 
 export interface CardSwiperProps extends CardEvents {
@@ -21,6 +26,7 @@ export interface CardEvents {
   onFinish?: (status: SwipeAction.FINISHED) => void
   onDismiss?: CardEvent
   onEnter?: CardEnterEvent
+  swiperElements?: any
 }
 
 export interface CardData {
@@ -50,14 +56,6 @@ export enum SwipeDirection {
   LEFT = -1,
   RIGHT = 1,
   SIMILAR = 1,
-}
-
-export enum SwipeAction {
-  LIKE = 'like',
-  DISLIKE = 'dislike',
-  FINISHED = 'finished',
-  BUY = 'buy',
-  SIMILAR = 'similar',
 }
 
 export enum SwipeOperation {
