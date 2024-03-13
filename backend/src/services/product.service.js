@@ -60,13 +60,13 @@ const scrapeAndAddProduct = async (productBody) => {
   if (product_link.includes('bloomingdale')) product_link = bloomingdaleUrlCleaner(product_link) || product_link;
 
   const productDB = await Product.findOne({ link: product_link });
-  const { content: AIContent, ...scrapedProduct } = await scrapeProduct(product_link, user_id);
+  const scrapedProduct = await scrapeProduct(product_link, user_id);
 
   if (!scrapedProduct || !AIContent) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
 
-  const gptData = await GPTbasedTagging(AIContent);
+  const gptData = await GPTbasedTagging(scrapedProduct.description, scrapedProduct.title);
   scrapedProduct.tags = gptData.preferenceData;
   scrapedProduct.gptTagging = gptData.JSON_response;
   scrapedProduct.curated = false;
@@ -152,11 +152,11 @@ const updateProductById = async (productId, updateBody) => {
   const { tags, curated, scrape } = updateBody;
   const product = await Product.findById(productId);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-  
+
   // From User
   product.tags = tags;
   if (curated !== undefined) product.curated = !!curated;
-  
+
   // From scraping
   if (scrape) {
     const { title, price, image, link, rating, description, thumbnails, price_currency } = await scrapeProduct(product.link);
@@ -177,7 +177,7 @@ const updateProductById = async (productId, updateBody) => {
   } catch (e) {
     console.error(e);
   }
-  
+
   return product;
 };
 
