@@ -41,12 +41,12 @@ export const BottomNav = observer(() => {
         height: isSmallScreen ? '50px' : '60px',
       }}
     >
-      <BottomNavigationAction label="Home" value="home" icon={<GoHomeFill style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} onClick={() => navigate('/profiles')} />
+      <BottomNavigationAction label="Home" value="home" icon={<GoHomeFill style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} onClick={() => navigate('/')} />
       <BottomNavigationAction
         label="Profiles"
         value="profiles"
         icon={<GridViewRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
-        onClick={() => navigate('/profile')}
+        onClick={() => navigate('/profiles')}
       /> 
       <BottomNavigationAction label="Favorites" value="favorites" icon={<FavoriteIcon style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} />
       <BottomNavigationAction label="User" value="user" icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} />

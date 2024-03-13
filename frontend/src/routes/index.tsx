@@ -18,7 +18,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
   const commonRoutes = (
     <>
-      <Route path="/" element={<Dashboard />} />
+      <Route path="/" element={<CreateProfile />} />
       <Route path="/welcome" element={<Onboarding />} />
       <Route path="/profiles" element={<Profiles />} />
       <Route path="/create-profile" element={<CreateProfile />} />
