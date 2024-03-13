@@ -27,16 +27,18 @@ prompt_template = Object.entries(category_jsonData).map(([key, value]) => {
   }
 });
 
-var system = `Given product information:
+var system = `You are an assistant tasked with analyzing a product description and title to determine suitable attributes for gifting the product. Here are the tasks you need to accomplish.
+
 ${prompt_template.join('\n')}
 
-Please provide responses in JSON format with keys: ${
-  "'" + Object.keys(category_jsonData).join("','") + "'"
-} and values as list respectively.
+Please provide responses in JSON format with keys: ${"'" + Object.keys(category_jsonData).join("','") + "'"
+  } and values as list respectively.
 `;
 
-async function GPTbasedTagging(content) {
+async function GPTbasedTagging(content, title) {
   try {
+    product_info = `Product Title : ${title}
+    Product Description : ${content}`
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo-1106',
       temperature: 0,
@@ -45,10 +47,10 @@ async function GPTbasedTagging(content) {
           role: 'system',
           content: system,
         },
-        ...gpt_assistance,
+        // ...gpt_assistance,
         {
           role: 'user',
-          content: content,
+          content: product_info,
         },
       ],
       response_format: { type: 'json_object' },
