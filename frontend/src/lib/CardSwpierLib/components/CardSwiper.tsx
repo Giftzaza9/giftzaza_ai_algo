@@ -7,7 +7,7 @@ import { Swiper } from '../utils/swiper';
 import CardSwiperActionButton from './CardSwiperActionButton';
 import CardSwiperEmptyState from './CardSwiperEmptyState';
 import CardSwiperRibbons from './CardSwiperRibbons';
-import { ProductCard } from '../../../sections/Products/ProductCard';
+import { ProductCard } from '../../../components/product/ProductCardUser';
 import CloseIcon from '@mui/icons-material/Close';
 import { GradientClose } from '../../../components/shared/Icons/GradientClose';
 import { Love } from '../../../components/shared/Icons/Love';
@@ -43,6 +43,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
 
   useEffect(() => {
     currentSwiper && handleEnter(currentSwiper.element, currentSwiper.meta, currentSwiper.id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSwiper]);
 
   const CardComponents = useMemo(

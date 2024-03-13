@@ -141,7 +141,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
           <Box
             component={'a'}
             href={product?.link}
-            target='_blank'
+            target="_blank"
             onClick={(e) => e.stopPropagation()}
             sx={{
               position: 'absolute',
@@ -152,23 +152,6 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
             {product?.source === 'amazon' ? <Amazon /> : <Bloomingdales />}
           </Box>
         </Tooltip>
-        {/* <Typography
-          fontWeight={500}
-          sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bgcolor: product?.source === 'amazon' ? 'rgba(255,153,0, 0.5)' : 'rgba(0, 0, 0, 0.5)',
-            color:  product?.source === 'amazon' ? 'black' : 'white',
-            display: 'inline-flex',
-            padding: '2px 14px',
-            fontSize: '14px',
-            borderRadius: '0px 4px 0px 4px',
-            fontFamily: 'Inter'
-          }}
-        >
-          {_.capitalize(product?.source)}
-        </Typography> */}
         <img
           src={product?.image ?? ''}
           alt={product?.title}
