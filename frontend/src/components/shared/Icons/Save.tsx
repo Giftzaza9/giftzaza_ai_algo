@@ -1,26 +1,18 @@
 import React from 'react';
 
-export const Save: React.FC = () => {
+interface propType {
+  width?: string;
+  height?: string;
+}
+
+export const Save: React.FC<propType> = (props) => {
+  const { width, height } = props;
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-    >
-      <rect width="20" height="20" fill="url(#pattern0)" />
-      <defs>
-        <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
-          <image
-            id="image0_1_1547"
-            width="96"
-            height="96"
-            xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAACeUlEQVR4nO2VPYoUURRGLwiKocHgItTILRgIIt6n1BZMDd2C+YyCW5gFmMiAvOdPaNIiGBoMw/scERoDwZmWSo2EtupUM9+Bm3edd+/pCGOMMcYYY4zZkpM3D271WvZ7zZVartXKZrcn1+O39JoH47ctdkG+vh+u9lZe9JpnvLQyyfRaznvL519e3b0Sy5OfR7QgzfUQLY8W9Qjj5tNSNPs15EEsqPnnF/ABzk7flZu0/xibSMsQ9ghln/YfveZnWoS4K1jR/kO1/KRFCJtc0/6Dl1DQof37AWjoDZQvgJcgJ4gXIWjoAjlBNPQGyhfAS5ATxIsQNHSBnCAaegPlC+AlyAniRQgaukBOEA29gfIF8BLkBPEiBA1dICeIht5A+QJ4CXKCeBGChi6QE0RDb6B8AbwEOUG8CEFDF8gJoqE3UL4AXoKcIF6EoKEL5ATR0BsoXwAvQU4QL0LQ0AVygmjoDZQvgJcgJ4gXIWjoAjlBNPQGyhfAS5ATxIsQNHSBnCAaegPlC+AlyAniRQgaukBOEA29gfIF8BLkBPEiBA1dICeIht5A+QJ4CXKCeBGChi6QE0RDb6B8AbwEOUG8CEFDF8gJoqE3UL4AXoKcoHkl9Fa+q5WXann7tD260Vs+Uy0n/g+YVHr+7i1f91aGzWq4/HcKN4fDpW/t4R21cthr/prrMYJmhm3/pFaenny4f/1ff9OPdu+aWj5Wy7d+gC0TE1sydaKCZq7EbMtUiQoaIjHb8j8TFTR0YuhEBc1SEkMlKmiWmJg5ExU0S0/M1IkKml1JzFSJChrV8rG3fHJch724IBzXYW/85vHb6d9ijDHGGGOMiZ3jD2O4chWXNKb/AAAAAElFTkSuQmCC"
-          />
-        </pattern>
-      </defs>
+    <svg width={width ?? '18'} height={height ?? '18'} viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16.5 4.72727L14.5475 6.40545L12.3612 4.52636V17.7273H9.63875V4.52636L7.4525 6.40545L5.5 4.72727L11 0L16.5 4.72727ZM22 10.6364V23.6364C22 24.9364 20.7625 26 19.25 26H2.75C1.22375 26 0 24.9364 0 23.6364V10.6364C0 9.32454 1.22375 8.27273 2.75 8.27273H6.875V10.6364H2.75V23.6364H19.25V10.6364H15.125V8.27273H19.25C20.7625 8.27273 22 9.32454 22 10.6364Z"
+        fill="black"
+      />
     </svg>
   );
 };

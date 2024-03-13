@@ -57,6 +57,17 @@ export const CardSwiper = (props: CardSwiperProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swiperElements?.current, swiperIndex]);
 
+  const handleUserActivity = (direction: SwipeDirection, action: SwipeAction) => {
+    actionHandler(direction, action, currentProduct?.id);
+    if (action === SwipeAction.BUY) {
+      window.open(currentProduct?.link, '_blank');
+    } else handleClickEvents(direction, action, currentProduct?.id as string);
+  };
+
+  const handleSave = () => {
+    handleUserActivity(SwipeDirection.BLANK, SwipeAction.SAVE);
+  };
+
   const CardComponents = useMemo(
     () =>
       dynamicData &&
@@ -85,6 +96,8 @@ export const CardSwiper = (props: CardSwiperProps) => {
                   profile?.preferences
                 )}
                 productData={product}
+                handleSave={handleSave}
+                matchingScore={product?.matching_score}
               />
             </div>
           )
@@ -107,13 +120,6 @@ export const CardSwiper = (props: CardSwiperProps) => {
 
     return () => window.removeEventListener('blur', handleWindowBlur);
   }, [currentSwiper]);
-
-  const handleUserActivity = (direction: SwipeDirection, action: SwipeAction) => {
-    actionHandler(direction, action, currentProduct?.id);
-    if (action === SwipeAction.BUY) {
-      window.open(currentProduct?.link, '_blank');
-    } else handleClickEvents(direction, action, currentProduct?.id as string);
-  };
 
   return (
     <div className="swipe-card" id="swipe-card">
@@ -161,7 +167,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
               >
                 <Love />
               </CardSwiperActionButton>
-              <CardSwiperActionButton
+              {/* <CardSwiperActionButton
                 isCustom
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.LIKE}
@@ -169,7 +175,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 extraClass="saveProduct"
               >
                 <Save />
-              </CardSwiperActionButton>
+              </CardSwiperActionButton> */}
             </>
           ) : (
             <>

@@ -57,7 +57,7 @@ export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data }: UseCardSwi
   };
 
   const handleClickEvents = (direction: SwipeDirection, action: SwipeAction, currentID: string) => {
-    if (swiperIndex) {
+    if (swiperIndex && direction !== SwipeDirection.BLANK) {
       const swiper = swiperElements.current[swiperIndex - 1];
       swiper?.dismissById(direction);
     }
