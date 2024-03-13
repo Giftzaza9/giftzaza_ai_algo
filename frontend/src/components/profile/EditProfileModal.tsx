@@ -1,5 +1,5 @@
-import { Box, Button, Grid, InputAdornment, Modal, Stack, TextField, Typography } from '@mui/material';
-import { FC, PropsWithChildren, useEffect, useState } from 'react';
+import { Box, Button, Dialog, Grid, InputAdornment, Slide, Stack, TextField, Typography } from '@mui/material';
+import { FC, PropsWithChildren, forwardRef, useEffect, useState } from 'react';
 import { theme } from '../../utils/theme';
 import { ArrowBackIos } from '@mui/icons-material';
 import { MobileSingleSelectChip } from '../shared/MobileSingleSelectChip';
@@ -9,6 +9,7 @@ import { Profile } from '../../constants/types';
 import _ from 'lodash';
 import { updateProfile } from '../../services/profile';
 import { toast } from 'react-toastify';
+import { TransitionProps } from '@mui/material/transitions';
 
 interface _Props extends PropsWithChildren {
   title: string;
@@ -52,6 +53,15 @@ const EditProfileInputWrapper: FC<_Props> = ({ title, children, multiSelect }) =
     </Grid>
   );
 };
+
+const Transition = forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="left" ref={ref} {...props} />;
+});
 
 interface Props {
   open: boolean;
@@ -119,11 +129,13 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
   };
 
   return (
-    <Modal
+    <Dialog
+      fullScreen
       open={open}
       onClose={() => {
         onClose();
       }}
+      TransitionComponent={Transition}
     >
       {/* Modal Main Container */}
       <Grid
@@ -323,6 +335,6 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
           </EditProfileInputWrapper>
         </Grid>
       </Grid>
-    </Modal>
+    </Dialog>
   );
 };

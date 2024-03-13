@@ -5,7 +5,7 @@ import { Add, KeyboardArrowUp, Search } from '@mui/icons-material';
 import { FilterSelector } from '../../../components/product/FilterSelector';
 import { productPerPageAdmin, sortOptions } from '../../../constants/constants';
 import { debounce } from 'lodash';
-import { ProductCard } from '../../../components/product/ProductCard';
+import { ProductCard } from '../../../components/product/ProductCardAdmin';
 import { getProducts } from '../../../services/product';
 import { Product } from '../../../constants/types';
 import { ProductSkeletonCard } from '../../../components/skeletons/ProductSkeletonCard';
