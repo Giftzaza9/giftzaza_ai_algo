@@ -7,12 +7,12 @@ import { decodeToken } from '../utils/decodeToken';
 import { NotFound } from '../sections/NotFound';
 import { Loved } from '../sections/Loved';
 import { roleEnum } from '../constants/types';
-import { Profiles } from '../sections/Profiles';
 import { AdminProducts } from '../sections/Administration/AdminProducts';
 import { Onboarding } from '../sections/Onboarding';
 import { Products } from '../sections/Products';
 import { observer } from 'mobx-react-lite';
-import { ProfilesList } from '../sections/Profiles/ProfilesList';
+import { Profiles } from '../sections/Profiles';
+import { CreateProfile } from '../sections/Profiles/CreateProfile';
 
 const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
@@ -21,7 +21,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
       <Route path="/" element={<Dashboard />} />
       <Route path="/welcome" element={<Onboarding />} />
       <Route path="/profiles" element={<Profiles />} />
-      <Route path="/profile" element={<ProfilesList />} />
+      <Route path="/create-profile" element={<CreateProfile />} />
       <Route path="/profiles/:profileId" element={<Products />} />
       <Route path="/loved" element={<Loved />} />
     </>

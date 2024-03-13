@@ -7,12 +7,16 @@ import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
 import { ProductPreviewModalUser } from './ProductPreviewModalUser';
 import { FC, useState } from 'react';
 import { Product, RecommendedProduct } from '../../constants/types';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import { Save } from '../shared/Icons/Save';
 
 interface Props {
   productData: RecommendedProduct;
+  handleSave: any;
+  matchingScore: string;
 }
 
-export const ProductCard: FC<Props> = ({ productData }) => {
+export const ProductCard: FC<Props> = ({ productData, handleSave, matchingScore }) => {
   const { title, description, source, thumbnails, image, price_currency, price, rating } = productData?.item_id as Product;
 
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -20,6 +24,27 @@ export const ProductCard: FC<Props> = ({ productData }) => {
   return (
     <>
       <Card sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            right: '10px',
+            top: '26px',
+            display: 'flex',
+            flexDirection: 'column',
+            rowGap: '12px',
+            alignItems: 'center',
+            cursor: 'pointer',
+            zIndex: 10,
+          }}
+        >
+          <Save width={'18px'} height={'18px'} />
+          <BookmarkBorderIcon sx={{ fontSize: 'x-large' }} onClick={() => handleSave()} />
+        </Box>
+
+        <div className="badge-product-match">
+          <span className="match">{Math.round(Number(matchingScore) * 100)}% MATCH</span>
+        </div>
+
         <CardActionArea>
           {thumbnails && thumbnails?.length > 1 ? (
             <Carousel>

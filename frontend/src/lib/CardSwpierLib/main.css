@@ -189,3 +189,46 @@
   border: 2px solid yellowgreen;
   background: white;
 }
+
+.badge-product-match {
+  display: flex;
+  position: absolute;
+  text-align: center;
+  top: 34px;
+  left: 0px;
+  z-index: 2;
+  min-width: 100px;
+}
+
+.badge-product-match span {
+  position: relative;
+  background: rgba(133, 198, 226, 1);
+  color: #fff; 
+  font-size: large;
+  padding: 3px 12px;
+  font-family: Inter;
+}
+
+
+.badge-product-match span::before {
+  border: 5px solid rgba(133, 198, 226, 1);
+  border-color: rgba(133, 198, 226, 1) transparent transparent rgba(133, 198, 226, 1);
+  border-width: 9px 5px;
+  position: absolute;
+  right: -9px;
+  top: 0;
+  content: "";
+  z-index: 1;
+}
+
+.badge-product-match span::after {
+  border: 5px solid rgba(133, 198, 226, 1);
+  border-color: transparent transparent rgba(133, 198, 226, 1) rgba(133, 198, 226, 1);
+  border-width: 10px 5px;
+  position: absolute;
+  right: -9px;
+  bottom: 0;
+  content: "";
+  z-index: 1;
+}
+

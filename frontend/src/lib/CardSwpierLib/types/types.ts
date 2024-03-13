@@ -56,6 +56,7 @@ export enum SwipeDirection {
   LEFT = -1,
   RIGHT = 1,
   SIMILAR = 1,
+  BLANK = 0,
 }
 
 export enum SwipeOperation {
