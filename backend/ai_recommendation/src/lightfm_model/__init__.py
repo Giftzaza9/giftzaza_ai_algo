@@ -95,7 +95,7 @@ def cs_user_item_recommendation(new_user_attributes,similar_user_id = "test_prof
     idf = LightFM_Obj.cold_start_user_item_recommendation(filter_user_attributes,similar_user_id)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"matching_score"})
     if test_sample_flag:
         idf = idf[idf['test_set']==True].copy()
-
+    idf.rename(columns={'all_unique_id':'item_id'},inplace=True)
     return idf[idf['tags'].apply(lambda eachList : set(all_filter_values).issubset(set(eachList)))].head(N).to_dict(orient='records')
     # return idf.to_dict(orient='records')
 
@@ -209,7 +209,7 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,test_sam
         if profile_user_id:
             for profile_id in profile_user_id:
                 if LightFM_Obj.check_profile_interaction(profile_id=profile_id):
-                    return cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_user_id,N=N,test_sample_flag = test_sample_flag)
+                    return cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_id,N=N,test_sample_flag = test_sample_flag)
         ####  If No Similar profile from same user - Popular recommendation from all profile
         popular_recommdendations = []
         for profile_id in similar_profile_cutoff['user_id'].to_list():
