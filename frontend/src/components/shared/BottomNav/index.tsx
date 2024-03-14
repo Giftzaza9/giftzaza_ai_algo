@@ -11,9 +11,11 @@ import { observer } from 'mobx-react-lite';
 import { bottomNavState } from '../../../store/BottomNavState';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
+import { iphoneSeCondition } from '../../../constants/constants';
+import { theme } from '../../../utils/theme';
 
 export const BottomNav = observer(() => {
-  const isSmallScreen = useMediaQuery('(max-width: 400px) and (max-height: 700px)');
+  const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const navigate = useNavigate();
   const { isVisible } = bottomNavState;
   const { user } = userStore;
@@ -39,24 +41,28 @@ export const BottomNav = observer(() => {
         width: '100%',
         zIndex: 1000,
         height: isSmallScreen ? '50px' : '60px',
+        backgroundColor: theme.palette.secondary.main,
+        '& .Mui-selected': { color: 'rgba(221, 110, 63, 1)' },
       }}
     >
-      <BottomNavigationAction label="Home" value="home" icon={<GoHomeFill style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} onClick={() => navigate('/')} />
       <BottomNavigationAction
-        label="Profiles"
+        value="home"
+        icon={<GoHomeFill style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
+        onClick={() => navigate('/')}
+      />
+      <BottomNavigationAction
         value="profiles"
         icon={<GridViewRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
         onClick={() => navigate('/profiles')}
-      /> 
-      <BottomNavigationAction label="Favorites" value="favorites" icon={<FavoriteIcon style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} />
-      <BottomNavigationAction label="User" value="user" icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} />
-      {/* {user?.role === 'admin' && (
-        <BottomNavigationAction
-          label="Administration"
-          value="administration"
-          icon={<AdminPanelSettings style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />}
-        />
-      )} */}
+      />
+      <BottomNavigationAction
+        value="favorites"
+        icon={<FavoriteIcon style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
+      />
+      <BottomNavigationAction
+        value="user"
+        icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
+      />
     </BottomNavigation>
   );
 });
