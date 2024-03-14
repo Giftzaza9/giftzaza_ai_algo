@@ -50,13 +50,6 @@ export const BottomNav = observer(() => {
       /> 
       <BottomNavigationAction label="Favorites" value="favorites" icon={<FavoriteIcon style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} />
       <BottomNavigationAction label="User" value="user" icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />} />
-      {/* {user?.role === 'admin' && (
-        <BottomNavigationAction
-          label="Administration"
-          value="administration"
-          icon={<AdminPanelSettings style={{ fontSize: isSmallScreen ? '24px' : '36px'}} />}
-        />
-      )} */}
     </BottomNavigation>
   );
 });

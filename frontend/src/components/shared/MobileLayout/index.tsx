@@ -6,6 +6,7 @@ import { FC, PropsWithChildren, useState } from 'react';
 import { Tune } from '@mui/icons-material';
 import { EditProfileModal } from '../../profile/EditProfileModal';
 import { Profile } from '../../../constants/types';
+import { iphoneSeCondition } from '../../../constants/constants';
 
 interface _Props {
   fetchProfile?: () => Promise<void>;
@@ -13,7 +14,7 @@ interface _Props {
 }
 
 const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
-  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
+  const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const navigate = useNavigate();
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
   const [profileToUpdate, setProfileToUpdate] = useState<Profile | undefined>();
@@ -46,7 +47,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
         src={require('../../../assets/giftzaza-logo.png')}
         alt="logo"
         style={{
-          width: isSmallScreen ? '100px' : '150px',
+          width: isSmallScreen ? '80px' : '100px',
           cursor: 'pointer',
         }}
         onClick={() => navigate('/')}
@@ -72,7 +73,7 @@ interface Props extends PropsWithChildren {
 }
 
 export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => {
-  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
+  const isSmallScreen = useMediaQuery(iphoneSeCondition);
   return (
     <Grid
       container
@@ -86,7 +87,7 @@ export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => 
       }}
     >
       <MobileHeader profile={profile} fetchProfile={fetchProfile} />
-      <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: isSmallScreen ? '32px' : '40px', marginTop: isSmallScreen ? '56px' : '85px', flexDirection: 'column' }}>{children}</Box>
+      <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb:  isSmallScreen ? '50px' : '60px', marginTop:  isSmallScreen ? '50px' : '76px', flexDirection: 'column' }}>{children}</Box>
     </Grid>
   );
 };

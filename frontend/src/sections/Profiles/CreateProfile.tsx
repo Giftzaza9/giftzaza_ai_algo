@@ -4,7 +4,7 @@ import { MobileLayout } from '../../components/shared/MobileLayout';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { MobileSingleSelectChip } from '../../components/shared/MobileSingleSelectChip';
-import { budgetMap, filterObject, getStartedChips } from '../../constants/constants';
+import { budgetMap, filterObject, getStartedChips, iphoneSeCondition } from '../../constants/constants';
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
 import TripOriginIcon from '@mui/icons-material/TripOrigin';
 import { MobileMultiSelectChip } from '../../components/shared/MobileMultiSelectChip';
@@ -27,7 +27,7 @@ const initialProfileData: Partial<Profile> = {
 };
 
 export const CreateProfile = () => {
-  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
+  const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(0);
   const [styles, setSelectedStyles] = useState<string[]>([]);
@@ -45,7 +45,6 @@ export const CreateProfile = () => {
   }, [interests?.length]);
 
   const handleStarted = (val: string) => {
-    console.log(val);
     if (val === 'Discover gifts for your spouse') handleCreateProfileData('title', val, 2);
     else if (val === 'Discover gifts for your mom') {
       handleCreateProfileData('title', val, 0);
@@ -139,7 +138,7 @@ export const CreateProfile = () => {
         }}
       >
         {/* Progess bar and next & prev arrows */}
-        {page !== 10 && (
+        {page !== 10 && page !== 0 && (
           <Grid>
             <LinearProgress
               color="primary"
@@ -178,6 +177,8 @@ export const CreateProfile = () => {
           </Grid>
         )}
         {page === 0 && (
+          <>
+          <Box></Box>
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
               Let’s get started
@@ -198,6 +199,7 @@ export const CreateProfile = () => {
               ))}
             </Box>
           </Grid>
+          </>
         )}
         {page === 1 && (
           <Grid sx={animationStyle}>

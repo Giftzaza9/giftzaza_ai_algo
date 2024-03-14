@@ -153,3 +153,5 @@ export enum SwipeAction {
   NO_INTERACTION = 'no interaction',
   FINISHED = "FINISHED"
 }
+
+export const iphoneSeCondition = '(max-width: 389px) or (max-height: 700px)'
