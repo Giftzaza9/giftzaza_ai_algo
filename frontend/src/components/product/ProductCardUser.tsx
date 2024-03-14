@@ -1,4 +1,4 @@
-import { Card, CardActionArea, CardMedia, CardContent, Grid, Chip, Typography, useMediaQuery } from '@mui/material';
+import { Card, CardActionArea, CardMedia, CardContent, Grid, Chip, Typography, useMediaQuery, IconButton } from '@mui/material';
 import { Box } from '@mui/system';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
@@ -41,7 +41,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           }}
         >
           <Save width={'22px'} height={'22px'} />
-          <BookmarkBorderIcon sx={{fontSize: '28px'}} onClick={() => handleSave()} />
+          <BookmarkBorderIcon sx={{ fontSize: '28px' }} onClick={() => handleSave()} />
         </Box>
 
         <div className="badge-product-match">
@@ -109,20 +109,23 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                     )}
                   </Box>
                 </Box>
-                <Box
-                  onClick={() => {
-                    setPreviewOpen(true);
-                  }}
-                >
-                  <img
-                    src={require('../../assets/arrow-down.png')}
-                    alt="logo"
-                    style={{
-                      width: '30px',
-                      cursor: 'pointer',
+                <Box>
+                  <IconButton
+                    onClick={() => {
+                      setPreviewOpen(true);
                     }}
-                    // onClick={() => navigate('/')}
-                  />
+                    sx={{border: '1px solid rgba(221, 110, 63, 1)'}}
+                  >
+                    <img
+                      src={require('../../assets/arrow-down.png')}
+                      alt="logo"
+                      style={{
+                        width: '30px',
+                        cursor: 'pointer',
+                      }}
+                      // onClick={() => navigate('/')}
+                    />
+                  </IconButton>
                 </Box>
               </Box>
             </Grid>
