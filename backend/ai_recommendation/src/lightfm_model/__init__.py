@@ -30,8 +30,8 @@ class Global_cls:
                     keys=list(map(self.preprocess_str,self.cat_odata[i]['category']))
                     self.cat_dict[i] = keys
                 if i not in self.hard_filters: ### Hard Filters removed from the model parameters
-                        self.attr_list.extend(keys)
-                        self.attr_weights.update(dict(zip(keys,[self.cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
+                    self.attr_list.extend(keys)
+                self.attr_weights.update(dict(zip(keys,[self.cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
         with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "useractivity.json"),'r') as fr:
             self.user_activity_types = json.load(fr)
 
@@ -114,40 +114,11 @@ def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,te
     
     return idf.to_dict(orient='records')
 
-def train_with_mongodb(hil_flag = False,is_active_flag=True):
+def train_with_mongodb(hil_flag = False,is_active_flag=True,weight_flag=True):
     try:
         try:
             Mongodb_Obj.connect()
-            
-            def get_random_profile():
-                preference_dict = {}
-                for i in Global_Obj.cat_dict:
-                    if i in ['gender','age_category','relationship','occasion']:
-                        preference_dict[i] = list(np.random.choice(Global_Obj.cat_dict[i],1))
-                    else:
-                        preference_dict[i] = list(np.random.choice(Global_Obj.cat_dict[i],np.random.randint(1, 4),replace=False))
-                return preference_dict
-            
-            def get_profile_interactions(attributes,profile_id,user_id):
-                try:
-                    temp_df = pd.DataFrame(create_recommendation(user_id,attributes))
-                    temp_dict = {}
-                    temp_dict["dislike"] = list(np.random.choice(temp_df["item_id"].to_list()[5:],np.random.randint(1,3)))
-                    temp_dict["liked"] = list(np.random.choice(temp_df["item_id"].to_list(),np.random.randint(1,8)))
-                    temp_dict["loved"] = list(np.random.choice(temp_df["item_id"].to_list()[:7],np.random.randint(1,5)))
-                    temp_dict["saved"] = list(np.random.choice(temp_df["item_id"].to_list()[:5],np.random.randint(1,5)))
-                    temp_dict["bought"] = list(np.random.choice(temp_df["item_id"].to_list()[:3],1))
-                    temp_list = list(itertools.chain(*[ list(zip([k]*len(v),[Global_Obj.user_activity_types[k]]*len(v),v)) for k,v in temp_dict.items()]))
-                    tdf = pd.DataFrame(temp_list,columns = ["activity_type","weight","productId"])
-                    tdf['profileId'] = profile_id
-                    tdf['userId'] = user_id
-                    tdf['_id'] = "temp_activity_id"
-                    return tdf
-                except Exception as e:
-                    print(e)
-                    return np.nan
                 
-
             df_items = Mongodb_Obj.get_collection_as_dataframe("test","products")
             filter_condition = True
             if is_active_flag:
@@ -155,48 +126,58 @@ def train_with_mongodb(hil_flag = False,is_active_flag=True):
             if hil_flag:
                 filter_condition = (filter_condition) & (df_items['hil']==hil_flag)
             df_items = df_items[filter_condition]
-            # df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
-            df_users = pd.DataFrame(data = [['test_profile_id'+str(i),[],np.random.randint(10),get_random_profile(),'test_user_id'+str(i%50)] for i in range(100)],
-                                    columns = ['_id', 'recommended_products', '__v','profile_preferences','userId'])
-            df_users['tags'] = df_users['profile_preferences'].apply(lambda preferences : list(itertools.chain(*list(preferences.values()))))
-            # df_interactions = Mongodb_Obj.get_collection_as_dataframe("test","useractivities")
-            list_interactions_df = df_users.apply(lambda row : get_profile_interactions(row['tags'],row['_id'],row['userId']) , axis=1)
-            list_interactions_df = list_interactions_df.dropna()
-            df_interactions = pd.concat(list_interactions_df.tolist(),ignore_index=True)
-            # df_interactions = pd.DataFrame(data = [["test_activity_id1",'65b369606932958a4f56f4d2',"test_user_id1",np.random.randint(10),'test_profile_id1']],
-            #                             columns = ['_id', 'productId', 'userId', '__v', 'profileId'] )
+
+            df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
+            df_users.rename({"preferences":"tags",
+                             "user_id":"userId"},inplace=True, axis=1)
+            
+            df_interactions = Mongodb_Obj.get_collection_as_dataframe("test","useractivities")
+            df_interactions.dropna(inplace=True)
+            df_interactions.rename({"product_id":"productId",
+                                    "user_id":"userId",
+                                    "profile_id":"profileId",
+                                    "activity":"activity_type"},inplace=True, axis=1)
         except Exception as e:
             raise Exception(f"Error in Connection to Mongodb : {e}")
-        if "weight" in df_interactions.columns:
+        
+        if weight_flag:
+            df_interactions['weight'] = df_interactions['activity_type'].map(Global_Obj.user_activity_types)
             rdf_interactions = df_interactions[['profileId','productId','activity_type','weight']].copy()
+            rdf_interactions = rdf_interactions.astype({'profileId': 'str',
+                                                        'productId': 'str',
+                                                        'activity_type': 'str'
+                                                        })
         else:
             rdf_interactions = df_interactions[['profileId','productId']].copy()
-        rdf_interactions = rdf_interactions.astype(str)
-        if "weight" in df_interactions.columns:
-            rdf_interactions = rdf_interactions.astype({'weight': 'float32'})
 
         rdf_items = df_items[['_id','tags']].copy()
         rdf_items['_id'] = rdf_items['_id'].astype(str)
         rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(), eachList)) )
         rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : list(set(eachList) & set(Global_Obj.attr_list)))
-        ### with weights assigned
-        # rdf_items['tags'] = rdf_items['tags'].apply(lambda eachList : {key: attr_weights[key] for key in attr_weights.keys() & set(eachList)})
 
         rdf_users = df_users[['_id','tags']].copy()
         rdf_users['_id'] = rdf_users['_id'].astype(str)
         rdf_users['tags'] = rdf_users['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(), eachList)) )
         rdf_users['tags'] = rdf_users['tags'].apply(lambda eachList : list(set(eachList) & set(Global_Obj.attr_list)))
 
-        df_users['all_unique_id'] = df_users['_id'].copy()
-        df_items['all_unique_id'] = df_items['_id'].copy()
+        df_users['all_unique_id'] = df_users['_id'].astype(str).copy()
+        df_items['all_unique_id'] = df_items['_id'].astype(str).copy()
 
-        LightFM_Obj.Re_Train(rdf_users.rename(columns={"_id":"userID","tags":"user_attr_list"}).to_dict(orient='list'),
-                rdf_items.rename(columns={"_id":"itemID","tags":"item_attr_list"}).to_dict(orient='list'),
-                rdf_interactions.rename(columns={"profileId":"userID","productId":"itemID"}).to_dict(orient='list'),
+        rdf_users.rename(columns={"_id":"userID","tags":"user_attr_list"},inplace=True)
+        rdf_items.rename(columns={"_id":"itemID","tags":"item_attr_list"},inplace=True)
+        rdf_interactions.rename(columns={"profileId":"userID","productId":"itemID"},inplace=True)
+
+        rdf_interactions = rdf_interactions[rdf_interactions['userID'].isin(set(rdf_users['userID']))]
+        rdf_interactions = rdf_interactions[rdf_interactions['itemID'].isin(set(rdf_items['itemID']))]
+
+        LightFM_Obj.Re_Train(rdf_users.to_dict(orient='list'),
+                rdf_items.to_dict(orient='list'),
+                rdf_interactions.to_dict(orient='list'),
                 Global_Obj.attr_list,
                 df_users,
                 df_items,
-                df_interactions
+                df_interactions,
+                Global_Obj
                 )
     except Exception as e:
         return {"status":False,
@@ -223,7 +204,6 @@ def test_with_sample(N):
 def create_recommendation(user_id,new_attributes,content_attr=None,N=20,test_sample_flag=False):
     df_similar_profile = pd.DataFrame(cs_similar_user(new_attributes,N=10))
     similar_profile_cutoff = df_similar_profile[df_similar_profile['matching_score']>0.7][:5]
-    similar_profile_of_current_user_flag = False
     if similar_profile_cutoff.shape[0] > 0: ### No similar Profile
         profile_user_id = LightFM_Obj.get_userid_of_profile(similar_profile_cutoff,user_id) ### similar profile from same user
         if profile_user_id:

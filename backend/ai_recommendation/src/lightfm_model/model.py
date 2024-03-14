@@ -107,16 +107,16 @@ class LightFM_cls:
         feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
         i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
         
-        soft_filter_dict = {}
-        weight_assigner = {}
-        total = 0
-        for i in Global_Obj.soft_filters:
-            common_list = list(set(Global_Obj.cat_dict[i]) & set(soft_filter_attrs))
-            soft_filter_dict.update({i: common_list})
-            if len(common_list)!=0:
-                total += Global_Obj.cat_odata[i]['manual_weights']
-                weight_assigner.update(dict(zip(common_list,[Global_Obj.cat_odata[i]['manual_weights']/len(common_list) for _ in range(len(common_list))])))
-        weight_assigner = {k: v / total for k, v in weight_assigner.items()}
+        # soft_filter_dict = {}
+        # weight_assigner = {}
+        # total = 0
+        # for i in Global_Obj.soft_filters:
+        #     common_list = list(set(Global_Obj.cat_dict[i]) & set(soft_filter_attrs))
+        #     soft_filter_dict.update({i: common_list})
+        #     if len(common_list)!=0:
+        #         total += Global_Obj.cat_odata[i]['manual_weights']
+        #         weight_assigner.update(dict(zip(common_list,[Global_Obj.cat_odata[i]['manual_weights']/len(common_list) for _ in range(len(common_list))])))
+        # weight_assigner = {k: v / total for k, v in weight_assigner.items()}
         
         summation = 0
         for idx in range(len(feat_idxs)):
@@ -154,6 +154,7 @@ class LightFM_cls:
         summation = 0
         for idx in range(len(feat_idxs)):
             summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
+        
         filter_item_embeddings = np.array(filter_idf['embedding_tags'].to_list())
         scores = filter_item_embeddings.dot(summation)
         item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
@@ -258,15 +259,15 @@ class LightFM_cls:
         i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
         
         soft_filter_dict = {}
-        weight_assigner = {}
-        total = 0
-        for i in Global_Obj.soft_filters:
-            common_list = list(set(Global_Obj.cat_dict[i]) & set(soft_filter_attrs))
-            soft_filter_dict.update({i: common_list})
-            if len(common_list)!=0:
-                total += Global_Obj.cat_odata[i]['manual_weights']
-                weight_assigner.update(dict(zip(common_list,[Global_Obj.cat_odata[i]['manual_weights']/len(common_list) for _ in range(len(common_list))])))
-        weight_assigner = {k: v / total for k, v in weight_assigner.items()}
+        # weight_assigner = {}
+        # total = 0
+        # for i in Global_Obj.soft_filters:
+        #     common_list = list(set(Global_Obj.cat_dict[i]) & set(soft_filter_attrs))
+        #     soft_filter_dict.update({i: common_list})
+        #     if len(common_list)!=0:
+        #         total += Global_Obj.cat_odata[i]['manual_weights']
+        #         weight_assigner.update(dict(zip(common_list,[Global_Obj.cat_odata[i]['manual_weights']/len(common_list) for _ in range(len(common_list))])))
+        # weight_assigner = {k: v / total for k, v in weight_assigner.items()}
         
         summation = 0
         for idx in range(len(feat_idxs)):
@@ -304,15 +305,15 @@ class LightFM_cls:
         matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
 
-    def Re_Train(self,new_user_meta,new_item_meta,new_user_item_interactions,attr_list,df_users,df_items,df_interactions):
+    def Re_Train(self,new_user_meta,new_item_meta,new_user_item_interactions,attr_list,df_users,df_items,df_interactions,Global_Obj):
         dataset = Dataset()
         dataset.fit(users=new_user_meta['userID'], ## new 
             items=new_item_meta['itemID'],
             item_features=attr_list,
             user_features=attr_list)
 
-        item_features = dataset.build_item_features([(x,y) for x,y in zip(new_item_meta['itemID'],new_item_meta['item_attr_list'])], normalize=True)
-        user_features = dataset.build_user_features([(x,y) for x,y in zip(new_user_meta['userID'],new_user_meta['user_attr_list'])], normalize=True)
+        item_features = dataset.build_item_features([(x,dict(zip(y,[*map(Global_Obj.attr_weights.get,y)]))) for x,y in zip(new_item_meta['itemID'],new_item_meta['item_attr_list'])], normalize=True)
+        user_features = dataset.build_user_features([(x,dict(zip(y,[*map(Global_Obj.attr_weights.get,y)]))) for x,y in zip(new_user_meta['userID'],new_user_meta['user_attr_list'])], normalize=True)
         if "weight" in new_user_item_interactions.keys():
             (interactions, weights) = dataset.build_interactions((x, y, w) for x,y,w in zip(new_user_item_interactions['userID'],new_user_item_interactions['itemID'],new_user_item_interactions['weight']))
         else:
