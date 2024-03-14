@@ -1,4 +1,4 @@
-import { Grid, IconButton, useMediaQuery } from '@mui/material';
+import { Backdrop, CircularProgress, Grid, IconButton, useMediaQuery } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
@@ -7,6 +7,8 @@ import { Tune } from '@mui/icons-material';
 import { EditProfileModal } from '../../profile/EditProfileModal';
 import { Profile } from '../../../constants/types';
 import { iphoneSeCondition } from '../../../constants/constants';
+import { observer } from 'mobx-react-lite';
+import { loaderState } from '../../../store/ShowLoader';
 
 interface _Props {
   fetchProfile?: () => Promise<void>;
@@ -74,8 +76,9 @@ interface Props extends PropsWithChildren {
   profile?: Profile;
 }
 
-export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => {
+export const MobileLayout = observer(({ children, profile, fetchProfile }: Props) => {
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
+  const { loading, setLoading } = loaderState;
   return (
     <Grid
       container
@@ -89,7 +92,35 @@ export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => 
       }}
     >
       <MobileHeader profile={profile} fetchProfile={fetchProfile} />
-      <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb:  isSmallScreen ? '50px' : '60px', marginTop:  isSmallScreen ? '50px' : '76px', flexDirection: 'column' }}>{children}</Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexGrow: 1,
+          overflowY: 'auto',
+          pb: isSmallScreen ? '50px' : '60px',
+          marginTop: isSmallScreen ? '50px' : '76px',
+          flexDirection: 'column',
+        }}
+      >
+        {children}
+      </Box>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: 9999 }}
+        open={loading}
+        onClick={() => {
+          setLoading(false);
+        }}
+      >
+        <CircularProgress
+          sx={{
+            width: '150px!important',
+            height: '150px!important',
+            color: 'rgba(221, 110, 63, 1)',
+            alignSelf: 'center',
+            margin: '20px auto',
+          }}
+        />
+      </Backdrop>
     </Grid>
   );
-};
+});

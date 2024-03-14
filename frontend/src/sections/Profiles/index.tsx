@@ -5,6 +5,8 @@ import { Profile } from '../../constants/types';
 import { getProfiles } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { loaderState } from '../../store/ShowLoader';
 
 const startedChipsStyle = {
   padding: '32px 15px',
@@ -27,7 +29,8 @@ const startedChipsStyle = {
   },
 };
 
-export const Profiles = () => {
+export const Profiles = observer(() => {
+  const { setLoading } = loaderState;
   const navigate = useNavigate();
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
@@ -36,10 +39,16 @@ export const Profiles = () => {
   }, []);
 
   const fetchProfiles = async () => {
-    const { data, error } = await getProfiles();
-    if (error) toast.error(error || 'Faild to fetch profiles');
-    else {
-      setProfiles(data);
+    try {
+      setLoading(true);
+      const { data, error } = await getProfiles();
+      if (error) toast.error(error || 'Faild to fetch profiles');
+      else {
+        setProfiles(data);
+      }
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
     }
   };
 
@@ -76,4 +85,4 @@ export const Profiles = () => {
       </Container>
     </MobileLayout>
   );
-};
+});

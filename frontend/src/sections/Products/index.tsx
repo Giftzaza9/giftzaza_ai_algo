@@ -11,18 +11,27 @@ import { Profile } from '../../constants/types';
 import { SimilarProductBody, getSimilarProducts } from '../../services/product';
 import { SwipeAction } from '../../constants/constants';
 import { storeUserActivity, userActivityBody } from '../../services/user';
+import { observer } from 'mobx-react-lite';
+import { loaderState } from '../../store/ShowLoader';
 
-export const Products = () => {
+export const Products = observer(() => {
+  const { setLoading } = loaderState;
   const { profileId } = useParams();
   const [products, setProducts] = useState<any>([]);
   const [profile, setProfile] = useState<Profile | undefined>();
 
   const fetchProfile = async () => {
-    const { data, error } = await getProfile(profileId as string);
-    if (error) toast.error(error || 'Failed to fetch profile data !');
-    else {
-      setProfile(data);
-      setProducts(data?.recommended_products?.map((item: any) => ({ ...item })).reverse());
+    try {
+      setLoading(true);
+      const { data, error } = await getProfile(profileId as string);
+      if (error) toast.error(error || 'Failed to fetch profile data !');
+      else {
+        setProfile(data);
+        setProducts(data?.recommended_products?.map((item: any) => ({ ...item })).reverse());
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
     }
   };
 
@@ -39,9 +48,7 @@ export const Products = () => {
   const handleProductAction = (direction: SwipeDirection, action: SwipeAction, currentID: string) => {
     if (action === SwipeAction.SIMILAR) {
       fetchSimilarProducts(currentID);
-    }
-    else 
-      saveUserActivity(currentID, action);
+    } else saveUserActivity(currentID, action);
   };
 
   const fetchSimilarProducts = async (productId: string) => {
@@ -108,4 +115,4 @@ export const Products = () => {
       </Container>
     </MobileLayout>
   );
-};
+});
