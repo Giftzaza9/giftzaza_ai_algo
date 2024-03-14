@@ -62,6 +62,7 @@ export const BottomNav = observer(() => {
       <BottomNavigationAction
         value="user"
         icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
+        onClick={() => navigate('/user')}
       />
     </BottomNavigation>
   );

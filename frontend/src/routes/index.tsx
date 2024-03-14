@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Auth } from '../sections/Auth';
-import { Dashboard } from '../sections/Dashboard';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import { userStore } from '../store/UserStore';
 import { decodeToken } from '../utils/decodeToken';
@@ -13,6 +12,7 @@ import { Products } from '../sections/Products';
 import { observer } from 'mobx-react-lite';
 import { Profiles } from '../sections/Profiles';
 import { CreateProfile } from '../sections/Profiles/CreateProfile';
+import { User } from '../sections/User';
 
 const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
@@ -24,6 +24,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
       <Route path="/create-profile" element={<CreateProfile />} />
       <Route path="/profiles/:profileId" element={<Products />} />
       <Route path="/loved" element={<Loved />} />
+      <Route path="/user" element={<User />} />
     </>
   );
 
@@ -51,7 +52,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
   } else if (app_role === roleEnum.USER) {
     return <>{commonRoutes}</>;
   } else {
-    return <Route path="/" element={<Dashboard />} />;
+    return <Route path="/*" element={<Auth />} />;
   }
 };
 
