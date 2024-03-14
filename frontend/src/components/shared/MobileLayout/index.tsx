@@ -1,4 +1,4 @@
-import { Grid, IconButton, useMediaQuery } from '@mui/material';
+import { Backdrop, CircularProgress, Grid, IconButton, useMediaQuery } from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
@@ -6,6 +6,9 @@ import { FC, PropsWithChildren, useState } from 'react';
 import { Tune } from '@mui/icons-material';
 import { EditProfileModal } from '../../profile/EditProfileModal';
 import { Profile } from '../../../constants/types';
+import { iphoneSeCondition } from '../../../constants/constants';
+import { observer } from 'mobx-react-lite';
+import { loaderState } from '../../../store/ShowLoader';
 
 interface _Props {
   fetchProfile?: () => Promise<void>;
@@ -13,7 +16,7 @@ interface _Props {
 }
 
 const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
-  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
+  const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const navigate = useNavigate();
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
   const [profileToUpdate, setProfileToUpdate] = useState<Profile | undefined>();
@@ -38,7 +41,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
         backgroundColor: theme.palette.secondary.main,
         position: 'fixed',
         top: 0,
-        zIndex: 1000,
+        zIndex: 100,
         justifyContent: 'space-between',
       }}
     >
@@ -46,7 +49,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
         src={require('../../../assets/giftzaza-logo.png')}
         alt="logo"
         style={{
-          width: isSmallScreen ? '100px' : '150px',
+          width: isSmallScreen ? '80px' : '100px',
           cursor: 'pointer',
         }}
         onClick={() => navigate('/')}
@@ -57,6 +60,8 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
             setProfileToUpdate(profile);
             setEditProfileModalOpen(true);
           }}
+          size="small"
+          sx={{ p: 0 }}
         >
           <Tune fontSize={'large'} />
         </IconButton>
@@ -71,8 +76,9 @@ interface Props extends PropsWithChildren {
   profile?: Profile;
 }
 
-export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => {
-  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
+export const MobileLayout = observer(({ children, profile, fetchProfile }: Props) => {
+  const isSmallScreen = useMediaQuery(iphoneSeCondition);
+  const { loading, setLoading } = loaderState;
   return (
     <Grid
       container
@@ -86,7 +92,35 @@ export const MobileLayout: FC<Props> = ({ children, profile, fetchProfile }) => 
       }}
     >
       <MobileHeader profile={profile} fetchProfile={fetchProfile} />
-      <Box sx={{ display: 'flex', flexGrow: 1, overflowY: 'auto', pb: isSmallScreen ? '32px' : '40px', marginTop: isSmallScreen ? '56px' : '85px', flexDirection: 'column' }}>{children}</Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexGrow: 1,
+          overflowY: 'auto',
+          pb: isSmallScreen ? '50px' : '60px',
+          marginTop: isSmallScreen ? '50px' : '76px',
+          flexDirection: 'column',
+        }}
+      >
+        {children}
+      </Box>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: 9999 }}
+        open={loading}
+        onClick={() => {
+          setLoading(false);
+        }}
+      >
+        <CircularProgress
+          sx={{
+            width: '150px!important',
+            height: '150px!important',
+            color: 'rgba(221, 110, 63, 1)',
+            alignSelf: 'center',
+            margin: '20px auto',
+          }}
+        />
+      </Backdrop>
     </Grid>
   );
-};
+});

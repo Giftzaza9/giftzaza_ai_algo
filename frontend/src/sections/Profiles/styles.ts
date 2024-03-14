@@ -1,5 +1,5 @@
 export const startedChipsStyle = {
-  padding: '32px 15px',
+  padding: '28px 15px',
   borderRadius: '32px',
   backgroundColor: 'white',
   color: 'rgba(0, 0, 0, 1)',
@@ -17,6 +17,7 @@ export const startedChipsStyle = {
     backgroundColor: 'rgba(221, 110, 63, 1)!important',
     color: 'white',
   },
+  border: 0
 };
 
 export const genderChipsStyle = {
@@ -47,5 +48,5 @@ export const forwardButtonStyle ={
   fontSize: '18px',
   fontFamily: 'Inter',
   fontWeight: '600',
-  padding: '8px 16px',
+  padding: '6px 15px!important',
 }

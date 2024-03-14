@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Container, Grid, Box, Chip, TextField, LinearProgress, CircularProgress, Button, useMediaQuery } from '@mui/material';
+import {
+  Typography,
+  Container,
+  Grid,
+  Box,
+  Chip,
+  TextField,
+  LinearProgress,
+  CircularProgress,
+  Button,
+  useMediaQuery,
+} from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { MobileSingleSelectChip } from '../../components/shared/MobileSingleSelectChip';
-import { budgetMap, filterObject, getStartedChips } from '../../constants/constants';
+import { budgetMap, filterObject, getStartedChips, iphoneSeCondition } from '../../constants/constants';
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
 import TripOriginIcon from '@mui/icons-material/TripOrigin';
 import { MobileMultiSelectChip } from '../../components/shared/MobileMultiSelectChip';
@@ -27,7 +38,7 @@ const initialProfileData: Partial<Profile> = {
 };
 
 export const CreateProfile = () => {
-  const isSmallScreen = useMediaQuery('(max-width: 400px) or (max-height: 700px)');
+  const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const navigate = useNavigate();
   const [page, setPage] = useState<number>(0);
   const [styles, setSelectedStyles] = useState<string[]>([]);
@@ -45,9 +56,12 @@ export const CreateProfile = () => {
   }, [interests?.length]);
 
   const handleStarted = (val: string) => {
-    console.log(val);
-    if (val === 'Discover gifts for your spouse') handleCreateProfileData('title', val, 2);
-    else if (val === 'Discover gifts for your mom') {
+    if (val === 'View existing giftee profiles') {
+      navigate('/profiles');
+    } else if (val === 'Discover gifts for your spouse') {
+      handleCreateProfileData('title', val, 0);
+      handleCreateProfileData('relation', 'Spouse or Significant Other', 3);
+    } else if (val === 'Discover gifts for your mom') {
       handleCreateProfileData('title', val, 0);
       handleCreateProfileData('relation', 'Parent', 3);
     } else handleCreateProfileData('', val, 1);
@@ -60,7 +74,6 @@ export const CreateProfile = () => {
       min_price: budgetMap[budget as keyof typeof budgetMap]?.min,
       max_price: budgetMap[budget as keyof typeof budgetMap]?.max,
     };
-    console.log({ payload });
     const { data, error } = await createProfile(payload!);
     if (error) {
       toast.error(error || 'Failed to create profile !');
@@ -139,7 +152,7 @@ export const CreateProfile = () => {
         }}
       >
         {/* Progess bar and next & prev arrows */}
-        {page !== 10 && (
+        {page !== 10 && page !== 0 && (
           <Grid>
             <LinearProgress
               color="primary"
@@ -157,12 +170,30 @@ export const CreateProfile = () => {
                 onClick={() => handleArrows(-1)}
               />
               {page === 9 ? (
-                <Button sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
-                  Done
+                <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
+                  <Typography
+                    sx={{
+                      fontSize: '16px',
+                      fontFamily: 'Inter',
+                      fontWeight: 600,
+                      textTransform: 'none',
+                    }}
+                  >
+                    Done
+                  </Typography>
                 </Button>
               ) : page === 8 ? (
-                <Button sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
-                  Next
+                <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
+                  <Typography
+                    sx={{
+                      fontSize: '16px',
+                      fontFamily: 'Inter',
+                      fontWeight: 600,
+                      textTransform: 'none',
+                    }}
+                  >
+                    Next
+                  </Typography>
                 </Button>
               ) : (
                 <ArrowForwardIosIcon
@@ -178,30 +209,33 @@ export const CreateProfile = () => {
           </Grid>
         )}
         {page === 0 && (
-          <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
-              Let’s get started
-            </Typography>
-            <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
-              {getStartedChips.map((el, index) => (
-                <Chip
-                  key={index}
-                  variant="outlined"
-                  onClick={(e: any) => handleStarted(e.target.textContent)}
-                  label={el}
-                  sx={{
-                    ...startedChipsStyle,
-                    padding: isSmallScreen ? '24px 12px' : startedChipsStyle.padding,
-                    fontSize: isSmallScreen ? '16px' : startedChipsStyle.fontSize,
-                  }}
-                />
-              ))}
-            </Box>
-          </Grid>
+          <>
+            <Box></Box>
+            <Grid sx={animationStyle}>
+              <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2, pl: 2 }}>
+                Let’s get started
+              </Typography>
+              <Box display={'flex'} flexDirection={'column'} rowGap={'10px'} p={1}>
+                {getStartedChips.map((el, index) => (
+                  <Chip
+                    key={index}
+                    variant="outlined"
+                    onClick={(e: any) => handleStarted(e.target.textContent)}
+                    label={el}
+                    sx={{
+                      ...startedChipsStyle,
+                      padding: isSmallScreen ? '24px 12px' : startedChipsStyle.padding,
+                      fontSize: isSmallScreen ? '16px' : startedChipsStyle.fontSize,
+                    }}
+                  />
+                ))}
+              </Box>
+            </Grid>
+          </>
         )}
         {page === 1 && (
           <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               Who is this gift for?
             </Typography>
             <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
@@ -217,9 +251,10 @@ export const CreateProfile = () => {
             </Box>
           </Grid>
         )}
+
         {page === 2 && (
           <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               How are you related?
             </Typography>
             <MobileSingleSelectChip
@@ -231,9 +266,10 @@ export const CreateProfile = () => {
             />
           </Grid>
         )}
+
         {page === 3 && (
           <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               What’s their age?
             </Typography>
             <MobileSingleSelectChip
@@ -247,7 +283,7 @@ export const CreateProfile = () => {
         )}
         {page === 4 && (
           <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               Gender
             </Typography>
             <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
@@ -284,7 +320,7 @@ export const CreateProfile = () => {
         )}
         {page === 5 && (
           <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               What’s the occasion?
             </Typography>
             <MobileSingleSelectChip
@@ -298,7 +334,7 @@ export const CreateProfile = () => {
         )}
         {page === 6 && (
           <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               When’s the occasion?
             </Typography>
             <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
@@ -321,7 +357,7 @@ export const CreateProfile = () => {
         )}
         {page === 7 && (
           <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               What’s the budget?
             </Typography>
             <MobileSingleSelectChip
@@ -335,10 +371,10 @@ export const CreateProfile = () => {
         )}
         {page === 8 && (
           <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 1 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 1 }}>
               Tell me about their style?
             </Typography>
-            <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '600', mb: 2 }}>
+            <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '400', mb: 2 }}>
               Choose as many as you want
             </Typography>
             <MobileMultiSelectChip
@@ -351,10 +387,10 @@ export const CreateProfile = () => {
         )}
         {page === 9 && (
           <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 1 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 1 }}>
               What are their Interests?
             </Typography>
-            <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '600', mb: 2 }}>
+            <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '400', mb: 2 }}>
               Choose as many as you want
             </Typography>
             <MobileMultiSelectChip
@@ -375,7 +411,7 @@ export const CreateProfile = () => {
             textAlign={'center'}
             sx={animationStyle}
           >
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 1 }}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 1 }}>
               Giftzaza recommendations are being generated
             </Typography>
             <CircularProgress
@@ -387,7 +423,7 @@ export const CreateProfile = () => {
                 margin: '20px auto',
               }}
             />
-            <Typography sx={{ fontSize: '26px', fontFamily: 'Inter', fontWeight: '600', mb: 1 }}>Please wait...</Typography>
+            <Typography sx={{ fontSize: '26px', fontFamily: 'Inter', fontWeight: '400', mb: 1 }}>Please wait...</Typography>
           </Grid>
         )}
       </Container>

@@ -37,10 +37,10 @@ export const MobileSingleSelectChip: FC<Props> = ({ title, items, selectedTag, h
                   small ? (
                     <Typography
                       sx={{
-                        fontSize: '16px',
+                        fontSize: '14px',
                         fontFamily: 'Inter',
                         fontWeight: 500,
-                        lineHeight: '24px',
+                        lineHeight: '21px',
                         color: isSelected ? 'white' : greyText ? 'rgba(96, 113, 132, 1)' : 'black',
                       }}
                     >
