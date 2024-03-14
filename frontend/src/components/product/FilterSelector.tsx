@@ -17,13 +17,16 @@ import { filterObject } from '../../constants/constants';
 import _ from 'lodash';
 import { Dispatch, FC, SetStateAction } from 'react';
 import { RestartAlt } from '@mui/icons-material';
+import { CustomSlider } from '../shared/CustomSlider';
 
 interface Props {
   filters: string[];
   setFilters: Dispatch<SetStateAction<string[]>>;
+  budgetTuples: [number, number];
+  setBudgetTuples: Dispatch<SetStateAction<[number, number]>>;
 }
 
-export const FilterSelector: FC<Props> = ({ filters, setFilters }) => {
+export const FilterSelector: FC<Props> = ({ filters, setFilters, budgetTuples, setBudgetTuples }) => {
   const handleFilterChecked = (checked: boolean, value: string) => {
     if (checked) setFilters((prev) => [...prev, value]);
     else setFilters((prev) => prev.filter((el) => el !== value));
@@ -50,6 +53,7 @@ export const FilterSelector: FC<Props> = ({ filters, setFilters }) => {
               <IconButton
                 onClick={() => {
                   setFilters([]);
+                  setBudgetTuples([0, 1000])
                 }}
               >
                 <RestartAlt />
@@ -98,6 +102,23 @@ export const FilterSelector: FC<Props> = ({ filters, setFilters }) => {
             <Divider variant="fullWidth" sx={{ backgroundColor: 'rgba(233, 218, 241, 1)' }} />
           </>
         ))}
+
+        <Accordion key={'budget'} sx={{ boxShadow: 'none' }}>
+          <AccordionSummary
+            sx={{ '&.Mui-expanded': { minHeight: '56px' } }}
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1-content"
+            id={`panel-budget`}
+          >
+            <Typography variant="subtitle1" fontFamily={'Inter'} fontWeight={600} fontSize={'14px'} lineHeight={'16px'}>
+              {`Budget`}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <CustomSlider maxValue={1000} minDistance={50} valueTuples={budgetTuples} setValueTuples={setBudgetTuples} />
+          </AccordionDetails>
+        </Accordion>
+        <Divider variant="fullWidth" sx={{ backgroundColor: 'rgba(233, 218, 241, 1)' }} />
       </Grid>
     </Grid>
   );
