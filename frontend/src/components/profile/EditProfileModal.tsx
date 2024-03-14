@@ -186,7 +186,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
                 lineHeight: '33px',
               }}
             >
-              Edit Profile
+              Edit
             </Typography>
           </Grid>
           <Grid item>
