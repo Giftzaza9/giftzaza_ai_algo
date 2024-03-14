@@ -92,9 +92,9 @@ def cs_user_item_recommendation(new_user_attributes,similar_user_id = "test_prof
         filter_dict.update({i: common_list})
     filter_user_attributes = list(set(new_user_attributes).difference(set(all_filter_values)))
 
-    idf = LightFM_Obj.cold_start_user_item_recommendation(filter_user_attributes,similar_user_id,test_sample_flag=test_sample_flag)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"score"})
-    idf['tags'] = idf['tags'].apply(lambda eachList : list(map(Global_Obj.preprocess_str,ast.literal_eval(eachList))))
-    idf = idf[idf['test_set']==True].copy()
+    idf = LightFM_Obj.cold_start_user_item_recommendation(filter_user_attributes,similar_user_id)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"matching_score"})
+    if test_sample_flag:
+        idf = idf[idf['test_set']==True].copy()
 
     return idf[idf['tags'].apply(lambda eachList : set(all_filter_values).issubset(set(eachList)))].head(N).to_dict(orient='records')
     # return idf.to_dict(orient='records')
@@ -114,7 +114,7 @@ def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,te
     
     return idf.to_dict(orient='records')
 
-def train_with_mongodb():
+def train_with_mongodb(hil_flag = False,is_active_flag=True):
     try:
         try:
             Mongodb_Obj.connect()
@@ -149,6 +149,12 @@ def train_with_mongodb():
                 
 
             df_items = Mongodb_Obj.get_collection_as_dataframe("test","products")
+            filter_condition = True
+            if is_active_flag:
+                filter_condition = (filter_condition) & (df_items["is_active"]==is_active_flag)
+            if hil_flag:
+                filter_condition = (filter_condition) & (df_items['hil']==hil_flag)
+            df_items = df_items[filter_condition]
             # df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
             df_users = pd.DataFrame(data = [['test_profile_id'+str(i),[],np.random.randint(10),get_random_profile(),'test_user_id'+str(i%50)] for i in range(100)],
                                     columns = ['_id', 'recommended_products', '__v','profile_preferences','userId'])
@@ -161,12 +167,13 @@ def train_with_mongodb():
             #                             columns = ['_id', 'productId', 'userId', '__v', 'profileId'] )
         except Exception as e:
             raise Exception(f"Error in Connection to Mongodb : {e}")
-        if True:
+        if "weight" in df_interactions.columns:
             rdf_interactions = df_interactions[['profileId','productId','activity_type','weight']].copy()
         else:
             rdf_interactions = df_interactions[['profileId','productId']].copy()
         rdf_interactions = rdf_interactions.astype(str)
-        rdf_interactions = rdf_interactions.astype({'weight': 'float32'})
+        if "weight" in df_interactions.columns:
+            rdf_interactions = rdf_interactions.astype({'weight': 'float32'})
 
         rdf_items = df_items[['_id','tags']].copy()
         rdf_items['_id'] = rdf_items['_id'].astype(str)

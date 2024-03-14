@@ -313,7 +313,7 @@ class LightFM_cls:
 
         item_features = dataset.build_item_features([(x,y) for x,y in zip(new_item_meta['itemID'],new_item_meta['item_attr_list'])], normalize=True)
         user_features = dataset.build_user_features([(x,y) for x,y in zip(new_user_meta['userID'],new_user_meta['user_attr_list'])], normalize=True)
-        if True:
+        if "weight" in new_user_item_interactions.keys():
             (interactions, weights) = dataset.build_interactions((x, y, w) for x,y,w in zip(new_user_item_interactions['userID'],new_user_item_interactions['itemID'],new_user_item_interactions['weight']))
         else:
             (interactions, weights) = dataset.build_interactions((x, y) for x,y in zip(new_user_item_interactions['userID'],new_user_item_interactions['itemID']))
@@ -346,7 +346,7 @@ class LightFM_cls:
     
     def get_userid_of_profile(self,profile_df,current_user_id):
         df_profile_user = pd.merge(profile_df,self.user_meta,left_on="user_id",right_on="all_unique_id")
-        return df_profile_user[['userId'] == current_user_id]['all_unique_id'].to_list()
+        return df_profile_user[df_profile_user['userId'] == current_user_id]['all_unique_id'].to_list()
     
     def check_profile_interaction(self,profile_id):
         return profile_id in self.interaction_meta['profileId'].to_list()
