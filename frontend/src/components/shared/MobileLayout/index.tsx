@@ -39,7 +39,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
         backgroundColor: theme.palette.secondary.main,
         position: 'fixed',
         top: 0,
-        zIndex: 1000,
+        zIndex: 100,
         justifyContent: 'space-between',
       }}
     >
@@ -58,6 +58,8 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
             setProfileToUpdate(profile);
             setEditProfileModalOpen(true);
           }}
+          size="small"
+          sx={{ p: 0 }}
         >
           <Tune fontSize={'large'} />
         </IconButton>

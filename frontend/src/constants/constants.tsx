@@ -141,7 +141,7 @@ export const addNewProductSteps = ['Link', 'Product Info', 'Preview'];
 
 export const bottomNavHidePaths = ['welcome', 'login']
 
-export const getStartedChips = ['Discover gifts for your spouse','Discover gifts for your mom', 'Create a new giftee profile', 'View existing giftee profiles', 'Surprise me']
+export const getStartedChips = ['Discover gifts for your spouse','Discover gifts for your mom', 'Create a new giftee profile', 'View existing giftee profiles', 'Start shopping']
 
 
 export enum SwipeAction {

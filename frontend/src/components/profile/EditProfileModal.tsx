@@ -10,6 +10,7 @@ import _ from 'lodash';
 import { updateProfile } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { TransitionProps } from '@mui/material/transitions';
+import { forwardButtonStyle } from '../../sections/Profiles/styles';
 
 interface _Props extends PropsWithChildren {
   title: string;
@@ -191,8 +192,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
           <Grid item>
             <Button
               variant="contained"
-              size="small"
-              sx={{ bgcolor: 'rgba(221, 110, 63, 1)', color: 'white', height: '34px', width: '78px', borderRadius: '67px' }}
+              sx={forwardButtonStyle}
               onClick={() => {
                 handleDone();
               }}
@@ -202,7 +202,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
                   fontSize: '16px',
                   fontFamily: 'Inter',
                   fontWeight: 600,
-                  lineHeight: '27px',
+                  textTransform: 'none',
                 }}
               >
                 Done

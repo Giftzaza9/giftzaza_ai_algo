@@ -9,6 +9,7 @@ import { FC, useState } from 'react';
 import { Product, RecommendedProduct } from '../../constants/types';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { Save } from '../shared/Icons/Save';
+import { iphoneSeCondition } from '../../constants/constants';
 
 interface Props {
   productData: RecommendedProduct;
@@ -18,7 +19,7 @@ interface Props {
 }
 
 export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore }) => {
-  const isSmallScreen = useMediaQuery('(max-width: 400px) and (max-height: 700px)');
+  const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const { title, description, source, thumbnails, image, price_currency, price, rating } = productData?.item_id as Product;
 
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -30,21 +31,21 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           sx={{
             position: 'absolute',
             right: '10px',
-            top: '26px',
+            top: '20px',
             display: 'flex',
             flexDirection: 'column',
-            rowGap: '12px',
+            rowGap: '16px',
             alignItems: 'center',
             cursor: 'pointer',
             zIndex: 10,
           }}
         >
-          <Save width={'18px'} height={'18px'} />
-          <BookmarkBorderIcon sx={{ fontSize: 'x-large' }} onClick={() => handleSave()} />
+          <Save width={'22px'} height={'22px'} />
+          <BookmarkBorderIcon sx={{fontSize: '28px'}} onClick={() => handleSave()} />
         </Box>
 
         <div className="badge-product-match">
-          <span className="match">{Math.round(Number(matchingScore) * 100)}% MATCH</span>
+          <span className="match">{Math.round(Number(matchingScore) * 100)}% Match</span>
         </div>
 
         <CardActionArea>
@@ -90,7 +91,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
                 <Box display={'flex'} flexDirection={'column'} rowGap={1} mt={1}>
                   <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>
-                    {ellipsisText(title, 42)}
+                    {ellipsisText(title, 22)}
                   </Typography>
                   <Typography sx={{ fontSize: '12px', fontFamily: 'Inter' }}>{ellipsisText(description, 95)}</Typography>
                   <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
