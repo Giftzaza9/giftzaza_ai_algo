@@ -153,6 +153,7 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, mat
           <Grid item>
             <IconButton
               size="small"
+              sx={{border: '1px solid rgba(221, 110, 63, 1)'}}
               onClick={() => {
                 onClose();
               }}
