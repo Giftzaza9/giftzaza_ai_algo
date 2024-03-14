@@ -30,42 +30,31 @@ export const CardSwiper = (props: CardSwiperProps) => {
     profile,
   } = props;
 
-  const { handleEnter, handleClickEvents, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, swiperElements } =
+  const { handleEnter, handleClickEvents, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, swiperElements, elements, handleUserActivity } =
     useCardSwiper({
       onDismiss,
       onFinish,
       onEnter,
       data,
+      actionHandler,
     });
-  const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(swiperElements.current[swiperIndex]);
+  // const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(swiperElements.current[swiperIndex]);
+  const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(elements[swiperIndex]);
   const [hideActionButtons, setHideActionButtons] = useState('');
-  const [currentProduct, setCurrentProduct] = useState<Product | null>();
+  // const [currentProduct, setCurrentProduct] = useState<Product | null>();
 
   useEffect(() => {
-    setCurrentSwiper(swiperElements.current[swiperIndex - 1]);
-  }, [swiperElements, swiperIndex]);
+    // setCurrentSwiper(swiperElements.current[swiperIndex - 1]);
+    setCurrentSwiper(elements[swiperIndex - 1]);
+  }, [elements, swiperIndex]);
 
   useEffect(() => {
     currentSwiper && handleEnter(currentSwiper.element, currentSwiper.meta, currentSwiper.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSwiper]);
 
-  useEffect(() => {
-    if (swiperElements?.current) {
-      setCurrentProduct(swiperElements.current[swiperIndex - 1]?.product as unknown as Product);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swiperElements?.current, swiperIndex]);
-
-  const handleUserActivity = (direction: SwipeDirection, action: SwipeAction) => {
-    actionHandler(direction, action, currentProduct?.id);
-    if (action === SwipeAction.BUY) {
-      window.open(currentProduct?.link, '_blank');
-    } else handleClickEvents(direction, action, currentProduct?.id as string);
-  };
-
   const handleSave = () => {
-    handleUserActivity(SwipeDirection.BLANK, SwipeAction.SAVE);
+    handleUserActivity(SwipeDirection.BLANK, SwipeAction.SAVE, false);
   };
 
   const CardComponents = useMemo(
