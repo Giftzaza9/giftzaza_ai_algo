@@ -37,6 +37,7 @@ export type Product = {
   rulebased_tags: string[];
   gptTagging: GPTTagging[];
   hil: boolean;
+  is_active: boolean;
   created_at: string | Date | null;
   updated_at: string | Date | null;
   price: number;

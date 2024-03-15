@@ -78,7 +78,7 @@ export const Onboarding = observer(() => {
             sx={{ width: '100%' }}
             onClick={() => {
               setIsVisible(true);
-              navigate('/profiles');
+              navigate('/');
             }}
           >
             I Agree

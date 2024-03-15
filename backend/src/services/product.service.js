@@ -44,7 +44,7 @@ const queryProducts = async (queryObject) => {
     }
   }
   if (typeof price_min === 'number' && typeof price_max === 'number')
-    filterObject = { ...filterObject, $and: [{ price: { $gte: price_min} }, { price: {$lte: price_max} }] };
+    filterObject = { ...filterObject, $and: [{ price: { $gte: price_min } }, { price: { $lte: price_max } }] };
   else if (typeof price_min === 'number') filterObject.price = { $gte: price_min };
   else if (typeof price_max === 'number') filterObject.price = { $lte: price_max };
   if (typeof hil === 'boolean') filterObject.hil = hil;
@@ -162,6 +162,7 @@ const updateProductById = async (productId, updateBody) => {
   // From User
   product.tags = tags;
   if (curated !== undefined) product.curated = !!curated;
+  product.hil = true;
 
   // From scraping
   if (scrape) {
