@@ -156,7 +156,7 @@ export class Swiper implements SwiperProps {
       60 * direction
     }deg)`;
     this.element.classList.add('dismissing');
-    setTimeout(() => this.element?.remove(), 300);
+    setTimeout(() => this?.element?.remove(), 300);
 
     if (typeof this.onDismiss === 'function') {
       const swipeDirection = direction === 1 ? SwipeAction.LIKE : SwipeAction.DISLIKE;
