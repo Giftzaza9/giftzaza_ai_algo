@@ -18,7 +18,11 @@ router
 
 router
   .route('/similar-products')
-  .post(validate(productValidation.similarProducts), productController.similarProducts)
+  .post(auth(), validate(productValidation.similarProducts), productController.similarProducts)
+
+router
+  .route('/more-products')
+  .post(auth(), validate(productValidation.moreProducts), productController.moreProducts)
 
 router
   .route('/')

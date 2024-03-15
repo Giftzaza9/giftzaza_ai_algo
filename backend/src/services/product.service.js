@@ -6,6 +6,7 @@ const { scrapeProduct } = require('../lib/scrapeProduct');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
 const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleaners');
 const axiosInstance = require('../utils/axiosInstance');
+const {getRecommendedProducts} = require("../services/profile.service")
 
 /**
  * Query for products
@@ -90,6 +91,34 @@ function convertToObjectId(itemIds) {
     _id: mongoose.Types.ObjectId(item.item_id),
   }));
 }
+
+/**
+ * Find get more products
+ * @param {Object} productBody
+ * @returns {Promise<Product>}
+ */
+const getMoreProducts = async (productBody) => {
+  const {user_id, preferences, top_n} = productBody;
+  const payload = {
+    user_id,
+    new_attributes: preferences,
+    top_n
+  } 
+  return await getRecommendedProducts(payload)
+    .then(async (res) => {
+      const objectIds = convertToObjectId(res);
+      const products = await Product.find({ _id: { $in: objectIds } });
+      const products_detail = objectIds?.map((obj) => {
+        const productDetails = products.find((product) => product._id == obj?.item_id);
+        return { ...obj, item_id: productDetails };
+      });
+      return products_detail;
+    })
+    .catch((error) => {
+      console.log('ERROR IN GET MORE PRODUCTS ', error.message);
+      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in fetch more products !');
+    });
+};
 
 /**
  * Find similar products
@@ -203,6 +232,7 @@ module.exports = {
   queryProducts,
   scrapeAndAddProduct,
   similarProducts,
+  getMoreProducts,
   createProduct,
   deleteProductById,
   updateProductById,

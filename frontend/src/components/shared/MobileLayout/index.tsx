@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../../store/ShowLoader';
 
 interface _Props {
-  fetchProfile?: () => Promise<void>;
+  fetchProfile?: () => void;
   profile?: Profile;
 }
 
@@ -25,7 +25,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
     setProfileToUpdate(undefined);
     setEditProfileModalOpen(false);
     if (refetch && typeof fetchProfile === 'function') {
-      await fetchProfile();
+      fetchProfile();
     }
   };
 
@@ -72,7 +72,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
 };
 
 interface Props extends PropsWithChildren {
-  fetchProfile?: () => Promise<void>;
+  fetchProfile?: () => void;
   profile?: Profile;
 }
 
