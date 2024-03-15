@@ -2,6 +2,7 @@ import { isAxiosError } from 'axios';
 import { ApiResponse } from '../constants/types';
 import { decodeToken } from './decodeToken';
 import { toast } from 'react-toastify';
+import dayjs from 'dayjs';
 
 export const generateErrorMessage = (error: Error | unknown): ApiResponse => {
   if (isAxiosError(error) && error?.response?.data?.message) {
@@ -80,3 +81,19 @@ export const ellipsisText = (text: string, maxChars: number) => {
 };
 
 export const getCurrencySymbol = (currency: string) => (currency === 'INR' ? '₹' : currency === 'USD' ? '$' : '~');
+
+export const daysRemaining = (date: string) => {
+  const days = dayjs(date).diff(dayjs(), 'days');
+  if (days < 0) return 'Expired';
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Tomorrow';
+  return `${days} days`;
+};
+
+export const comingUpOn = (date: string) => {
+  const days = dayjs(date).diff(dayjs(), 'days');
+  if (days < 0) return `expired on ${dayjs(date).format('DD/MM/YYYY')}`;
+  if (days === 0) return 'happens today';
+  if (days === 1) return 'coming up on tomorrow';
+  return `coming up on ${dayjs(date).format('DD/MM/YYYY')}`;
+};

@@ -65,3 +65,14 @@ a:hover {
  .carousel .thumbs-wrapper {
 	margin: 0px!important;
  }
+
+ /* Hide the scrollbar */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Optional: Provide a fallback color for scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}

@@ -91,7 +91,6 @@ async function AmazonScraper(product_link, userId) {
         return null;
       }
     });
-    console.log('🚀 ~ constproduct_description=awaitpage.evaluate ~ product_description:', product_description);
 
     await browser.close();
 
