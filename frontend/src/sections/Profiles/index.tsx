@@ -1,4 +1,4 @@
-import { Box, Chip, Container, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { useEffect, useState } from 'react';
 import { Profile } from '../../constants/types';
@@ -7,36 +7,16 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../store/ShowLoader';
-
-const startedChipsStyle = {
-  padding: '32px 15px',
-  borderRadius: '32px',
-  backgroundColor: 'white',
-  color: 'rgba(0, 0, 0, 1)',
-  fontSize: '18px',
-  fontWeight: '600',
-  fontFamily: 'Inter',
-  cursor: 'pointer',
-  width: '-webkit-fill-available',
-  justifyContent: 'flex-start',
-  '&:hover': {
-    backgroundColor: 'rgba(221, 110, 63, 1)!important',
-    color: 'white',
-  },
-  '&:active': {
-    backgroundColor: 'rgba(221, 110, 63, 1)!important',
-    color: 'white',
-  },
-};
+import { Add } from '@mui/icons-material';
+import { ProfileCard } from '../../components/profile/ProfileCard';
+import { EditProfileModal } from '../../components/profile/EditProfileModal';
 
 export const Profiles = observer(() => {
   const { setLoading } = loaderState;
   const navigate = useNavigate();
+  const [profileToEdit, setProfileToEdit] = useState<Profile | undefined>();
   const [profiles, setProfiles] = useState<Profile[]>([]);
-
-  useEffect(() => {
-    fetchProfiles();
-  }, []);
+  const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
 
   const fetchProfiles = async () => {
     try {
@@ -52,37 +32,65 @@ export const Profiles = observer(() => {
     }
   };
 
-  console.log({ profiles });
+  const handleEditProfileModalClose = async (refetch?: boolean) => {
+    setEditProfileModalOpen(false);
+    setProfileToEdit(undefined);
+    if (refetch) await fetchProfiles();
+  };
+
+  const handleProfileToEdit = (profile: Profile) => {
+    setProfileToEdit(profile);
+    setEditProfileModalOpen(true);
+  };
+
+  useEffect(() => {
+    fetchProfiles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <MobileLayout>
-      <Container
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          mb: '20px',
-          flexGrow: 1,
-        }}
-      >
-        <Grid>
-          <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '600', mb: 2 }}>
-            Profiles
+    <MobileLayout profile={profileToEdit}>
+      <Grid container sx={{ rowGap: '1.5vh', columnGap: '1.5vw', padding: '3vw' }}>
+        <Grid
+          item
+          xs={5.9}
+          sm={3.8}
+          md={2.7}
+          lg={1.8}
+          sx={{
+            width: '45vw',
+            height: '28vh',
+            boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)',
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onClick={() => {
+            navigate('/create-profile');
+          }}
+        >
+          <Add sx={{ height: '64px', width: '64px', color: 'rgba(102, 9, 133, 1)' }} />
+          <Typography
+            variant="h6"
+            sx={{
+              color: 'rgba(102, 9, 133, 1)',
+              fontFamily: 'Inter',
+              fontWeight: 600,
+              fontSize: '12px',
+              lineHeight: '18px',
+            }}
+          >
+            Add New Profile
           </Typography>
-          <Box display={'flex'} flexDirection={'column'} rowGap={1}>
-            {profiles?.length > 0 &&
-              profiles?.map((item) => (
-                <Chip
-                  key={item?.id}
-                  variant="outlined"
-                  onClick={() => navigate(`/profiles/${item?.id}`)}
-                  label={item?.title}
-                  sx={startedChipsStyle}
-                />
-              ))}
-          </Box>
         </Grid>
-      </Container>
+        {profiles?.map((profile) => (
+          <ProfileCard handleProfileToEdit={handleProfileToEdit} profile={profile} key={profile?.id} />
+        ))}
+        <EditProfileModal onClose={handleEditProfileModalClose} open={editProfileModalOpen} profile={profileToEdit!} />
+      </Grid>
     </MobileLayout>
   );
 });

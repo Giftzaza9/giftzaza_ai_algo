@@ -4,7 +4,6 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import { GoHomeFill } from 'react-icons/go';
-import { userStore } from '../../../store/UserStore';
 import { observer } from 'mobx-react-lite';
 import { bottomNavState } from '../../../store/BottomNavState';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +16,6 @@ export const BottomNav = observer(() => {
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const navigate = useNavigate();
   const { isVisible } = bottomNavState;
-  const { user } = userStore;
   const [value, setValue] = React.useState('home');
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -29,12 +27,7 @@ export const BottomNav = observer(() => {
       value={value}
       onChange={handleChange}
       sx={{
-        display:
-          user?.role === 'admin' && isVisible
-            ? { xs: 'flex', md: 'none' }
-            : user?.role === 'user' && isVisible
-            ? { xs: 'flex' }
-            : { xs: 'none' },
+        display: isVisible ? { xs: 'flex' } : { xs: 'none' },
         position: 'fixed',
         bottom: 0,
         width: '100%',

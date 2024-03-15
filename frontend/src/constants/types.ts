@@ -50,6 +50,7 @@ export type Product = {
 };
 
 export interface RecommendedProduct {
+  _id: string;
   item_id: string | Product;
   title: string;
   tags: string[];

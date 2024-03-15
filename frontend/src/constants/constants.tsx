@@ -1,4 +1,3 @@
-// import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { Product, roleEnum } from './types';
 
@@ -140,7 +139,7 @@ export const dummyProduct: Product = {
 
 export const addNewProductSteps = ['Link', 'Product Info', 'Preview'];
 
-export const bottomNavHidePaths = ['welcome', 'login'];
+export const bottomNavHidePaths = ['welcome', 'login', 'admin'];
 
 export const getStartedChips = [
   'Discover gifts for your spouse',
@@ -161,3 +160,9 @@ export enum SwipeAction {
 }
 
 export const iphoneSeCondition = '(max-width: 389px) or (max-height: 700px)';
+
+export const profileCardImages = {
+  parent: '/_parent_.jpeg',
+  wife: '/_wife_.jpeg',
+  friend: '/_friend_.jpeg',
+};
