@@ -5,7 +5,7 @@ import { Carousel } from 'react-responsive-carousel';
 import StarIcon from '@mui/icons-material/Star';
 import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
 import { ProductPreviewModalUser } from './ProductPreviewModalUser';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Product, RecommendedProduct } from '../../constants/types';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { Save } from '../shared/Icons/Save';
@@ -16,13 +16,19 @@ interface Props {
   handleSave: any;
   matches: string[];
   matchingScore: string;
+  setPrevProducts: any;
 }
 
-export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore }) => {
+export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts }) => {
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
-  const { title, description, source, thumbnails, image, price_currency, price, rating } = productData?.item_id as Product;
+  const { title, description, source, thumbnails, image, price_currency, price, rating, id } =
+    productData?.item_id as Product;
 
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    setPrevProducts((prev: Iterable<unknown> | null | undefined) => new Set(prev).add(id));
+  }, [id]);
 
   return (
     <>
@@ -41,7 +47,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           }}
         >
           <Save width={'22px'} height={'22px'} />
-          <BookmarkBorderIcon sx={{fontSize: '28px'}} onClick={() => handleSave()} />
+          <BookmarkBorderIcon sx={{ fontSize: '28px' }} onClick={() => handleSave()} />
         </Box>
 
         <div className="badge-product-match">

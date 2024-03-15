@@ -33,7 +33,6 @@ const getRecommendedProducts = async (payload) => {
     console.log('RESPONSEE ', data);
     return data;
   } catch (error) {
-    // console.log('ERROR IN RECOMMENDATION ', error);
     console.log('ERROR IN RECOMMENDATION MSG ', error.message);
     throw new ApiError(httpStatus.BAD_REQUEST, 'Faild in product recommendation');
   }
@@ -131,4 +130,5 @@ module.exports = {
   createProfile,
   deleteProfileById,
   updateProfile,
+  getRecommendedProducts,
 };

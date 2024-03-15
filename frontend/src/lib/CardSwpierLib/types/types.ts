@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react"
 import { SwipeAction } from "../../../constants/constants"
 import { Product, Profile } from "../../../constants/types"
 
@@ -21,6 +22,12 @@ export interface CardSwiperProps extends CardEvents {
   ribbonColors?: CardRibbonColors
   actionHandler?: any
   profile?: Profile
+  setPrevProducts: any
+  prevProducts? :any
+  prevProductsCount?: number
+  refetch: boolean;
+  setRefetch: Dispatch<SetStateAction<boolean>>
+  modelRetrain: () => void
 }
 
 export interface CardEvents {

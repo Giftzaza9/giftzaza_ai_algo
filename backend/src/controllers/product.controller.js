@@ -15,6 +15,12 @@ const scrapeProduct = catchAsync(async (req, res) => {
 
 const similarProducts = catchAsync(async (req, res) => {
   const products = await productService.similarProducts(req.body);
+  res.status(httpStatus.OK).send(products);
+});
+
+const moreProducts = catchAsync(async (req, res) => {
+  req.body.user_id = req.user._id;
+  const products = await productService.getMoreProducts(req.body);
   console.log({products})
   res.status(httpStatus.OK).send(products);
 });
@@ -39,6 +45,7 @@ module.exports = {
   getProducts,
   scrapeProduct,
   similarProducts,
+  moreProducts,
   createProduct,
   deleteProduct,
   updateProduct,

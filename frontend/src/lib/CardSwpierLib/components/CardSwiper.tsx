@@ -28,16 +28,34 @@ export const CardSwiper = (props: CardSwiperProps) => {
     onEnter,
     actionHandler,
     profile,
+    setPrevProducts,
+    prevProducts,
+    prevProductsCount,
+    refetch,
+    setRefetch,
+    modelRetrain,
   } = props;
 
-  const { handleEnter, handleClickEvents, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, swiperElements, elements, handleUserActivity } =
-    useCardSwiper({
-      onDismiss,
-      onFinish,
-      onEnter,
-      data,
-      actionHandler,
-    });
+  const {
+    handleEnter,
+    handleClickEvents,
+    handleNewCardSwiper,
+    dynamicData,
+    isFinish,
+    swiperIndex,
+    swiperElements,
+    elements,
+    setElements,
+    handleUserActivity,
+  } = useCardSwiper({
+    onDismiss,
+    onFinish,
+    onEnter,
+    data,
+    actionHandler,
+    prevProducts,
+    prevProductsCount,
+  });
   // const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(swiperElements.current[swiperIndex]);
   const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(elements[swiperIndex]);
   const [hideActionButtons, setHideActionButtons] = useState('');
@@ -49,6 +67,14 @@ export const CardSwiper = (props: CardSwiperProps) => {
   }, [elements, swiperIndex]);
 
   useEffect(() => {
+    if (refetch) {
+      setElements([]);
+      setRefetch(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refetch]);
+
+  useEffect(() => {
     currentSwiper && handleEnter(currentSwiper.element, currentSwiper.meta, currentSwiper.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSwiper]);
@@ -56,6 +82,14 @@ export const CardSwiper = (props: CardSwiperProps) => {
   const handleSave = () => {
     handleUserActivity(SwipeDirection.BLANK, SwipeAction.SAVE, false);
   };
+  console.log({ dynamicData });
+
+  useEffect(() => {
+    if (swiperIndex - prevProductsCount! === 3) {
+      modelRetrain();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swiperIndex]);
 
   const CardComponents = useMemo(
     () =>
@@ -87,6 +121,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 productData={product}
                 handleSave={handleSave}
                 matchingScore={product?.matching_score}
+                setPrevProducts={setPrevProducts}
               />
             </div>
           )
@@ -96,7 +131,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
   );
 
   useEffect(() => {
-    if (isFinish) setHideActionButtons('hide-action-buttons');
+    // if (isFinish ) setHideActionButtons('hide-action-buttons');
   }, [isFinish]);
 
   useEffect(() => {

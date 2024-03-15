@@ -24,6 +24,20 @@ export const scrapeProduct = async (body: ScrapeProductBody): Promise<ApiRespons
   }
 };
 
+export interface moreProductBody {
+  preferences: string[];
+  top_n: number;
+}
+
+export const moreProducts = async (payload: moreProductBody): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.post(`/products/more-products`, payload);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};
+
 export interface SimilarProductBody {
   item_id: string;
   top_n: number;

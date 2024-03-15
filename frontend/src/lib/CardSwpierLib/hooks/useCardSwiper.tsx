@@ -7,9 +7,19 @@ import { Product } from '../../../constants/types';
 interface UseCardSwiper extends CardEvents {
   data: CardData[];
   actionHandler: any;
+  prevProducts: any;
+  prevProductsCount?: number;
 }
 
-export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data, actionHandler }: UseCardSwiper) => {
+export const useCardSwiper = ({
+  onDismiss,
+  onFinish,
+  onEnter,
+  data,
+  actionHandler,
+  prevProducts,
+  prevProductsCount,
+}: UseCardSwiper) => {
   const swiperElements = useRef<Swiper[]>([]);
   const [swiperIndex, setSwiperIndex] = useState(data?.length);
   const [dynamicData, setDynamicData] = useState(data);
@@ -20,6 +30,7 @@ export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data, actionHandle
   useEffect(() => {
     // Update dynamicData when data changes
     if (data && data?.length > 0) {
+      console.log('USE EFFECT WORKING ', data);
       swiperElements.current = [];
       setDynamicData(data);
       setSwiperIndex(data?.length);
@@ -27,11 +38,16 @@ export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data, actionHandle
     }
   }, [data]);
 
+  console.log({ swiperIndex });
+  console.log({ elements });
+  console.log('CURR PROD ', currentProductRef.current);
   const handleNewCardSwiper = (ref: HTMLDivElement | null, id: CardId, meta: CardMetaData, product: Product) => {
     if (ref) {
       const currentSwiper = new Swiper({ element: ref, id, meta, onDismiss: handleDismiss, swiperElements, product });
       swiperElements.current.push(currentSwiper);
-      setElements((pre) => [...pre, currentSwiper]);
+      setElements((pre) => {
+        return [...pre, currentSwiper];
+      });
     }
   };
 
@@ -49,11 +65,11 @@ export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data, actionHandle
     setSwiperIndex((prev) => prev - 1);
     onDismiss && onDismiss(element, meta, id, action, operation);
     // swiperElements.current.pop();
-    setElements((prevElement) => {
-      const newArray = [...prevElement];
-      newArray.pop();
-      return newArray;
-    });
+    // setElements((prevElement) => {
+    //   const newArray = [...prevElement];
+    //   newArray.pop();
+    //   return newArray;
+    // });
     handleUserActivity(SwipeDirection.BLANK, action, true);
   };
 
@@ -74,8 +90,10 @@ export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data, actionHandle
   };
 
   useEffect(() => {
-    if (!swiperIndex && onFinish) {
+    if (swiperIndex === prevProductsCount && onFinish) {
       setIsFinish(true);
+      console.log('SETTING ELEMENTS EMPTY ');
+      setElements([]);
       onFinish(SwipeAction.FINISHED);
     }
   }, [swiperIndex]);
@@ -93,6 +111,7 @@ export const useCardSwiper = ({ onDismiss, onFinish, onEnter, data, actionHandle
     swiperIndex,
     swiperElements,
     elements,
+    setElements,
     handleEnter,
     setDynamicData,
     handleClickEvents,
