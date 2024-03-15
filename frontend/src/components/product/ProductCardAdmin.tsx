@@ -24,6 +24,7 @@ import { DeleteIcon } from '../shared/Icons/DeleteIcon';
 import _ from 'lodash';
 import { Amazon } from '../shared/Icons/Amazon';
 import { Bloomingdales } from '../shared/Icons/Bloomingdales';
+import { Verified } from '@mui/icons-material';
 
 interface Props {
   product: Product;
@@ -71,7 +72,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
         padding: 2,
       }}
     >
-      {isAdminView && isFocused && (
+      {isAdminView && isFocused && product?.is_active && (
         <CardHeader
           sx={{ position: 'absolute', top: '12px', right: '12px' }}
           action={
@@ -204,6 +205,11 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
             <Typography variant="h6" sx={{ fontFamily: 'Inter', fontSize: '15px', fontWeight: 600, lineHeight: '18.15px' }}>
               {getCurrencySymbol(product?.price_currency)} {product?.price?.toFixed(2)}
             </Typography>
+            {product?.hil && (
+              <Tooltip title={'HIL Verified'}>
+                <Verified sx={{ fontSize: '15px', color: 'rgba(168, 108, 198, 1)' }} />
+              </Tooltip>
+            )}
             <Tooltip title={product?.rating} TransitionComponent={Fade} TransitionProps={{ timeout: 600 }} followCursor>
               <Box>
                 <Rating

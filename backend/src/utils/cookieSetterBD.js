@@ -1,8 +1,6 @@
 module.exports.cookieSetterBD = async (page) => {
   let reloadRequired = false;
   const currentCookies = await page.cookies();
-  console.log('Current Cookies:', currentCookies);
-
   const cookiesToReplace = [
     { name: 'shippingCountry', value: 'US' },
     { name: 'currency', value: 'USD' },

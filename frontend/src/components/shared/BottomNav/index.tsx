@@ -2,17 +2,16 @@ import * as React from 'react';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import { GoHomeFill } from 'react-icons/go';
 import { userStore } from '../../../store/UserStore';
-// import { AdminPanelSettings } from '@mui/icons-material';
 import { observer } from 'mobx-react-lite';
 import { bottomNavState } from '../../../store/BottomNavState';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mui/material';
 import { iphoneSeCondition } from '../../../constants/constants';
 import { theme } from '../../../utils/theme';
+import { Bookmark } from '@mui/icons-material';
 
 export const BottomNav = observer(() => {
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
@@ -40,28 +39,25 @@ export const BottomNav = observer(() => {
         bottom: 0,
         width: '100%',
         zIndex: 1000,
-        height: isSmallScreen ? '50px' : '60px',
+        height: '50px',
         backgroundColor: theme.palette.secondary.main,
         '& .Mui-selected': { color: 'rgba(221, 110, 63, 1)' },
       }}
     >
       <BottomNavigationAction
         value="home"
-        icon={<GoHomeFill style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
+        icon={<GoHomeFill style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />}
         onClick={() => navigate('/')}
       />
       <BottomNavigationAction
         value="profiles"
-        icon={<GridViewRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
+        icon={<GridViewRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />}
         onClick={() => navigate('/profiles')}
       />
-      <BottomNavigationAction
-        value="favorites"
-        icon={<FavoriteIcon style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
-      />
+      <BottomNavigationAction value="favorites" icon={<Bookmark style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />} />
       <BottomNavigationAction
         value="user"
-        icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '36px' }} />}
+        icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />}
         onClick={() => navigate('/user')}
       />
     </BottomNavigation>

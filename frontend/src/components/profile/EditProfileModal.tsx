@@ -239,12 +239,26 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
                         fontFamily: 'Inter',
                         fontWeight: 500,
                         lineHeight: '21px',
+                        color: 'rgba(107, 60, 102, 1)',
                       }}
                     >
                       {relation}
                     </Typography>
                   </InputAdornment>
                 ),
+              }}
+            />
+          </EditProfileInputWrapper>
+
+          <EditProfileInputWrapper title="Relationship">
+            <MobileSingleSelectChip
+              greyText
+              small
+              title={'relationship'}
+              items={filterObject.relationship}
+              selectedTag={relation}
+              handleSelect={(label: string, val: string) => {
+                setRelation(val);
               }}
             />
           </EditProfileInputWrapper>
@@ -271,19 +285,6 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
               selectedTag={age}
               handleSelect={(label: string, val: string) => {
                 setAge(val);
-              }}
-            />
-          </EditProfileInputWrapper>
-
-          <EditProfileInputWrapper title="Relationship">
-            <MobileSingleSelectChip
-              greyText
-              small
-              title={'relationship'}
-              items={filterObject.relationship}
-              selectedTag={relation}
-              handleSelect={(label: string, val: string) => {
-                setRelation(val);
               }}
             />
           </EditProfileInputWrapper>

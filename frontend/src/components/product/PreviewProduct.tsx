@@ -1,4 +1,4 @@
-import { Box, Chip, Fade, Grid, Rating, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Chip, Fade, Grid, Rating, Stack, Tooltip, Typography } from '@mui/material';
 import { FC } from 'react';
 import { Product } from '../../constants/types';
 import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
@@ -6,6 +6,7 @@ import { Amazon } from '../shared/Icons/Amazon';
 import { Bloomingdales } from '../shared/Icons/Bloomingdales';
 import _ from 'lodash';
 import { Carousal } from '../shared/Carousal';
+import { ArrowForwardIos, Verified } from '@mui/icons-material';
 
 interface Props {
   product: Product;
@@ -34,15 +35,22 @@ export const PreviewProduct: FC<Props> = ({ product }) => {
           </Typography>
         )}
         <Tooltip title={_.capitalize(product?.source)} followCursor color="primary">
-          <Box
+          <Stack
             sx={{
               position: 'absolute',
               top: '4px',
               right: '8px',
+              alignItems: 'flex-end',
+              gap: '4px',
             }}
           >
             {product?.source === 'amazon' ? <Amazon /> : <Bloomingdales />}
-          </Box>
+            {product?.hil && (
+              <Tooltip title={'HIL Verified'} arrow>
+                <Verified sx={{ fontSize: '18px', color: 'rgba(168, 108, 198, 1)' }} />
+              </Tooltip>
+            )}
+          </Stack>
         </Tooltip>
         {product?.thumbnails?.length ? (
           <Carousal images={product?.thumbnails} />
@@ -95,10 +103,24 @@ export const PreviewProduct: FC<Props> = ({ product }) => {
       </Grid>
 
       <Grid item>
-        <Stack direction={'row'} justifyContent={'space-between'}>
+        <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
           <Typography variant="h6" sx={{ fontFamily: 'Inter', fontSize: '18px', fontWeight: 600, lineHeight: '18.15px' }}>
             {getCurrencySymbol(product?.price_currency)} {product?.price?.toFixed(2)}
           </Typography>
+          <Button
+            LinkComponent={'a'}
+            href={product?.link}
+            target="_blank"
+            sx={{ padding: '6px 12px', textTransform: 'none' }}
+            variant="contained"
+            size="small"
+            color="primary"
+            endIcon={<ArrowForwardIos sx={{ height: '12px' }} />}
+          >
+            <Typography sx={{ fontFamily: 'Inter', fontSize: '12px', fontWeight: 600, lineHeight: '18.15px' }}>
+              Check out
+            </Typography>
+          </Button>
           <Tooltip title={product?.rating} TransitionComponent={Fade} TransitionProps={{ timeout: 600 }} followCursor>
             <Box>
               <Rating value={product?.rating} precision={0.1} readOnly sx={{ color: 'rgba(125, 141, 160, 1)' }} />

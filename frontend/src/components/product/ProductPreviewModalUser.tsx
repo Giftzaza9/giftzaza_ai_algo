@@ -78,7 +78,7 @@ const ContentWrapper: FC<{ title: string } & PropsWithChildren> = ({ title, chil
     <Grid item sx={itemStyles}>
       <Typography
         sx={{
-          fontSize: '11px',
+          fontSize: '14px',
           fontFamily: 'Inter',
           fontWeight: '700',
           lineHeight: '22px',
@@ -153,7 +153,7 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, mat
           <Grid item>
             <IconButton
               size="small"
-              sx={{border: '1px solid rgba(221, 110, 63, 1)'}}
+              sx={{ border: '1px solid rgba(221, 110, 63, 1)' }}
               onClick={() => {
                 onClose();
               }}
@@ -189,13 +189,28 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, mat
             )}
           </Grid>
 
+          <ContentWrapper title="Title">
+            <Typography
+              variant="caption"
+              sx={{
+                fontSize: '14px',
+                fontFamily: 'Inter',
+                fontWeight: '600',
+                lineHeight: '18px',
+                color: 'rgba(80, 80, 80, 1)',
+              }}
+            >
+              {title}
+            </Typography>
+          </ContentWrapper>
+
           <ContentWrapper title="Sourced from">
             <Grid container justifyContent={'space-between'} alignItems={'center'}>
               <Grid item>
                 <Typography
                   variant="caption"
                   sx={{
-                    fontSize: '12px',
+                    fontSize: '14px',
                     fontFamily: 'Inter',
                     fontWeight: '600',
                     lineHeight: '18px',
@@ -213,7 +228,7 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, mat
                   variant="body2"
                   display={'inline-flex'}
                   sx={{
-                    fontSize: '8px',
+                    fontSize: '12px',
                     fontFamily: 'Inter',
                     fontWeight: '600',
                     lineHeight: '18px',
@@ -237,7 +252,7 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, mat
                 <Typography
                   variant="caption"
                   sx={{
-                    fontSize: '12px',
+                    fontSize: '14px',
                     fontFamily: 'Inter',
                     fontWeight: '600',
                     lineHeight: '18px',
@@ -262,10 +277,10 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, mat
             <Typography
               variant="body1"
               sx={{
-                fontSize: '12px',
+                fontSize: '14px',
                 fontFamily: 'Inter',
                 fontWeight: '500',
-                lineHeight: '18px',
+                lineHeight: '20px',
                 color: 'rgba(93, 94, 97, 1)',
               }}
             >
