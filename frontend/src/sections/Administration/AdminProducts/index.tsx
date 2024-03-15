@@ -21,6 +21,9 @@ export const AdminProducts = () => {
   const [sort, setSort] = useState<string>('latest');
   const [searchDebounced, setSearchDebounced] = useState<string>('');
   const [searchRaw, setSearchRaw] = useState<string>('');
+  const [budgetTuples, setBudgetTuples] = useState<[number, number]>([0, 1000]);
+  const [hil, setHil] = useState<boolean>(false);
+  const [showDeletedProducts, setShowDeletedProducts] = useState<boolean>(false);
   const [queryString, setQueryString] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState<boolean>(false);
@@ -84,6 +87,13 @@ export const AdminProducts = () => {
     const queryParams: string[] = [`page=${1}&limit=${productPerPageAdmin}&sort=${sort}`];
     if (filters.length > 0) queryParams.push(`filter=${filters.join(',')}`);
     if (searchDebounced.trim()) queryParams.push(`search=${searchDebounced}`);
+    if (hil) queryParams.push(`hil=${hil}`);
+    if (showDeletedProducts) queryParams.push(`is_active=${!showDeletedProducts}`);
+    if (budgetTuples[0] !== 0 || budgetTuples[1] !== 1000) {
+      queryParams.push(`price_min=${budgetTuples[0]}`);
+      if (budgetTuples[1] === 1000) queryParams.push(`price_max=${Number.MAX_SAFE_INTEGER}`);
+      else queryParams.push(`price_max=${budgetTuples[1]}`);
+    }
     const newQueryString = queryParams.join('&');
     if (newQueryString !== queryString) {
       setProducts([]);
@@ -91,7 +101,7 @@ export const AdminProducts = () => {
       setQueryString(newQueryString);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sort, searchDebounced]);
+  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil]);
 
   useEffect(() => {
     if (page > 1) {
@@ -144,7 +154,16 @@ export const AdminProducts = () => {
       <Grid container gap={2} alignItems={'flex-start'}>
         {/* SIDE FILTERS */}
         <Grid item container flex={{ xs: 2, md: 1 }}>
-          <FilterSelector filters={filters} setFilters={setFilters} />
+          <FilterSelector
+            filters={filters}
+            setFilters={setFilters}
+            budgetTuples={budgetTuples}
+            setBudgetTuples={setBudgetTuples}
+            hil={hil}
+            showDeletedProducts={showDeletedProducts}
+            setHil={setHil}
+            setShowDeletedProducts={setShowDeletedProducts}
+          />
         </Grid>
 
         {/* PRODUCTS */}

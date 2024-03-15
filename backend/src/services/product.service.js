@@ -14,8 +14,8 @@ const {getRecommendedProducts} = require("../services/profile.service")
  * @returns {Promise<QueryResult>}
  */
 const queryProducts = async (queryObject) => {
-  const { sort, search = '', filter = '', page = 1, limit = 12 } = queryObject;
-  const filterObject = {
+  const { sort, search = '', filter = '', page = 1, limit = 12, price_min, price_max, hil, is_active } = queryObject;
+  let filterObject = {
     is_active: true,
     // hil: true,
   };
@@ -44,8 +44,14 @@ const queryProducts = async (queryObject) => {
         optionsObject.sort = { createdAt: -1 };
     }
   }
+  if (typeof price_min === 'number' && typeof price_max === 'number')
+    filterObject = { ...filterObject, $and: [{ price: { $gte: price_min } }, { price: { $lte: price_max } }] };
+  else if (typeof price_min === 'number') filterObject.price = { $gte: price_min };
+  else if (typeof price_max === 'number') filterObject.price = { $lte: price_max };
+  if (typeof hil === 'boolean') filterObject.hil = hil;
+  if (typeof is_active === 'boolean') filterObject.is_active = is_active;
   if (search) filterObject.title = { $regex: new RegExp(search, 'i') };
-  if (filter) filterObject.tags = { $all: filter?.split(',') };
+  if (filter) filterObject.tags = { $all: filter?.split(',')?.map((el) => (el?.trim() === '65' ? '65 +' : el)) };
   return await Product.paginate(filterObject, optionsObject);
 };
 
@@ -185,6 +191,7 @@ const updateProductById = async (productId, updateBody) => {
   // From User
   product.tags = tags;
   if (curated !== undefined) product.curated = !!curated;
+  product.hil = true;
 
   // From scraping
   if (scrape) {

@@ -10,9 +10,12 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import { userStore } from '../../store/UserStore';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../utils/theme';
+import { observer } from 'mobx-react-lite';
+import { bottomNavState } from '../../store/BottomNavState';
 
-export const Auth = () => {
+export const Auth = observer(() => {
   const { setUser, user } = userStore;
+  const { setIsVisible } = bottomNavState;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,7 +38,7 @@ export const Auth = () => {
     const { data, error } = await loginWithGoogle(payload);
     if (data) {
       setUser(data?.user);
-      console.log('Logged in ', data);
+      setIsVisible(false);
       navigate('/welcome');
     } else {
       console.log('ERROR ', error);
@@ -53,7 +56,7 @@ export const Auth = () => {
     const { data, error } = await loginWithFacebook(payload);
     if (data) {
       setUser(data?.user);
-      console.log('Logged in ', data);
+      setIsVisible(false);
       navigate('/welcome');
     } else {
       console.log('ERROR ', error);
@@ -115,4 +118,4 @@ export const Auth = () => {
       </Container>
     </Grid>
   );
-};
+});

@@ -8,6 +8,7 @@ puppeteer.use(StealthPlugin());
 // plugin to block all ads and trackers (saves bandwidth)
 const AdBlockerPlugin = require('puppeteer-extra-plugin-adblocker');
 const { cookieSetterBD } = require('../utils/cookieSetterBD');
+const { reorderThumbnail } = require('../utils/reorderThumbnail');
 puppeteer.use(AdBlockerPlugin({ blockTrackers: true }));
 
 const scrapeProduct = async (productLink, userId) => {
@@ -41,8 +42,6 @@ async function AmazonScraper(product_link, userId) {
       const imgSrcArray = Array.from(imgElements).map((imgElement) => imgElement.getAttribute('src'));
       return imgSrcArray;
     });
-
-    console.log(thumbnails)
 
     const product_image = await page.evaluate(() => {
       const imgElement = document.querySelector('img#landingImage');
@@ -92,7 +91,7 @@ async function AmazonScraper(product_link, userId) {
         return null;
       }
     });
-    console.log('🚀 ~ constproduct_description=awaitpage.evaluate ~ product_description:', product_description)
+    console.log('🚀 ~ constproduct_description=awaitpage.evaluate ~ product_description:', product_description);
 
     await browser.close();
 
@@ -102,11 +101,14 @@ async function AmazonScraper(product_link, userId) {
       image: product_image,
       link: product_link,
       rating: Number(product_rating?.split(' ')?.[0]?.trim()),
-      price: Number(product_price?.replace('$', '')?.trim()) || Number(product_price?.replace('US$', '')?.trim()) || -1,
+      price:
+        Number(product_price?.replace('$', '')?.replace(',', '')?.trim()) ||
+        Number(product_price?.replace('US$', '')?.replace(',', '')?.trim()) ||
+        -1,
       description: product_description,
       price_currency: product_price_currency,
       added_by: userId,
-      thumbnails: [] // UNABLE TO ADD thumbnails
+      thumbnails: [], // UNABLE TO ADD thumbnails
     };
   } catch (error) {
     console.error(error);
@@ -143,12 +145,12 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
 
     let product_rating = await textgetter('.product-header-reviews-count');
 
-    const thumbnails = await page.evaluate(() => {
+    let thumbnails = await page.evaluate(() => {
       const isUniqueNumber = (link) => {
         const uniqueNumbers = [];
         const match = link.match(/optimized\/(\d+)_fpx/);
         return match && !uniqueNumbers.includes(match[1]);
-      }
+      };
       const getUniqueLinks = (imgSrcArray) => {
         const uniqueLinks = [];
         imgSrcArray.forEach((src) => {
@@ -157,10 +159,10 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
           }
         });
         return uniqueLinks;
-      }
+      };
       const imgElements = document.querySelectorAll('picture.main-picture > img');
       const imgSrcArray = Array.from(imgElements).map((imgElement) => imgElement.getAttribute('data-lazy-src'));
-      return getUniqueLinks(imgSrcArray)
+      return getUniqueLinks(imgSrcArray);
     });
 
     let containsNumber = /\d/.test(product_rating);
@@ -170,6 +172,8 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
     if (!product_rating || product_rating == null) {
       product_rating = '0.0 rating';
     }
+
+    if (product_image && thumbnails?.length > 0) thumbnails = reorderThumbnail(product_image, thumbnails);
 
     await browser.close();
 
@@ -187,14 +191,13 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
       description: product_details,
       price_currency: product_price_currency,
       added_by: userId,
-      thumbnails: thumbnails
+      thumbnails: thumbnails,
     };
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return null;
   }
 };
-
 
 const NodestormScraper = async (product_link) => {
   // NOTE: Not working,

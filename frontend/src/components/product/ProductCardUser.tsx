@@ -1,4 +1,14 @@
-import { Card, CardActionArea, CardMedia, CardContent, Grid, Chip, Typography, useMediaQuery } from '@mui/material';
+import {
+  Card,
+  CardActionArea,
+  CardMedia,
+  CardContent,
+  Grid,
+  Chip,
+  Typography,
+  useMediaQuery,
+  IconButton,
+} from '@mui/material';
 import { Box } from '@mui/system';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
@@ -10,6 +20,7 @@ import { Product, RecommendedProduct } from '../../constants/types';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { Save } from '../shared/Icons/Save';
 import { iphoneSeCondition } from '../../constants/constants';
+import _ from 'lodash';
 
 interface Props {
   productData: RecommendedProduct;
@@ -85,7 +96,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           <CardContent>
             <Grid>
               <Chip
-                label={source}
+                label={_.capitalize(source)}
                 sx={{
                   padding: '10px 4 px',
                   color: 'rgba(221, 110, 63, 1)',
@@ -97,7 +108,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
                 <Box display={'flex'} flexDirection={'column'} rowGap={1} mt={1}>
                   <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>
-                    {ellipsisText(title, 22)}
+                    {ellipsisText(title, 26)}
                   </Typography>
                   <Typography sx={{ fontSize: '12px', fontFamily: 'Inter' }}>{ellipsisText(description, 95)}</Typography>
                   <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
@@ -107,7 +118,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                     </Typography>
                     {rating - 0 > 0 && (
                       <>
-                        <StarIcon sx={{ ml: 1, color: '#e1e26c' }} />
+                        <StarIcon sx={{ ml: 1, color: '#f1c506' }} />
                         <Typography sx={{ fontSize: '12px', fontFamily: 'Inter', fontWeight: '600' }}>
                           {rating} / 5 (2400 ratings)
                         </Typography>
@@ -115,20 +126,23 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                     )}
                   </Box>
                 </Box>
-                <Box
-                  onClick={() => {
-                    setPreviewOpen(true);
-                  }}
-                >
-                  <img
-                    src={require('../../assets/arrow-down.png')}
-                    alt="logo"
-                    style={{
-                      width: '30px',
-                      cursor: 'pointer',
+                <Box>
+                  <IconButton
+                    onClick={() => {
+                      setPreviewOpen(true);
                     }}
-                    // onClick={() => navigate('/')}
-                  />
+                    sx={{ border: '1px solid rgba(221, 110, 63, 1)' }}
+                  >
+                    <img
+                      src={require('../../assets/arrow-down.png')}
+                      alt="logo"
+                      style={{
+                        width: '30px',
+                        cursor: 'pointer',
+                      }}
+                      // onClick={() => navigate('/')}
+                    />
+                  </IconButton>
                 </Box>
               </Box>
             </Grid>

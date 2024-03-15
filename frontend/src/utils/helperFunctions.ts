@@ -41,12 +41,13 @@ export const formatHTML = (htmlString: any) => {
   return { __html: formattedString };
 };
 
-function stringToColor(string: string) {
+export function stringToColor(string: string) {
+  if (!string) return '';
   let hash = 0;
   let i;
 
   /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
+  for (i = 0; i < string?.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
 

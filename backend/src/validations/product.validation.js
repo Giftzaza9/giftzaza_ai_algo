@@ -9,6 +9,10 @@ const getProducts = {
     search: Joi.string(),
     source: Joi.string(),
     filter: Joi.string(),
+    price_min: Joi.number().integer(),
+    price_max: Joi.number().integer(),
+    hil: Joi.boolean(),
+    is_active: Joi.boolean()
   }),
 };
 

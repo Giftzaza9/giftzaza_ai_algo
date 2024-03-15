@@ -122,6 +122,7 @@ export const dummyProduct: Product = {
     },
   ],
   hil: false,
+  is_active: false,
   created_at: null,
   updated_at: null,
   title:
@@ -139,10 +140,15 @@ export const dummyProduct: Product = {
 
 export const addNewProductSteps = ['Link', 'Product Info', 'Preview'];
 
-export const bottomNavHidePaths = ['welcome', 'login']
+export const bottomNavHidePaths = ['welcome', 'login'];
 
-export const getStartedChips = ['Discover gifts for your spouse','Discover gifts for your mom', 'Create a new giftee profile', 'View existing giftee profiles', 'Start shopping']
-
+export const getStartedChips = [
+  'Discover gifts for your spouse',
+  'Discover gifts for your mom',
+  'Create a new giftee profile',
+  'View existing giftee profiles',
+  'Start shopping',
+];
 
 export enum SwipeAction {
   LIKE = 'like',
@@ -151,7 +157,7 @@ export enum SwipeAction {
   SAVE = 'save',
   SIMILAR = 'similar',
   NO_INTERACTION = 'no interaction',
-  FINISHED = "FINISHED"
+  FINISHED = 'FINISHED',
 }
 
-export const iphoneSeCondition = '(max-width: 389px) or (max-height: 700px)'
+export const iphoneSeCondition = '(max-width: 389px) or (max-height: 700px)';
