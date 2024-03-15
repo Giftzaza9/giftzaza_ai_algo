@@ -42,8 +42,6 @@ async function AmazonScraper(product_link, userId) {
       return imgSrcArray;
     });
 
-    console.log(thumbnails)
-
     const product_image = await page.evaluate(() => {
       const imgElement = document.querySelector('img#landingImage');
       return imgElement?.getAttribute('src');
@@ -102,11 +100,14 @@ async function AmazonScraper(product_link, userId) {
       image: product_image,
       link: product_link,
       rating: Number(product_rating?.split(' ')?.[0]?.trim()),
-      price: Number(product_price?.replace('$', '')?.trim()) || Number(product_price?.replace('US$', '')?.trim()) || -1,
+      price:
+        Number(product_price?.replace('$', '')?.replace(',', '')?.trim()) ||
+        Number(product_price?.replace('US$', '')?.replace(',', '')?.trim()) ||
+        -1,
       description: product_description,
       price_currency: product_price_currency,
       added_by: userId,
-      thumbnails: [] // UNABLE TO ADD thumbnails
+      thumbnails: [], // UNABLE TO ADD thumbnails
     };
   } catch (error) {
     console.error(error);
