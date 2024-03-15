@@ -67,6 +67,8 @@ export const FilterSelector: FC<Props> = ({
                 onClick={() => {
                   setFilters([]);
                   setBudgetTuples([0, 1000]);
+                  setHil(false);
+                  setShowDeletedProducts(false);
                 }}
               >
                 <RestartAlt />
