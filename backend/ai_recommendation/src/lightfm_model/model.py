@@ -139,8 +139,11 @@ class LightFM_cls:
         matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
-    def new_cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,test_sample_flag=False):
+    def new_cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
         filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        filter_idf = filter_idf.astype({"price" : "float"})
+        def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
+        filter_idf = filter_idf[filter_idf['price'].apply(def_budget_filter)]
         all_soft_attrs = list(itertools.chain(*map(Global_Obj.cat_dict.get,Global_Obj.soft_filters)))
         # filter_idf['matched_tags'] = filter_idf['tags'].apply(lambda eachList: list(set(eachList) & set(soft_filter_attrs)))
         filter_idf['matched_tags'] = filter_idf['tags'].apply(lambda eachList: list(set(eachList) & set(all_soft_attrs)))
@@ -179,11 +182,13 @@ class LightFM_cls:
         top_items.insert(0, 'ranking_score', list(-np.sort(-scores)))
         return top_items
     
-    def cold_start_user_item_recommendation(self,new_user_attributes,similar_user_id):
+    def cold_start_user_item_recommendation(self,new_user_attributes,similar_user_id,min_budget=0,max_budget=None):
         new_user_features = self.dataset.build_user_features([(similar_user_id,new_user_attributes)])
         scores_new_user = self.model.predict(user_ids = 0,item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
         top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
         top_items_new.insert(0, 'ranking_score', list(-np.sort(-scores_new_user)))
+        def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
+        top_items_new = top_items_new[top_items_new['price'].apply(def_budget_filter)]
         return top_items_new
     
     def cold_start_similar_items_with_text_sim(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,content_attr=None,test_sample_flag=False):
@@ -244,8 +249,11 @@ class LightFM_cls:
         matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
-    def new_cold_start_similar_items_with_text_sim(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,content_attr=None,test_sample_flag=False):
+    def new_cold_start_similar_items_with_text_sim(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,content_attr=None,min_budget=0,max_budget=None,test_sample_flag=False):
         filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        filter_idf = filter_idf.astype({"price" : "float"})
+        def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
+        filter_idf = filter_idf[filter_idf['price'].apply(def_budget_filter)]
         all_soft_attrs = list(itertools.chain(*map(Global_Obj.cat_dict.get,Global_Obj.soft_filters)))
         # filter_idf['matched_tags'] = filter_idf['tags'].apply(lambda eachList: list(set(eachList) & set(soft_filter_attrs)))
         filter_idf['matched_tags'] = filter_idf['tags'].apply(lambda eachList: list(set(eachList) & set(all_soft_attrs)))
