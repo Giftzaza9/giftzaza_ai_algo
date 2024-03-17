@@ -4,6 +4,7 @@ import ast
 from pathlib import Path
 from src.lightfm_model.model import LightFM_cls
 from src.mongodb.mongodb import Mongodb_cls
+from sklearn.preprocessing import MinMaxScaler
 import json
 import itertools
 import pandas as pd
@@ -86,6 +87,9 @@ def cs_similar_items(new_item_attributes,N=10,min_budget=0,max_budget=None,test_
     idf = LightFM_Obj.new_cold_start_similar_items(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
+
+    scaler = MinMaxScaler(feature_range=(0.1,0.90))
+    idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
     
     return idf.to_dict(orient='records')
 
@@ -104,6 +108,9 @@ def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_bud
     idf = idf[idf['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))]
     for each_semi_hard_filter in Global_Obj.semi_hard_filters:
             idf = idf[idf['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
+    scaler = MinMaxScaler(feature_range=(0.1,0.90))
+    idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
+    
     return idf.head(N).to_dict(orient='records')
     # return idf.to_dict(orient='records')
 
@@ -114,6 +121,8 @@ def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,mi
     idf = LightFM_Obj.new_cold_start_similar_items_with_text_sim(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
+    scaler = MinMaxScaler(feature_range=(0.1,0.90))
+    idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
     
     return idf.to_dict(orient='records')
 
