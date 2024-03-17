@@ -19,7 +19,8 @@ class Global_cls:
             self.attr_list= []
             self.attr_weights = {}
             self.hard_filters=["gender","age_category"]
-            self.soft_filters=["interest","occasion","relationship","style"]
+            self.semi_hard_filters = ["interest"]
+            self.soft_filters=["occasion","relationship","style"]
             self.preprocess_str = lambda x: x.strip().lower()
             self.cat_dict = {}
             for i in self.cat_odata:
@@ -29,7 +30,7 @@ class Global_cls:
                 else:
                     keys=list(map(self.preprocess_str,self.cat_odata[i]['category']))
                     self.cat_dict[i] = keys
-                if i not in self.hard_filters: ### Hard Filters removed from the model parameters
+                if i not in self.hard_filters and i not in self.semi_hard_filters: ### Hard Filters removed from the model parameters
                     self.attr_list.extend(keys)
                 self.attr_weights.update(dict(zip(keys,[self.cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
         with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "useractivity.json"),'r') as fr:
@@ -38,6 +39,25 @@ class Global_cls:
 LightFM_Obj = LightFM_cls()
 Mongodb_Obj = Mongodb_cls()
 Global_Obj = Global_cls()          
+
+def filter_attributes(Global_Obj,new_attributes_list):
+    filter_dict = {}
+    hard_filter_attrs = []
+    semi_hard_filter_attrs=[]
+    for i in Global_Obj.hard_filters:
+        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_attributes_list))
+        hard_filter_attrs.extend(common_list)
+        filter_dict.update({i: common_list})
+
+    for i in Global_Obj.semi_hard_filters:
+        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_attributes_list))
+        semi_hard_filter_attrs.extend(common_list)
+        filter_dict.update({i: common_list})
+
+    soft_filter_attrs = list(set(new_attributes_list).difference(set(hard_filter_attrs+semi_hard_filter_attrs)))
+
+    return filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs
+
 
 def similar_users_endpoint(user_id,N=10):
     udf = LightFM_Obj.similar_existing_user(user_id,N)[['left_all_unique_id','left_score']].copy()
@@ -50,30 +70,20 @@ def similar_items_endpoint(item_id,N=10):
     return idf.to_dict(orient='records')
 
 def cs_similar_user(new_user_attributes,N=10):
-    filter_dict = {}
-    hard_filter_attrs = []
-    for i in Global_Obj.hard_filters:
-        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_user_attributes))
-        hard_filter_attrs.extend(common_list)
-        filter_dict.update({i: common_list})
-    soft_filter_attrs = list(set(new_user_attributes).difference(set(hard_filter_attrs)))
+    
+    filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_user_attributes)
 
-    udf = LightFM_Obj.cold_start_similar_user(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N)
+    udf = LightFM_Obj.cold_start_similar_user(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N)
     udf = udf[['left_all_unique_id','left_score']].copy()
     udf.rename(columns={'left_all_unique_id':'user_id','left_score':'matching_score'},inplace=True)
     
     return udf.to_dict(orient='records')
 
 def cs_similar_items(new_item_attributes,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
-    filter_dict = {}
-    hard_filter_attrs = []
-    for i in Global_Obj.hard_filters:
-        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_item_attributes))
-        hard_filter_attrs.extend(common_list)
-        filter_dict.update({i: common_list})
-    soft_filter_attrs = list(set(new_item_attributes).difference(set(hard_filter_attrs)))
 
-    idf = LightFM_Obj.new_cold_start_similar_items(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
+    filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_item_attributes)
+
+    idf = LightFM_Obj.new_cold_start_similar_items(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     
@@ -83,32 +93,25 @@ def user_item_recommendation(user_id,N=10):
     idf = LightFM_Obj.user_item_recommendation(user_id)[['all_unique_id','title','ranking_score']].rename(columns={"ranking_score":"score"})
     return idf.head(N).to_dict(orient='records')
 
-def cs_user_item_recommendation(new_user_attributes,similar_user_id = "test_profile_id1",N=10,min_budget=0,max_budget=None,test_sample_flag=False):
-    filter_dict = {}
-    all_filter_values = []
-    for i in Global_Obj.hard_filters:
-        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_user_attributes))
-        all_filter_values.extend(common_list)
-        filter_dict.update({i: common_list})
-    filter_user_attributes = list(set(new_user_attributes).difference(set(all_filter_values)))
+def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
+    
+    filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_user_attributes)
 
-    idf = LightFM_Obj.cold_start_user_item_recommendation(filter_user_attributes,similar_user_id,min_budget=min_budget,max_budget=max_budget)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"matching_score"})
+    idf = LightFM_Obj.cold_start_user_item_recommendation(new_user_attributes,similar_user_id,min_budget=min_budget,max_budget=max_budget)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"matching_score"})
     if test_sample_flag:
         idf = idf[idf['test_set']==True].copy()
 
-    return idf[idf['tags'].apply(lambda eachList : set(all_filter_values).issubset(set(eachList)))].head(N).to_dict(orient='records')
+    idf = idf[idf['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))]
+    for each_semi_hard_filter in Global_Obj.semi_hard_filters:
+            idf = idf[idf['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
+    return idf.head(N).to_dict(orient='records')
     # return idf.to_dict(orient='records')
 
 def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
-    filter_dict = {}
-    hard_filter_attrs = []
-    for i in Global_Obj.hard_filters:
-        common_list = list(set(Global_Obj.cat_dict[i]) & set(new_item_attributes))
-        hard_filter_attrs.extend(common_list)
-        filter_dict.update({i: common_list})
-    soft_filter_attrs = list(set(new_item_attributes).difference(set(hard_filter_attrs)))
 
-    idf = LightFM_Obj.new_cold_start_similar_items_with_text_sim(hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
+    filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_item_attributes)
+
+    idf = LightFM_Obj.new_cold_start_similar_items_with_text_sim(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     

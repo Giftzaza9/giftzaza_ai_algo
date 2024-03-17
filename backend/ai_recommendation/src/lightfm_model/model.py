@@ -73,8 +73,10 @@ class LightFM_cls:
         matched_item_meta = idf.merge(self.item_meta,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
-    def cold_start_similar_user(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10):
+    def cold_start_similar_user(self,filter_dict,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10):
         filter_udf = self.user_meta[self.user_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        for each_semi_hard_filter in Global_Obj.semi_hard_filters:
+            filter_udf = filter_udf[filter_udf['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
         filter_udf.reset_index(drop=True,inplace=True)
         feat_idxs = [self.user_fmapper.get(key) for key in soft_filter_attrs]
         u_biases, user_representations = self.model.get_user_representations(features=self.user_features)
@@ -139,8 +141,10 @@ class LightFM_cls:
         matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
-    def new_cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
+    def new_cold_start_similar_items(self,filter_dict,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
         filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        for each_semi_hard_filter in Global_Obj.semi_hard_filters:
+            filter_idf = filter_idf[filter_idf['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
         filter_idf = filter_idf.astype({"price" : "float"})
         def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
         filter_idf = filter_idf[filter_idf['price'].apply(def_budget_filter)]
@@ -183,8 +187,8 @@ class LightFM_cls:
         return top_items
     
     def cold_start_user_item_recommendation(self,new_user_attributes,similar_user_id,min_budget=0,max_budget=None):
-        new_user_features = self.dataset.build_user_features([(similar_user_id,new_user_attributes)])
-        scores_new_user = self.model.predict(user_ids = 0,item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
+        new_user_features = self.dataset.build_user_features([(self.user_mapper[similar_user_id],new_user_attributes)])
+        scores_new_user = self.model.predict(user_ids = self.user_mapper[similar_user_id],item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
         top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
         top_items_new.insert(0, 'ranking_score', list(-np.sort(-scores_new_user)))
         def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
@@ -249,8 +253,10 @@ class LightFM_cls:
         matched_item_meta = idf.merge(filter_idf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
-    def new_cold_start_similar_items_with_text_sim(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,content_attr=None,min_budget=0,max_budget=None,test_sample_flag=False):
+    def new_cold_start_similar_items_with_text_sim(self,filter_dict,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,content_attr=None,min_budget=0,max_budget=None,test_sample_flag=False):
         filter_idf = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        for each_semi_hard_filter in Global_Obj.semi_hard_filters:
+            filter_idf = filter_idf[filter_idf['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
         filter_idf = filter_idf.astype({"price" : "float"})
         def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
         filter_idf = filter_idf[filter_idf['price'].apply(def_budget_filter)]
