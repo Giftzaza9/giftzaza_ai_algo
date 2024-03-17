@@ -56,7 +56,12 @@ def cs_user_item_recommendation(body : cs_user_item_recommendation_schema):
 
 @app.post("/create_recommendation")
 def create_recommendation(body : create_recommendation_schema):
-    return lfm.create_recommendation(user_id=body.user_id,new_attributes=body.new_attributes,content_attr=body.content_attribute,N=body.top_n)
+    return lfm.create_recommendation(user_id=body.user_id,
+                                     new_attributes=body.new_attributes,
+                                     content_attr=body.content_attribute,
+                                     N=body.top_n,
+                                     min_budget=body.min_budget,
+                                     max_budget=body.max_budget)
 
 @app.post("/model_retrain")
 def model_retrain():
