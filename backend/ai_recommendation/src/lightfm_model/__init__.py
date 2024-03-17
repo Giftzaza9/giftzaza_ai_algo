@@ -216,7 +216,7 @@ def test_with_sample(N):
 
 def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budget=0,max_budget=None,test_sample_flag=False):
     df_similar_profile = pd.DataFrame(cs_similar_user(new_attributes,N=10))
-    similar_profile_cutoff = df_similar_profile[df_similar_profile['matching_score']>0.7][:5]
+    similar_profile_cutoff = df_similar_profile[:5]
     if similar_profile_cutoff.shape[0] > 0: ### No similar Profile
         profile_user_id = LightFM_Obj.get_userid_of_profile(similar_profile_cutoff,user_id) ### similar profile from same user
         if profile_user_id:
