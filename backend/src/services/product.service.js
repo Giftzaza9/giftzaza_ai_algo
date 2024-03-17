@@ -6,7 +6,7 @@ const { scrapeProduct } = require('../lib/scrapeProduct');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
 const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleaners');
 const axiosInstance = require('../utils/axiosInstance');
-const {getRecommendedProducts} = require("../services/profile.service")
+const { getRecommendedProducts } = require('../services/profile.service');
 
 /**
  * Query for products
@@ -98,12 +98,12 @@ function convertToObjectId(itemIds) {
  * @returns {Promise<Product>}
  */
 const getMoreProducts = async (productBody) => {
-  const {user_id, preferences, top_n} = productBody;
+  const { user_id, preferences, top_n } = productBody;
   const payload = {
     user_id,
     new_attributes: preferences,
-    top_n
-  } 
+    top_n,
+  };
   return await getRecommendedProducts(payload)
     .then(async (res) => {
       const objectIds = convertToObjectId(res);
@@ -225,6 +225,13 @@ const updateProductById = async (productId, updateBody) => {
 const deleteProductById = async (productId) => {
   const product = await Product.findByIdAndUpdate(productId, { is_active: false });
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
+
+  try {
+    axiosInstance.post(`/model_retrain`, {});
+  } catch (e) {
+    console.error(e);
+  }
+
   return product;
 };
 
