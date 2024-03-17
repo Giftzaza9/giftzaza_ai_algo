@@ -137,6 +137,7 @@ def train_with_mongodb(hil_flag = False,is_active_flag=True,weight_flag=True):
                                     "user_id":"userId",
                                     "profile_id":"profileId",
                                     "activity":"activity_type"},inplace=True, axis=1)
+            df_interactions = df_interactions[df_interactions['activity_type']!="dislike"]
         except Exception as e:
             raise Exception(f"Error in Connection to Mongodb : {e}")
         
