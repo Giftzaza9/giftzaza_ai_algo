@@ -90,14 +90,14 @@ def cs_similar_items(new_item_attributes,N=10,min_budget=0,max_budget=None,test_
     return idf.to_dict(orient='records')
 
 def user_item_recommendation(user_id,N=10):
-    idf = LightFM_Obj.user_item_recommendation(user_id)[['all_unique_id','title','ranking_score']].rename(columns={"ranking_score":"score"})
+    idf = LightFM_Obj.user_item_recommendation(user_id)[['all_unique_id','title','matching_score']]
     return idf.head(N).to_dict(orient='records')
 
 def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
     
     filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_user_attributes)
 
-    idf = LightFM_Obj.cold_start_user_item_recommendation(new_user_attributes,similar_user_id,min_budget=min_budget,max_budget=max_budget)[['all_unique_id','title','tags','ranking_score']].rename(columns={"ranking_score":"matching_score"})
+    idf = LightFM_Obj.cold_start_user_item_recommendation(new_user_attributes,similar_user_id,min_budget=min_budget,max_budget=max_budget)[['all_unique_id','title','tags','matching_score']]
     if test_sample_flag:
         idf = idf[idf['test_set']==True].copy()
 

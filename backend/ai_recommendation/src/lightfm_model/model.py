@@ -183,14 +183,14 @@ class LightFM_cls:
             raise KeyError("Given User Id is not present in Model")
         scores = self.model.predict(user_id, np.arange(len(self.item_mapper)))
         top_items = self.item_meta.iloc[np.argsort(-scores)].copy()
-        top_items.insert(0, 'ranking_score', list(-np.sort(-scores)))
+        top_items.insert(0, 'matching_score', list(-np.sort(-scores)))
         return top_items
     
     def cold_start_user_item_recommendation(self,new_user_attributes,similar_user_id,min_budget=0,max_budget=None):
         new_user_features = self.dataset.build_user_features([(self.user_mapper[similar_user_id],new_user_attributes)])
         scores_new_user = self.model.predict(user_ids = self.user_mapper[similar_user_id],item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
         top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
-        top_items_new.insert(0, 'ranking_score', list(-np.sort(-scores_new_user)))
+        top_items_new.insert(0, 'matching_score', list(-np.sort(-scores_new_user)))
         def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
         top_items_new = top_items_new[top_items_new['price'].apply(def_budget_filter)]
         return top_items_new
