@@ -142,6 +142,7 @@ export const Products = observer(() => {
       >
         {products !== undefined && products?.length > 0 && (
           <CardSwiper
+            type="product"
             profile={profile}
             modelRetrain={modelRetrain}
             refetch={refetch}

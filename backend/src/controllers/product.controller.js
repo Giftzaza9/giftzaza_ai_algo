@@ -25,6 +25,11 @@ const moreProducts = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(products);
 });
 
+const shopping = catchAsync(async (req, res) => {
+  const products = await productService.startShopping(req.body);
+  res.status(httpStatus.OK).send(products);
+});
+
 const createProduct = catchAsync(async (req, res) => {
   req.body.user_id = req.user._id;
   const product = await productService.createProduct(req.body);
@@ -46,6 +51,7 @@ module.exports = {
   scrapeProduct,
   similarProducts,
   moreProducts,
+  shopping,
   createProduct,
   deleteProduct,
   updateProduct,

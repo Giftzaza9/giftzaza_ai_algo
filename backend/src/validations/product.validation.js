@@ -36,6 +36,13 @@ const moreProducts = {
   }),
 };
 
+const shopping = {
+  body: Joi.object().keys({
+    page: Joi.number(),
+    limit: Joi.number()
+  }),
+};
+
 const createProduct = {
   body: Joi.object().keys({
     product_id: Joi.string().custom(objectId).required(),
@@ -66,6 +73,7 @@ module.exports = {
   scrapeProduct,
   similarProducts,
   moreProducts,
+  shopping,
   createProduct,
   deleteProduct,
   updateProduct,

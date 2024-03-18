@@ -7,6 +7,7 @@ const GPTbasedTagging = require('../lib/GPTbasedTagging');
 const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleaners');
 const axiosInstance = require('../utils/axiosInstance');
 const { getRecommendedProducts } = require('../services/profile.service');
+const userActivity = require('../models/useractivity.model');
 
 /**
  * Query for products
@@ -118,6 +119,65 @@ const getMoreProducts = async (productBody) => {
       console.log('ERROR IN GET MORE PRODUCTS ', error.message);
       throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in fetch more products !');
     });
+};
+
+/**
+ * Start Shopping
+ * @param {Object}
+ * @returns {Promise<Product>}
+ */
+const startShopping = async (payload) => {
+  const { page, limit } = payload;
+  const products = await userActivity.aggregate([
+    {
+      $group: {
+        _id: '$product_id',
+        like: { $sum: { $cond: [{ $eq: ['$activity', 'like'] }, 1, 0] } },
+        dislike: { $sum: { $cond: [{ $eq: ['$activity', 'dislike'] }, 1, 0] } },
+        buy: { $sum: { $cond: [{ $eq: ['$activity', 'buy'] }, 1, 0] } },
+        save: { $sum: { $cond: [{ $eq: ['$activity', 'save'] }, 1, 0] } },
+      },
+    },
+    {
+      $addFields: {
+        score: {
+          $add: [
+            { $multiply: ['$dislike', -1] },
+            { $multiply: ['$like', 2] },
+            { $multiply: ['$buy', 4] },
+            { $multiply: ['$save', 3] },
+          ],
+        },
+      },
+    },
+
+    { $sort: { score: -1 } },
+    { $skip: (page - 1) * limit },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: 'products',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'product',
+      },
+    },
+    {
+      $project: {
+        product: 1,
+        _id: 0,
+      },
+    },
+  ]);
+  const productsData = products.map((item) => item.product[0]);
+  const totalRows = await userActivity.aggregate([{ $group: { _id: '$product_id', totalRows: { $sum: 1 } } }]);
+
+  const result = {
+    row: productsData.length,
+    total_rows: totalRows?.length,
+    data: productsData,
+  };
+  return result;
 };
 
 /**
@@ -240,6 +300,7 @@ module.exports = {
   scrapeAndAddProduct,
   similarProducts,
   getMoreProducts,
+  startShopping,
   createProduct,
   deleteProductById,
   updateProductById,

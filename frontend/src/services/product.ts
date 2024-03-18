@@ -90,3 +90,17 @@ export const deleteProduct = async (product_id: string): Promise<ApiResponse> =>
     return generateErrorMessage(error);
   }
 };
+
+export interface shoppingBody {
+  page?: number;
+  limit?: number;
+}
+
+export const shopping = async (payload: shoppingBody): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.post(`/products/shopping`, payload);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};

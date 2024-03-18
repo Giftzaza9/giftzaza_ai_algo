@@ -67,7 +67,9 @@ export const CreateProfile = () => {
     } else if (val === 'Discover gifts for your mom') {
       handleCreateProfileData('title', val, 0);
       handleCreateProfileData('relation', 'Parent', 3);
-    } else handleCreateProfileData('', val, 1);
+    } else if(val === 'Start shopping') 
+      navigate('/shopping'); 
+    else handleCreateProfileData('', val, 1);
   };
 
   const handleCreateProfile = async () => {

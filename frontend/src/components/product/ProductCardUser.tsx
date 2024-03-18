@@ -16,26 +16,25 @@ import StarIcon from '@mui/icons-material/Star';
 import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { ProductPreviewModalUser } from './ProductPreviewModalUser';
 import { FC, useEffect, useState } from 'react';
-import { Product, RecommendedProduct } from '../../constants/types';
+import { Product } from '../../constants/types';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { Save } from '../shared/Icons/Save';
 import { lowHeightCondition, lowWidthCondition } from '../../constants/constants';
 import _ from 'lodash';
+import { RWebShare } from 'react-web-share';
 
 interface Props {
-  productData: RecommendedProduct;
+  productData: Product;
   handleSave: any;
-  matches: string[];
-  matchingScore: string;
-  setPrevProducts: any;
+  matches?: string[];
+  matchingScore?: string;
+  setPrevProducts?: any;
 }
 
 export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts }) => {
   const isSmallWidthScreen = useMediaQuery(lowWidthCondition);
   const isSmallHeightScreen = useMediaQuery(lowHeightCondition);
-  const { title, description, source, thumbnails, image, price_currency, price, rating, id } =
-    productData?.item_id as Product;
-
+  const { title, description, source, thumbnails, image, price_currency, price, rating, id, link } = productData as Product;
   const [previewOpen, setPreviewOpen] = useState(false);
 
   useEffect(() => {
@@ -55,17 +54,33 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
             flexDirection: 'column',
             rowGap: '16px',
             alignItems: 'center',
-            cursor: 'pointer',
             zIndex: 10,
           }}
         >
-          <Save width={'22px'} height={'22px'} />
-          <BookmarkBorderIcon sx={{ fontSize: '28px' }} onClick={() => handleSave()} />
+          <Box sx={{ cursor: 'pointer' }}>
+            <RWebShare
+              data={{
+                text: title,
+                url: link,
+                title: source,
+              }}
+              onClick={() => console.log('shared successfully!')}
+            >
+              <button style={{ background: "none", border: "none" }}>
+                <Save width={'22px'} height={'22px'} />
+              </button>
+            </RWebShare>
+          </Box>
+          <Box sx={{ cursor: 'pointer' }}>
+            <BookmarkBorderIcon sx={{ fontSize: '28px' }} onClick={() => handleSave()} />
+          </Box>
         </Box>
 
-        <div className="badge-product-match">
-          <span className="match">{Math.round(Number(matchingScore) * 100)}% Match</span>
-        </div>
+        {matchingScore && (
+          <div className="badge-product-match">
+            <span className="match">{Math.round(Number(matchingScore) * 100)}% Match</span>
+          </div>
+        )}
 
         <CardActionArea>
           {thumbnails && thumbnails?.length > 1 ? (
@@ -179,7 +194,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           setPreviewOpen(false);
         }}
         open={previewOpen}
-        product={productData?.item_id as Product}
+        product={productData as Product}
         matches={matches}
       />
     </>

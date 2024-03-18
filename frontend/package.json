@@ -29,6 +29,7 @@
     "react-scripts": "5.0.1",
     "react-toastify": "^10.0.4",
     "react-waypoint": "^10.3.0",
+    "react-web-share": "^2.0.2",
     "sweetalert2": "^11.10.5",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
