@@ -157,6 +157,8 @@ class LightFM_cls:
             filter_idf = filter_idf[filter_idf['test_set']==True].copy()
         filter_idf.reset_index(drop=True,inplace=True)
         feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
+        if filter_idf.shape[0] == 0:
+            return pd.DataFrame(columns=['left_all_unique_id','title','tags','left_score'])
 
         summation = 0
         for idx in range(len(feat_idxs)):
@@ -187,8 +189,8 @@ class LightFM_cls:
         return top_items
     
     def cold_start_user_item_recommendation(self,new_user_attributes,similar_user_id,min_budget=0,max_budget=None):
-        new_user_features = self.dataset.build_user_features([(self.user_mapper[similar_user_id],new_user_attributes)])
-        scores_new_user = self.model.predict(user_ids = self.user_mapper[similar_user_id],item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
+        new_user_features = self.dataset.build_user_features([(similar_user_id,new_user_attributes)])
+        scores_new_user = self.model.predict(user_ids = similar_user_id,item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
         top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
         top_items_new.insert(0, 'matching_score', list(-np.sort(-scores_new_user)))
         def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
@@ -271,6 +273,8 @@ class LightFM_cls:
         filter_idf.reset_index(drop=True,inplace=True)
         feat_idxs = [self.item_fmapper.get(key) for key in soft_filter_attrs]
         i_biases, item_representations = self.model.get_item_representations(features=self.item_features)
+        if filter_idf.shape[0] == 0:
+            return pd.DataFrame(columns = ['left_all_unique_id','title','tags','left_score'])
         
         soft_filter_dict = {}
         # weight_assigner = {}

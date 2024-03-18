@@ -85,6 +85,8 @@ def cs_similar_items(new_item_attributes,N=10,min_budget=0,max_budget=None,test_
     filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_item_attributes)
 
     idf = LightFM_Obj.new_cold_start_similar_items(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
+    if idf.shape[0]==0:
+        return []
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
 
@@ -102,6 +104,8 @@ def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_bud
     filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_user_attributes)
 
     idf = LightFM_Obj.cold_start_user_item_recommendation(new_user_attributes,similar_user_id,min_budget=min_budget,max_budget=max_budget)[['all_unique_id','title','tags','matching_score']]
+    if idf.shape[0]==0:
+        return []
     if test_sample_flag:
         idf = idf[idf['test_set']==True].copy()
 
@@ -119,6 +123,8 @@ def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,mi
     filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_item_attributes)
 
     idf = LightFM_Obj.new_cold_start_similar_items_with_text_sim(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
+    if idf.shape[0]==0:
+        return []
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     scaler = MinMaxScaler(feature_range=(0.1,0.90))
