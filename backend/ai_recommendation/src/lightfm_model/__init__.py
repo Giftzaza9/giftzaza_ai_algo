@@ -126,7 +126,7 @@ def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_bud
     if idf['matching_score'].max()>1:
         scaler = MinMaxScaler(feature_range=(0.1,0.90))
         idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
-    
+    idf.rename({"all_unique_id":"item_id"},inplace=True, axis=1)
     return idf.head(N).to_dict(orient='records')
     # return idf.to_dict(orient='records')
 
