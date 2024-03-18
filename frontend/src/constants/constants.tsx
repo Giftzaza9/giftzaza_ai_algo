@@ -160,6 +160,8 @@ export enum SwipeAction {
 }
 
 export const iphoneSeCondition = '(max-width: 389px) or (max-height: 700px)';
+export const lowWidthCondition = '(max-width: 420px)';
+export const lowHeightCondition = '(max-height: 550px)';
 
 export const profileCardImages = {
   parent: '/_parent_.jpeg',

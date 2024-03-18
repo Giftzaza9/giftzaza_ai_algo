@@ -13,13 +13,13 @@ import { Box } from '@mui/system';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
 import StarIcon from '@mui/icons-material/Star';
-import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
+import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { ProductPreviewModalUser } from './ProductPreviewModalUser';
 import { FC, useEffect, useState } from 'react';
 import { Product, RecommendedProduct } from '../../constants/types';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { Save } from '../shared/Icons/Save';
-import { iphoneSeCondition } from '../../constants/constants';
+import { lowHeightCondition, lowWidthCondition } from '../../constants/constants';
 import _ from 'lodash';
 
 interface Props {
@@ -31,7 +31,8 @@ interface Props {
 }
 
 export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts }) => {
-  const isSmallScreen = useMediaQuery(iphoneSeCondition);
+  const isSmallWidthScreen = useMediaQuery(lowWidthCondition);
+  const isSmallHeightScreen = useMediaQuery(lowHeightCondition);
   const { title, description, source, thumbnails, image, price_currency, price, rating, id } =
     productData?.item_id as Product;
 
@@ -44,7 +45,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
 
   return (
     <>
-      <Card sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px', height: '70vh' }}>
+      <Card sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px', height: isSmallHeightScreen ? '70vh' : '75vh' }}>
         <Box
           sx={{
             position: 'absolute',
@@ -70,7 +71,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           {thumbnails && thumbnails?.length > 1 ? (
             <Carousel>
               {thumbnails?.map((thumb) => (
-                <Box sx={{ width: '100%', height: isSmallScreen ? '35vh' : '40vh', marginTop: '20px' }}>
+                <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
                   <CardMedia
                     component="img"
                     width={'100%'}
@@ -83,7 +84,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               ))}
             </Carousel>
           ) : (
-            <Box sx={{ width: '100%', height: isSmallScreen ? '35vh' : '40vh', marginTop: '20px' }}>
+            <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
               <CardMedia
                 component="img"
                 width={'100%'}
@@ -108,11 +109,32 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               />
               <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
                 <Box display={'flex'} flexDirection={'column'} rowGap={1} mt={1}>
-                  <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>
-                    {ellipsisText(title, isSmallScreen ? 18 : 26)}
+                  <Typography
+                    sx={{
+                      fontSize: '20px',
+                      fontFamily: 'Inter',
+                      fontWeight: '700',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      maxWidth: isSmallWidthScreen ? '60vw' : '75vw',
+                    }}
+                  >
+                    {title}
                   </Typography>
-                  <Typography sx={{ fontSize: '12px', fontFamily: 'Inter' }}>
-                    {ellipsisText(description, isSmallScreen ? 64 : 95)}
+                  <Typography
+                    sx={{
+                      fontSize: '12px',
+                      fontFamily: 'Inter',
+                      maxWidth: isSmallWidthScreen ? '60vw' : '75vw',
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      WebkitLineClamp: isSmallHeightScreen ? 1 : 2, // Limit to two lines
+                    }}
+                  >
+                    {description}
+                    {/* {ellipsisText(description, isSmallScreen ? 64 : 95)} */}
                   </Typography>
                   <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
                     <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>

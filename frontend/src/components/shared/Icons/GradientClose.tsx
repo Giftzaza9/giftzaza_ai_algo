@@ -1,6 +1,13 @@
-export const GradientClose = () => {
+import { FC } from 'react';
+
+interface Props {
+  height?: string;
+  width?: string;
+}
+
+export const GradientClose: FC<Props> = ({ height, width }) => {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={width || '24'} height={height || '24'} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"
