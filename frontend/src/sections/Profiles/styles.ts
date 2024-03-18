@@ -38,7 +38,8 @@ export const genderChipsStyle = {
 export const animationStyle = {
   animation: 'fadeIn 0.3s ease-in',
   maxHeight: '66vh',
-  overflow: 'auto'
+  overflow: 'auto',
+  mt: '64px'
 };
 
 export const forwardButtonStyle ={

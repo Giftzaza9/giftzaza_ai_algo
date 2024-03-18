@@ -39,11 +39,12 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
 
   useEffect(() => {
     setPrevProducts((prev: Iterable<unknown> | null | undefined) => new Set(prev).add(id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   return (
     <>
-      <Card sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}>
+      <Card sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px', height: '70vh' }}>
         <Box
           sx={{
             position: 'absolute',
@@ -69,7 +70,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           {thumbnails && thumbnails?.length > 1 ? (
             <Carousel>
               {thumbnails?.map((thumb) => (
-                <Box sx={{ width: '100%', height: isSmallScreen ? '220px' : '400px', marginTop: '20px' }}>
+                <Box sx={{ width: '100%', height: isSmallScreen ? '35vh' : '40vh', marginTop: '20px' }}>
                   <CardMedia
                     component="img"
                     width={'100%'}
@@ -82,7 +83,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               ))}
             </Carousel>
           ) : (
-            <Box sx={{ width: '100%', height: isSmallScreen ? '220px' : '400px', marginTop: '20px' }}>
+            <Box sx={{ width: '100%', height: isSmallScreen ? '35vh' : '40vh', marginTop: '20px' }}>
               <CardMedia
                 component="img"
                 width={'100%'}
@@ -108,9 +109,11 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
                 <Box display={'flex'} flexDirection={'column'} rowGap={1} mt={1}>
                   <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>
-                    {ellipsisText(title, 26)}
+                    {ellipsisText(title, isSmallScreen ? 18 : 26)}
                   </Typography>
-                  <Typography sx={{ fontSize: '12px', fontFamily: 'Inter' }}>{ellipsisText(description, 95)}</Typography>
+                  <Typography sx={{ fontSize: '12px', fontFamily: 'Inter' }}>
+                    {ellipsisText(description, isSmallScreen ? 64 : 95)}
+                  </Typography>
                   <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
                     <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>
                       {getCurrencySymbol(price_currency)}
