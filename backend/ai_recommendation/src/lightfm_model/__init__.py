@@ -77,6 +77,10 @@ def cs_similar_user(new_user_attributes,N=10):
     udf = LightFM_Obj.cold_start_similar_user(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N)
     udf = udf[['left_all_unique_id','left_score']].copy()
     udf.rename(columns={'left_all_unique_id':'user_id','left_score':'matching_score'},inplace=True)
+
+    if udf['matching_score'].max()>1:
+        scaler = MinMaxScaler(feature_range=(0.1,0.90))
+        udf['matching_score'] = pd.Series(scaler.fit_transform(udf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
     
     return udf.to_dict(orient='records')
 
@@ -89,9 +93,9 @@ def cs_similar_items(new_item_attributes,N=10,min_budget=0,max_budget=None,test_
         return []
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
-
-    scaler = MinMaxScaler(feature_range=(0.1,0.90))
-    idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
+    if idf['matching_score'].max()>1:
+        scaler = MinMaxScaler(feature_range=(0.1,0.90))
+        idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
     
     return idf.to_dict(orient='records')
 
@@ -112,8 +116,9 @@ def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_bud
     idf = idf[idf['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))]
     for each_semi_hard_filter in Global_Obj.semi_hard_filters:
             idf = idf[idf['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
-    scaler = MinMaxScaler(feature_range=(0.1,0.90))
-    idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
+    if idf['matching_score'].max()>1:
+        scaler = MinMaxScaler(feature_range=(0.1,0.90))
+        idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
     
     return idf.head(N).to_dict(orient='records')
     # return idf.to_dict(orient='records')
@@ -127,8 +132,9 @@ def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,mi
         return []
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
-    scaler = MinMaxScaler(feature_range=(0.1,0.90))
-    idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
+    if idf['matching_score'].max()>1:
+        scaler = MinMaxScaler(feature_range=(0.1,0.90))
+        idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
     
     return idf.to_dict(orient='records')
 
@@ -222,7 +228,7 @@ def test_with_sample(N):
 
 def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budget=0,max_budget=None,test_sample_flag=False):
     df_similar_profile = pd.DataFrame(cs_similar_user(new_attributes,N=10))
-    similar_profile_cutoff = df_similar_profile[:5]
+    similar_profile_cutoff = df_similar_profile[df_similar_profile['matching_score']>0.7][:5]
     if similar_profile_cutoff.shape[0] > 0: ### No similar Profile
         profile_user_id = LightFM_Obj.get_userid_of_profile(similar_profile_cutoff,user_id) ### similar profile from same user
         if profile_user_id:
