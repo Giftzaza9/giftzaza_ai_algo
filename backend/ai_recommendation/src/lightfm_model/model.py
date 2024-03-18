@@ -81,6 +81,9 @@ class LightFM_cls:
         feat_idxs = [self.user_fmapper.get(key) for key in soft_filter_attrs]
         u_biases, user_representations = self.model.get_user_representations(features=self.user_features)
 
+        if filter_udf.shape[0] == 0:
+            return pd.DataFrame(columns=['left_all_unique_id','left_score'])
+
         summation = 0
         for idx in range(len(feat_idxs)):
             summation += (self.model.user_embeddings[feat_idxs[idx]] )
