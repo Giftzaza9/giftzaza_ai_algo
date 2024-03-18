@@ -24,6 +24,9 @@ import { toast } from 'react-toastify';
 import { CreateProfileBody, createProfile } from '../../services/profile';
 import { useNavigate } from 'react-router';
 import { animationStyle, forwardButtonStyle, genderChipsStyle, startedChipsStyle } from './styles';
+import { theme } from '../../utils/theme';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
 
 const initialProfileData: Partial<Profile> = {
   styles: [],
@@ -125,7 +128,6 @@ export const CreateProfile = () => {
   };
 
   const handleSingleSelect = (label: string, val: string) => {
-    console.log(label + ' ' + val);
     if (label === 'age' && profileData?.title === 'Discover gifts for your mom') {
       handleCreateProfileData(label, val, 0);
       handleCreateProfileData('gender', 'Female', 2);
@@ -141,7 +143,7 @@ export const CreateProfile = () => {
     }
     setPage((prev) => prev + page);
   };
-  // console.log({ profileData });
+
   return (
     <MobileLayout>
       <Container
@@ -153,9 +155,10 @@ export const CreateProfile = () => {
           flexGrow: 1,
         }}
       >
+        <Box></Box>
         {/* Progess bar and next & prev arrows */}
         {page !== 10 && page !== 0 && (
-          <Grid>
+          <Grid position={'absolute'} width={'95%'} zIndex={10} bgcolor={theme.palette.secondary.main} alignSelf={'center'}>
             <LinearProgress
               color="primary"
               variant="determinate"
@@ -340,19 +343,24 @@ export const CreateProfile = () => {
               When’s the occasion?
             </Typography>
             <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
-              <TextField
-                type="Date"
-                variant="outlined"
-                placeholder="Name"
-                size="small"
-                InputProps={{
-                  style: {
-                    ...startedChipsStyle,
-                    padding: '6px',
+              <MobileDatePicker
+                defaultValue={dayjs()}
+                value={dayjs(profileData?.occasion_date as string)}
+                onChange={(val) => handleSingleSelect('occasion_date', val?.toISOString() as string)}
+                minDate={dayjs()}
+                format="DD/MM/YYYY"
+                componentsProps={{
+                  textField: {
+                    variant: 'outlined',
+                    size: 'small',
+                    InputProps: {
+                      style: {
+                        ...startedChipsStyle,
+                        padding: '6px',
+                      },
+                    },
                   },
                 }}
-                value={profileData?.occasion_date as string}
-                onChange={(e) => handleSingleSelect('occasion_date', e.target.value)}
               />
             </Box>
           </Grid>

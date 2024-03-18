@@ -11,10 +11,9 @@ import { ProductCard } from '../../../components/product/ProductCardUser';
 import CloseIcon from '@mui/icons-material/Close';
 import { GradientClose } from '../../../components/shared/Icons/GradientClose';
 import { Love } from '../../../components/shared/Icons/Love';
-import { Save } from '../../../components/shared/Icons/Save';
-import { SwipeAction } from '../../../constants/constants';
-import { Product } from '../../../constants/types';
+import { SwipeAction, iphoneSeCondition } from '../../../constants/constants';
 import _ from 'lodash';
+import { useMediaQuery } from '@mui/material';
 
 export const CardSwiper = (props: CardSwiperProps) => {
   const {
@@ -58,6 +57,8 @@ export const CardSwiper = (props: CardSwiperProps) => {
     prevProductsCount,
   });
   // const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(swiperElements.current[swiperIndex]);
+  const isSmallScreen = useMediaQuery(iphoneSeCondition);
+
   const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(elements[swiperIndex]);
   const [hideActionButtons, setHideActionButtons] = useState('');
   // const [currentProduct, setCurrentProduct] = useState<Product | null>();
@@ -174,7 +175,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 onClick={handleUserActivity}
                 extraClass="dislikeProduct"
               >
-                <GradientClose />
+                <GradientClose height={isSmallScreen ? '18' : '24'} />
               </CardSwiperActionButton>
               <CardSwiperActionButton
                 isCustom
@@ -183,7 +184,9 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 onClick={handleUserActivity}
                 extraClass={'buyProduct'}
               >
-                <span style={{ fontSize: '21px', fontFamily: 'Inter', fontWeight: '700' }}>BUY</span>{' '}
+                <span style={{ fontSize: isSmallScreen ? '16px' : '21px', fontFamily: 'Inter', fontWeight: '700' }}>
+                  BUY
+                </span>{' '}
               </CardSwiperActionButton>
               <CardSwiperActionButton
                 isCustom
@@ -192,7 +195,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                 onClick={handleUserActivity}
                 extraClass={'loveProduct'}
               >
-                <Love />
+                <Love height={isSmallScreen ? '18' : '24'} />
               </CardSwiperActionButton>
               {/* <CardSwiperActionButton
                 isCustom

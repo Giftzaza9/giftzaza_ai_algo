@@ -104,10 +104,10 @@
   bottom: 0;
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 20px;
   align-items: center;
   position: absolute;
-  bottom: 73px;
+  bottom: 38px;
   margin-bottom: 22px;
   width: 100%;
   transition: all .7s ease;
@@ -158,12 +158,19 @@
   display: flex;
   width: 60px;
   height: 60px;
-  background: linear-gradient(180deg, #EA4080 0%, #EE805F 68.16%);
+  background: #DD6E3F;
   align-items: center;
   z-index: 1;
   color: white;
   justify-content: center;
   border-radius: 50%;
+}
+
+@media (max-height: 590px) {
+  .swipe-card__custom-action-button {
+    width: 50px;
+    height: 50px;
+  }
 }
 
 .loveProduct {

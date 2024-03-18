@@ -8,6 +8,7 @@ import { bottomNavState } from '../../store/BottomNavState';
 import { useNavigate } from 'react-router-dom';
 import { FC } from 'react';
 import { iphoneSeCondition } from '../../constants/constants';
+import { ArrowForwardIos } from '@mui/icons-material';
 
 const containerStyles = {
   height: '100vh',
@@ -19,8 +20,8 @@ const itemStyles = { display: 'flex', justifyContent: 'center', alignItems: 'cen
 const thumbContainerStyles = {
   borderRadius: '50%',
   border: '5px solid rgba(221, 110, 63, 1)',
-  height: '50vw',
-  width: '50vw',
+  height: '160px',
+  width: '160px',
 };
 
 interface _Props {
@@ -59,7 +60,7 @@ export const User = observer(() => {
   return (
     <MobileLayout>
       <Grid container component="main" sx={containerStyles}>
-        <Grid item sx={{ ...itemStyles, padding: isSmallScreen ? '5vw' : '15vw' }}>
+        <Grid item sx={{ ...itemStyles, padding: isSmallScreen ? '16px' : '32px' }}>
           <Box sx={thumbContainerStyles}>
             {user?.profile_picture ? (
               <Avatar sx={{ height: '100%', width: '100%' }} src={user?.profile_picture} />
@@ -77,9 +78,27 @@ export const User = observer(() => {
           <StyledTextField value={user?.email as string} label={`Email`} />
         </Grid>
 
-        <Grid item sx={{ ...itemStyles, flexDirection: 'column', paddingY: '18%', height: '100%' }}>
+        <Grid item sx={{ ...itemStyles, flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
           <Box flexGrow={1}></Box>
-          <Box width={'75%'}>
+          <Box width={'75%'} sx={{ paddingBottom: isSmallScreen ? '16px' : '32px' }}>
+            {user?.role === 'admin' && (
+              <Button
+                variant="contained"
+                color="secondary"
+                sx={{ width: '100%', padding: '6px 18px', mb: '12px' }}
+                LinkComponent={'a'}
+                href='/dashboard/admin'
+                target='_blank'
+                endIcon={<ArrowForwardIos />}
+              >
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontFamily: 'Inter', color: 'white', fontSize: '18px', fontWeight: 600, textTransform: 'none' }}
+                >
+                  Admin Panel
+                </Typography>
+              </Button>
+            )}
             <Button
               variant="contained"
               color="secondary"
