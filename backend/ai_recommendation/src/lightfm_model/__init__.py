@@ -254,6 +254,8 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budg
                     raise Exception(f"Error in Getting Similar Profile recommdendation : {e}")
             if popular_recommdendations:
                 popular_recommdendations = pd.DataFrame(popular_recommdendations).sort_values(by='matching_score',ascending=False)
+                popular_recommdendations.drop_duplicates(subset=["all_unique_id"], keep="first", inplace=True)
+                popular_recommdendations.reset_index(drop=True,inplace=True)
                 return popular_recommdendations.to_dict(orient='records')[:N]
     #### if No interaction for any of the profiles
     if content_attr:
