@@ -253,8 +253,8 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budg
                 except Exception as e:
                     raise Exception(f"Error in Getting Similar Profile recommdendation : {e}")
             if popular_recommdendations:
-                popular_recommdendations = pd.DataFrame(popular_recommdendations).sort_values(by='matching_score',ascending=False).to_dict(orient='records')
-                return popular_recommdendations[:N]
+                popular_recommdendations = pd.DataFrame(popular_recommdendations).sort_values(by='matching_score',ascending=False)
+                return popular_recommdendations.to_dict(orient='records')[:N]
     #### if No interaction for any of the profiles
     if content_attr:
         return cs_similar_items_with_text_sim(new_item_attributes=new_attributes,content_attr=content_attr,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
