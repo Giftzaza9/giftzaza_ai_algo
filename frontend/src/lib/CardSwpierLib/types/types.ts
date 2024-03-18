@@ -25,9 +25,10 @@ export interface CardSwiperProps extends CardEvents {
   setPrevProducts: any
   prevProducts? :any
   prevProductsCount?: number
-  refetch: boolean;
-  setRefetch: Dispatch<SetStateAction<boolean>>
-  modelRetrain: () => void
+  refetch?: boolean;
+  setRefetch?: Dispatch<SetStateAction<boolean>>
+  modelRetrain?: () => void
+  type: string
 }
 
 export interface CardEvents {

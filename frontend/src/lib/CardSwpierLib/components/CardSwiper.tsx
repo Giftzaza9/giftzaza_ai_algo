@@ -34,6 +34,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
     refetch,
     setRefetch,
     modelRetrain,
+    type,
   } = props;
 
   const {
@@ -69,7 +70,8 @@ export const CardSwiper = (props: CardSwiperProps) => {
   useEffect(() => {
     if (refetch) {
       setElements([]);
-      setRefetch(false);
+      if(setRefetch && typeof setRefetch === 'function')
+        setRefetch(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
@@ -86,7 +88,8 @@ export const CardSwiper = (props: CardSwiperProps) => {
 
   useEffect(() => {
     if (swiperIndex - prevProductsCount! === 3) {
-      modelRetrain();
+      if(modelRetrain && typeof modelRetrain === 'function')
+        modelRetrain();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swiperIndex]);
@@ -101,7 +104,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
             <div
               key={product?._id + '~' + index}
               ref={(ref: HTMLDivElement | null) =>
-                handleNewCardSwiper(ref, product?.item_id?.id, product?.matching_score, product?.item_id)
+                handleNewCardSwiper(ref, type === "shopping" ? product?.id : product?.item_id?.id, product?.matching_score, type === "shopping" ? product : product?.item_id)
               }
               className="swipe-card__container"
               id="swipe-card__container"
@@ -115,10 +118,10 @@ export const CardSwiper = (props: CardSwiperProps) => {
               )}
               <ProductCard
                 matches={_.intersection(
-                  product?.item_id?.tags?.map((el: string) => el?.toLowerCase()),
+                  type === "shopping" ? product?.tags?.map((el: string) => el?.toLowerCase()) : product?.item_id?.tags?.map((el: string) => el?.toLowerCase()),
                   profile?.preferences
                 )}
-                productData={product}
+                productData={type === "shopping" ? product : product?.item_id}
                 handleSave={handleSave}
                 matchingScore={product?.matching_score}
                 setPrevProducts={setPrevProducts}

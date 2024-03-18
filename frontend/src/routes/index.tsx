@@ -13,6 +13,7 @@ import { observer } from 'mobx-react-lite';
 import { Profiles } from '../sections/Profiles';
 import { CreateProfile } from '../sections/Profiles/CreateProfile';
 import { User } from '../sections/User';
+import { Shopping } from '../sections/Shopping';
 
 const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
@@ -25,6 +26,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
       <Route path="/profiles/:profileId" element={<Products />} />
       <Route path="/loved" element={<Loved />} />
       <Route path="/user" element={<User />} />
+      <Route path="/shopping" element={<Shopping />} />
     </>
   );
 
