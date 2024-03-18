@@ -25,6 +25,10 @@ router
   .post(auth(), validate(productValidation.moreProducts), productController.moreProducts)
 
 router
+  .route('/shopping')
+  .post(auth(), validate(productValidation.shopping), productController.shopping)
+
+router
   .route('/')
   .get(auth(), validate(productValidation.getProducts), productController.getProducts)
   .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.createProduct), productController.createProduct);

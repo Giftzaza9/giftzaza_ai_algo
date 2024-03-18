@@ -209,7 +209,6 @@
   font-family: Inter;
 }
 
-
 .badge-product-match span::before {
   border: 5px solid rgba(133, 198, 226, 1);
   border-color: rgba(133, 198, 226, 1) transparent transparent rgba(133, 198, 226, 1);
@@ -232,3 +231,10 @@
   z-index: 1;
 }
 
+.carousel.carousel-slider .control-arrow:hover {
+  background: none!important;
+}
+
+.carousel.carousel-slider .control-arrow {
+  padding: 40px!important;
+}
