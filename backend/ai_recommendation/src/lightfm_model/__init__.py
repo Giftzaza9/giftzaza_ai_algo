@@ -77,6 +77,7 @@ def cs_similar_user(new_user_attributes,N=10):
     udf = LightFM_Obj.cold_start_similar_user(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N)
     udf = udf[['left_all_unique_id','left_score']].copy()
     udf.rename(columns={'left_all_unique_id':'user_id','left_score':'matching_score'},inplace=True)
+    udf.reset_index(drop=True,inplace=True)
 
     if udf['matching_score'].max()>1:
         scaler = MinMaxScaler(feature_range=(0.1,0.90))
@@ -93,6 +94,7 @@ def cs_similar_items(new_item_attributes,N=10,min_budget=0,max_budget=None,test_
         return []
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
+    idf.reset_index(drop=True,inplace=True)
     if idf['matching_score'].max()>1:
         scaler = MinMaxScaler(feature_range=(0.1,0.90))
         idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
@@ -108,14 +110,18 @@ def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_bud
     filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_user_attributes)
 
     idf = LightFM_Obj.cold_start_user_item_recommendation(new_user_attributes,similar_user_id,min_budget=min_budget,max_budget=max_budget)[['all_unique_id','title','tags','matching_score']]
+    idf.reset_index(drop=True,inplace=True)
     if idf.shape[0]==0:
         return []
     if test_sample_flag:
         idf = idf[idf['test_set']==True].copy()
+        idf.reset_index(drop=True,inplace=True)
 
     idf = idf[idf['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))]
+    idf.reset_index(drop=True,inplace=True)
     for each_semi_hard_filter in Global_Obj.semi_hard_filters:
-            idf = idf[idf['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
+        idf = idf[idf['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
+        idf.reset_index(drop=True,inplace=True)
     if idf['matching_score'].max()>1:
         scaler = MinMaxScaler(feature_range=(0.1,0.90))
         idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
@@ -132,6 +138,7 @@ def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,mi
         return []
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
+    idf.reset_index(drop=True,inplace=True)
     if idf['matching_score'].max()>1:
         scaler = MinMaxScaler(feature_range=(0.1,0.90))
         idf['matching_score'] = pd.Series(scaler.fit_transform(idf['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))
