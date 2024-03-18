@@ -5,7 +5,6 @@ import { Profile } from '../../constants/types';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { comingUpOn, daysRemaining, ellipsisText } from '../../utils/helperFunctions';
-import { profileCardImages } from '../../constants/constants';
 
 interface Props {
   profile: Profile;
@@ -29,12 +28,12 @@ export const ProfileCard: FC<Props> = ({ profile, handleProfileToEdit }) => {
         borderRadius: '12px',
         backgroundImage: `url("${
           profile?.relation === 'Parent'
-            ? profileCardImages.parent
+            ? require('../../assets/_parent_.jpeg')
             : profile?.relation === 'Friend'
-            ? profileCardImages.friend
+            ? require('../../assets/_friend_.jpeg')
             : profile?.relation === 'Spouse or Significant Other'
-            ? profileCardImages.wife
-            : profileCardImages.wife
+            ? require('../../assets/_wife_.jpeg')
+            : require('../../assets/_wife_.jpeg')
         }")`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
