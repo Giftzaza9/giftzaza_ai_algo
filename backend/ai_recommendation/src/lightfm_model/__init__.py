@@ -31,8 +31,9 @@ class Global_cls:
                 else:
                     keys=list(map(self.preprocess_str,self.cat_odata[i]['category']))
                     self.cat_dict[i] = keys
-                if i not in self.hard_filters and i not in self.semi_hard_filters: ### Hard Filters removed from the model parameters
-                    self.attr_list.extend(keys)
+                # if i not in self.hard_filters and i not in self.semi_hard_filters: ### Hard Filters removed from the model parameters
+                #     self.attr_list.extend(keys)
+                self.attr_list.extend(keys)
                 self.attr_weights.update(dict(zip(keys,[self.cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
         with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "useractivity.json"),'r') as fr:
             self.user_activity_types = json.load(fr)
