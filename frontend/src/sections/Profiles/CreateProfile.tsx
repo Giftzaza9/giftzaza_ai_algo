@@ -67,8 +67,7 @@ export const CreateProfile = () => {
     } else if (val === 'Discover gifts for your mom') {
       handleCreateProfileData('title', val, 0);
       handleCreateProfileData('relation', 'Parent', 3);
-    } else if(val === 'Start shopping') 
-      navigate('/shopping'); 
+    } else if (val === 'Start shopping') navigate('/shopping');
     else handleCreateProfileData('', val, 1);
   };
 
@@ -150,15 +149,22 @@ export const CreateProfile = () => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-end',
+          position: 'relative',
           mb: '20px',
-          flexGrow: 1,
+          height: '100%',
         }}
       >
-        <Box></Box>
         {/* Progess bar and next & prev arrows */}
         {page !== 10 && page !== 0 && (
-          <Grid position={'absolute'} width={'95%'} zIndex={10} bgcolor={theme.palette.secondary.main} alignSelf={'center'}>
+          <Grid
+            position={'absolute'}
+            width={'95%'}
+            zIndex={10}
+            bgcolor={theme.palette.secondary.main}
+            alignSelf={'center'}
+            top={0}
+          >
             <LinearProgress
               color="primary"
               variant="determinate"
@@ -215,7 +221,7 @@ export const CreateProfile = () => {
         )}
         {page === 0 && (
           <>
-            <Box></Box>
+            {/* <Box></Box> */}
             <Grid sx={animationStyle}>
               <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2, pl: 2 }}>
                 Let’s get started
@@ -349,14 +355,16 @@ export const CreateProfile = () => {
                 onChange={(val) => handleSingleSelect('occasion_date', val?.toISOString() as string)}
                 minDate={dayjs()}
                 format="DD/MM/YYYY"
-                componentsProps={{
+                slotProps={{
                   textField: {
                     variant: 'outlined',
                     size: 'small',
+
                     InputProps: {
                       style: {
                         ...startedChipsStyle,
                         padding: '6px',
+                        fontSize: '16px',
                       },
                     },
                   },

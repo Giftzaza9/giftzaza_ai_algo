@@ -89,8 +89,10 @@ export const CardSwiper = (props: CardSwiperProps) => {
 
   useEffect(() => {
     if (swiperIndex - prevProductsCount! === 3) {
-      if(modelRetrain && typeof modelRetrain === 'function')
-        modelRetrain();
+      if (modelRetrain && typeof modelRetrain === 'function')
+        try {
+          modelRetrain();
+        } catch (error) {}
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swiperIndex]);
