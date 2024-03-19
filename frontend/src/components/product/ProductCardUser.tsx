@@ -66,7 +66,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               }}
               onClick={() => console.log('shared successfully!')}
             >
-              <button style={{ background: "none", border: "none" }}>
+              <button style={{ background: 'none', border: 'none' }}>
                 <Save width={'22px'} height={'22px'} />
               </button>
             </RWebShare>
@@ -82,24 +82,34 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           </div>
         )}
 
-        <CardActionArea sx={{ height: '100%', overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <CardActionArea
+          sx={{
+            height: '100%',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
           {thumbnails && thumbnails?.length > 1 ? (
-            <Carousel>
-              {thumbnails?.map((thumb) => (
-                // <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
-                <Box sx={{ width: '100%', height: '100%', marginTop: '20px' }}>
-                  <CardMedia
-                    component="img"
-                    width={'100%'}
-                    height="100%"
-                    sx={{ objectFit: 'contain' }}
-                    image={thumb}
-                    alt="green iguana"
-                  />
-                </Box>
-              ))}
-            </Carousel>
-          ) : ( 
+            <Box sx={{ height: '60%' }}>
+              <Carousel>
+                {thumbnails?.map((thumb) => (
+                  // <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
+                  <Box sx={{ width: '100%', height: '85%', marginTop: '20px' }}>
+                    <CardMedia
+                      component="img"
+                      width={'100%'}
+                      height="100%"
+                      sx={{ objectFit: 'contain' }}
+                      image={thumb}
+                      alt="green iguana"
+                    />
+                  </Box>
+                ))}
+              </Carousel>
+            </Box>
+          ) : (
             <Box sx={{ width: '100%', height: '60%', marginTop: '20px' }}>
               <CardMedia
                 component="img"
@@ -111,7 +121,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               />
             </Box>
           )}
-          <CardContent sx={{ width: "100%", height: "30%", minHeight: "165px", padding: 2 }}>
+          <CardContent sx={{ width: '100%', height: '30%', minHeight: '165px', padding: 2 }}>
             <Grid>
               <Chip
                 label={_.capitalize(source)}
