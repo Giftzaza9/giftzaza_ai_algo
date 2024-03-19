@@ -31,8 +31,8 @@ class create_recommendation_schema(BaseModel):
     new_attributes : List[str]
     content_attribute : Optional[str] = None
     top_n : Optional[int] = 10
-    min_budget : Optional[int] = 0
-    max_budget : Optional[int] = None
+    min_price : Optional[int] = 0
+    max_price : Optional[int] = None
 
 class get_metrics_schema(BaseModel):
     at_k : int = 4

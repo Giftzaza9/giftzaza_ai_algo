@@ -60,8 +60,8 @@ def create_recommendation(body : create_recommendation_schema):
                                      new_attributes=body.new_attributes,
                                      content_attr=body.content_attribute,
                                      N=body.top_n,
-                                     min_budget=body.min_budget,
-                                     max_budget=body.max_budget)
+                                     min_budget=body.min_price,
+                                     max_budget=body.max_price)
 
 @app.post("/model_retrain")
 def model_retrain():
