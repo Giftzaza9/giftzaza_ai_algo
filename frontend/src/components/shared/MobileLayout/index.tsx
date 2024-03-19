@@ -88,7 +88,7 @@ export const MobileLayout = observer(({ children, profile, fetchProfile }: Props
         backgroundColor: theme.palette.secondary.main,
         display: 'flex',
         flexDirection: 'column',
-        height: isMobileBrowser() ? '95vh' : '100vh',
+        height: '100vh',
         position: 'relative',
       }}
     >
