@@ -127,7 +127,7 @@ export const CreateProfile = () => {
   };
 
   const handleSingleSelect = (label: string, val: string) => {
-    if (label === 'age' && profileData?.title === 'Discover gifts for your mom') {
+    if (label === 'occasion_date' && profileData?.title === 'Discover gifts for your mom') {
       handleCreateProfileData(label, val, 0);
       handleCreateProfileData('gender', 'Female', 2);
     } else handleCreateProfileData(label, val, 1);
@@ -249,6 +249,20 @@ export const CreateProfile = () => {
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               Who is this gift for?
             </Typography>
+            <MobileSingleSelectChip
+              small
+              title={'relation'}
+              items={filterObject.relationship}
+              selectedTag={profileData?.relation as string}
+              handleSelect={handleSingleSelect}
+            />
+          </Grid>
+        )}
+        {page === 2 && (
+          <Grid sx={animationStyle}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
+              What's their name?
+            </Typography>
             <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
               <TextField
                 variant="outlined"
@@ -262,37 +276,51 @@ export const CreateProfile = () => {
             </Box>
           </Grid>
         )}
-
-        {page === 2 && (
-          <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
-              How are you related?
-            </Typography>
-            <MobileSingleSelectChip
-              small
-              title={'relation'}
-              items={filterObject.relationship}
-              selectedTag={profileData?.relation as string}
-              handleSelect={handleSingleSelect}
-            />
-          </Grid>
-        )}
-
         {page === 3 && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
-              What’s their age?
+              What’s the occasion?
             </Typography>
             <MobileSingleSelectChip
               small
-              title={'age'}
-              items={filterObject.age_category}
-              selectedTag={profileData?.age as string}
+              title={'occasion'}
+              items={filterObject.occasion}
+              selectedTag={profileData?.occasion as string}
               handleSelect={handleSingleSelect}
             />
           </Grid>
         )}
         {page === 4 && (
+          <Grid sx={animationStyle}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
+              When’s the occasion?
+            </Typography>
+            <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
+              <MobileDatePicker
+                defaultValue={dayjs()}
+                value={dayjs(profileData?.occasion_date as string)}
+                onChange={(val) => handleSingleSelect('occasion_date', val?.toISOString() as string)}
+                minDate={dayjs()}
+                format="DD/MM/YYYY"
+                slotProps={{
+                  textField: {
+                    variant: 'outlined',
+                    size: 'small',
+
+                    InputProps: {
+                      style: {
+                        ...startedChipsStyle,
+                        padding: '6px',
+                        fontSize: '16px',
+                      },
+                    },
+                  },
+                }}
+              />
+            </Box>
+          </Grid>
+        )}
+        {page === 5 && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               Gender
@@ -329,48 +357,18 @@ export const CreateProfile = () => {
             </Box>
           </Grid>
         )}
-        {page === 5 && (
-          <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
-              What’s the occasion?
-            </Typography>
-            <MobileSingleSelectChip
-              small
-              title={'occasion'}
-              items={filterObject.occasion}
-              selectedTag={profileData?.occasion as string}
-              handleSelect={handleSingleSelect}
-            />
-          </Grid>
-        )}
         {page === 6 && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
-              When’s the occasion?
+              What’s their age?
             </Typography>
-            <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
-              <MobileDatePicker
-                defaultValue={dayjs()}
-                value={dayjs(profileData?.occasion_date as string)}
-                onChange={(val) => handleSingleSelect('occasion_date', val?.toISOString() as string)}
-                minDate={dayjs()}
-                format="DD/MM/YYYY"
-                slotProps={{
-                  textField: {
-                    variant: 'outlined',
-                    size: 'small',
-
-                    InputProps: {
-                      style: {
-                        ...startedChipsStyle,
-                        padding: '6px',
-                        fontSize: '16px',
-                      },
-                    },
-                  },
-                }}
-              />
-            </Box>
+            <MobileSingleSelectChip
+              small
+              title={'age'}
+              items={filterObject.age_category}
+              selectedTag={profileData?.age as string}
+              handleSelect={handleSingleSelect}
+            />
           </Grid>
         )}
         {page === 7 && (
@@ -390,7 +388,7 @@ export const CreateProfile = () => {
         {page === 8 && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 1 }}>
-              Tell me about their style?
+              Now, tell me a bit about their style?
             </Typography>
             <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '400', mb: 2 }}>
               Choose as many as you want
