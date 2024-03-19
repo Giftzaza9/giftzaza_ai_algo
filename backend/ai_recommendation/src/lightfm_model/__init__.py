@@ -243,7 +243,7 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budg
             if profile_user_id:
                 for profile_id in profile_user_id:
                     if LightFM_Obj.check_profile_interaction(profile_id=profile_id):
-                        return cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_user_id,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag = test_sample_flag)
+                        return cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_id,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag = test_sample_flag)
             ####  If No Similar profile from same user - Popular recommendation from all profile
             popular_recommdendations = []
             for profile_id in similar_profile_cutoff['user_id'].to_list():
