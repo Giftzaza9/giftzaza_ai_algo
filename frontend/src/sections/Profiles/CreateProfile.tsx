@@ -89,23 +89,23 @@ export const CreateProfile = () => {
   };
 
   const handleArrows = (val: number) => {
-    if (page === 1 && val === 1 && !profileData?.title?.trim()) {
-      toast.warn('Please add name !');
-      return;
-    } else if (page === 2 && val === 1 && !profileData?.relation) {
+    if (page === 1 && val === 1 && !profileData?.relation) {
       toast.warn('Please select relation !');
       return;
-    } else if (page === 3 && val === 1 && !profileData?.age) {
-      toast.warn('Please select age !');
+    } else if (page === 2 && val === 1 && !profileData?.title?.trim()) {
+      toast.warn('Please add name !');
       return;
-    } else if (page === 4 && val === 1 && !profileData?.gender) {
-      toast.warn('Please select gender !');
-      return;
-    } else if (page === 5 && val === 1 && !profileData?.occasion) {
+    } else if (page === 3 && val === 1 && !profileData?.occasion) {
       toast.warn('Please select occasion !');
       return;
-    } else if (page === 6 && val === 1 && !profileData?.occasion_date) {
+    } else if (page === 4 && val === 1 && !profileData?.occasion_date) {
       toast.warn('Please select occasion date !');
+      return;
+    } else if (page === 5 && val === 1 && !profileData?.gender) {
+      toast.warn('Please select gender !');
+      return;
+    } else if (page === 6 && val === 1 && !profileData?.age) {
+      toast.warn('Please select age !');
       return;
     } else if (page === 7 && val === 1 && !profileData?.budget) {
       toast.warn('Please select budget !');
@@ -247,7 +247,7 @@ export const CreateProfile = () => {
         {page === 1 && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
-              Who is this gift for?
+              Who's this gift for?
             </Typography>
             <MobileSingleSelectChip
               small
