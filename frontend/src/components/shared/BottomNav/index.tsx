@@ -47,7 +47,7 @@ export const BottomNav = observer(() => {
         icon={<GridViewRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />}
         onClick={() => navigate('/profiles')}
       />
-      <BottomNavigationAction value="favorites" icon={<Bookmark style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />} />
+      <BottomNavigationAction value="favorites" icon={<Bookmark style={{ fontSize: isSmallScreen ? '24px' : '28px' }} onClick={() => navigate('/saved')} />} />
       <BottomNavigationAction
         value="user"
         icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />}

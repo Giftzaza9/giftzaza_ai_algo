@@ -73,10 +73,10 @@ export const stringAvatar = (name: string) => {
 };
 
 export const ellipsisText = (text: string, maxChars: number) => {
-  if (text.length <= maxChars) {
+  if (text?.length <= maxChars) {
     return text;
   } else {
-    return text.slice(0, maxChars) + '...';
+    return text?.slice(0, maxChars) + '...';
   }
 };
 
@@ -97,3 +97,5 @@ export const comingUpOn = (date: string) => {
   if (days === 1) return 'coming up on tomorrow';
   return `coming up on ${dayjs(date).format('DD/MM/YYYY')}`;
 };
+
+export const isMobileBrowser = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

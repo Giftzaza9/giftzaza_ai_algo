@@ -4,7 +4,6 @@ import ProtectedRoute from '../components/auth/ProtectedRoute';
 import { userStore } from '../store/UserStore';
 import { decodeToken } from '../utils/decodeToken';
 import { NotFound } from '../sections/NotFound';
-import { Loved } from '../sections/Loved';
 import { roleEnum } from '../constants/types';
 import { AdminProducts } from '../sections/Administration/AdminProducts';
 import { Onboarding } from '../sections/Onboarding';
@@ -14,6 +13,10 @@ import { Profiles } from '../sections/Profiles';
 import { CreateProfile } from '../sections/Profiles/CreateProfile';
 import { User } from '../sections/User';
 import { Shopping } from '../sections/Shopping';
+import { Suspense } from 'react';
+import { Loader } from '../components/shared/Loader';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Saved } from '../sections/Saved';
 
 const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
@@ -24,7 +27,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
       <Route path="/profiles" element={<Profiles />} />
       <Route path="/create-profile" element={<CreateProfile />} />
       <Route path="/profiles/:profileId" element={<Products />} />
-      <Route path="/loved" element={<Loved />} />
+      <Route path="/saved" element={<Saved />} />
       <Route path="/user" element={<User />} />
       <Route path="/shopping" element={<Shopping />} />
     </>
@@ -67,14 +70,23 @@ const Router = observer(() => {
   const user_role = userStore.user?.role || user?.user?.role;
 
   return (
-    <Routes>
-      <Route path={'/login'} element={<Auth />} />
-      <Route path="/404" element={<NotFound />} />
-      <Route path="/" element={<ProtectedRoute />}>
-        {roleBasedRouteAccess(user_role)}
-      </Route>
-      <Route path="*" element={<Navigate to="/404" />} />
-    </Routes>
+    <ErrorBoundary
+      onReset={() => {
+        window.location.href = window.location.href;
+      }}
+      FallbackComponent={CreateProfile}
+    >
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          <Route path={'/login'} element={<Auth />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="/" element={<ProtectedRoute />}>
+            {roleBasedRouteAccess(user_role)}
+          </Route>
+          <Route path="*" element={<Navigate to="/404" />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 });
 

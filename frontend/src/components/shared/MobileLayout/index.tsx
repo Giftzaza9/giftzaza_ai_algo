@@ -9,6 +9,7 @@ import { Profile } from '../../../constants/types';
 import { iphoneSeCondition } from '../../../constants/constants';
 import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../../store/ShowLoader';
+import { isMobileBrowser } from '../../../utils/helperFunctions';
 
 interface _Props {
   fetchProfile?: () => void;
@@ -87,7 +88,7 @@ export const MobileLayout = observer(({ children, profile, fetchProfile }: Props
         backgroundColor: theme.palette.secondary.main,
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
+        height: isMobileBrowser() ? '95vh' : '100vh',
         position: 'relative',
       }}
     >
