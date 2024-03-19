@@ -14,14 +14,14 @@ export const Shopping = observer(() => {
   const { setLoading } = loaderState;
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(50);
+  const [limit, setLimit] = useState<number>(30);
   const [prevProducts, setPrevProducts] = useState(new Set());
   const [prevProductsCount, setPrevProductsCount] = useState<number>(1);
 
   useEffect(() => {
     fetchShoppingProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page]);
 
   const fetchShoppingProducts = async () => {
     try {
