@@ -7,6 +7,16 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+      console.log('ServiceWorker registration successful:', registration);
+    }, (error) => {
+      console.log('ServiceWorker registration failed:', error);
+    });
+  });
+}
+
 root.render(
   // <React.StrictMode>
     <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID as string}>
