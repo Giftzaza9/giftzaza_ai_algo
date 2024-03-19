@@ -86,7 +86,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           {thumbnails && thumbnails?.length > 1 ? (
             <Carousel>
               {thumbnails?.map((thumb) => (
-                <Box sx={{ width: '100%', height: isSmallHeightScreen ? '30vh' : '35vh', marginTop: '20px' }}>
+                <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
                   <CardMedia
                     component="img"
                     width={'100%'}
@@ -99,7 +99,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               ))}
             </Carousel>
           ) : (
-            <Box sx={{ width: '100%', height: isSmallHeightScreen ? '30vh' : '35vh', marginTop: '20px' }}>
+            <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
               <CardMedia
                 component="img"
                 width={'100%'}
