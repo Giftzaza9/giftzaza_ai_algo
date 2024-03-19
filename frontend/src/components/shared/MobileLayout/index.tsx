@@ -9,7 +9,6 @@ import { Profile } from '../../../constants/types';
 import { iphoneSeCondition } from '../../../constants/constants';
 import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../../store/ShowLoader';
-import { isMobileBrowser } from '../../../utils/helperFunctions';
 
 interface _Props {
   fetchProfile?: () => void;
