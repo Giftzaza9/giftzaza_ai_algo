@@ -32,6 +32,7 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <button id="invisible-button"></button>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -44,21 +45,28 @@
             });
         });
       }
+      let deferredPrompt;
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         // Stash the event so it can be triggered later.
-        window.deferredPrompt = e;
+        deferredPrompt = e;
+        window.deferredPrompt = deferredPrompt;
         console.log(`'beforeinstallprompt' event was fired.`);
-        e?.prompt();
-        e?.userChoice?.then((choiceResult) => {
+      });
+      
+      document.querySelector('#invisible-button').addEventListener('click', (e) => {
+        console.log(`'invisible-button' event was triggered.`);
+        console.log('🚀 ~ document.querySelector ~ deferredPrompt:', deferredPrompt)
+        
+        window?.deferredPrompt?.prompt();
+        window?.deferredPrompt?.userChoice?.then((choiceResult) => {
           if (choiceResult?.outcome === 'accepted') {
             console.log('User accepted the install prompt');
           } else {
             console.log('User dismissed the install prompt');
           }
         });
-
-      });
+      })
     </script>
     <!--
       This HTML file is a template.
