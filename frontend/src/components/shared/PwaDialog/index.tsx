@@ -12,6 +12,7 @@ export const PwaDialogue: FC<Props> = ({ onClose, open }) => {
     if ('serviceWorker' in navigator) {
       const button = document.querySelector('#invisible-button')
       if(button) (button as any)?.click()
+      else toast.error("Installation failed")
       onClose();
     }
   };

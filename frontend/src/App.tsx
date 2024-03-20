@@ -10,15 +10,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { isMobileBrowser } from './utils/helperFunctions';
 import { PwaDialogue } from './components/shared/PwaDialog';
 
-const { deferredPrompt } = (window as any) || {};
-
 const App: React.FC = () => {
   const [pwaPromptOpen, setPwaPromptOpen] = useState(false);
 
   useEffect(() => {
-    console.log('defpropmpr' , (window as any).deferredPrompt)
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any)?.standalone;
-    if (isMobileBrowser() && !isInstalled) {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any)?.MSStream;
+    if (isMobileBrowser() && !isInstalled && !isIOS) {
       setPwaPromptOpen(true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
