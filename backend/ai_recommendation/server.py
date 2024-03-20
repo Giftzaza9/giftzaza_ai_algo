@@ -2,6 +2,7 @@ import os
 import sys
 import uvicorn
 import json
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Query
 # from fastapi import Depends, File, Form, UploadFile
@@ -16,7 +17,16 @@ from server_schema import ( similar_existing_item_schema,
                            create_recommendation_schema,
                            get_metrics_schema)
 
-app = FastAPI()
+@asynccontextmanager
+async def app_lifespan(app: FastAPI):
+    print("Calling Model Re-Train While On Start")
+    model_retrain()
+    yield
+    # code to execute when app is shutting down
+
+app = FastAPI(lifespan=app_lifespan)
+
+# app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
