@@ -12,12 +12,14 @@ import { PwaDialogue } from './components/shared/PwaDialog';
 
 const App: React.FC = () => {
   const [pwaPromptOpen, setPwaPromptOpen] = useState(false);
+
   useEffect(() => {
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any)?.standalone;
-    if (isMobileBrowser() && !isInstalled) {
+    if ((window as any)?.deferredPrompt && isMobileBrowser() && !isInstalled) {
       setPwaPromptOpen(true);
     }
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [(window as any)?.deferredPrompt]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -37,6 +39,7 @@ const App: React.FC = () => {
           onClose={() => {
             setPwaPromptOpen(false);
           }}
+          // deferredPrompt={deferredPrompt}
         />
       </LocalizationProvider>
     </ThemeProvider>
