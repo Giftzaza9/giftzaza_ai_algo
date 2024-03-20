@@ -43,7 +43,7 @@ export const PwaDialogue: FC<Props> = ({ onClose, open }) => {
         >
           Close
         </Button>
-        <Button id="install-button" onClick={handleInstallClick}>
+        <Button id="install-button" onClick={handleInstallClick} >
           Install
         </Button>
       </DialogActions>
