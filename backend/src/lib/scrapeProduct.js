@@ -53,6 +53,11 @@ async function AmazonScraper(product_link, userId) {
       return spanElement?.getAttribute('title');
     });
 
+    // const reviewCount = await page.evaluate(() => {
+    //   const spanElement = document.querySelector('#acrCustomerReviewText')
+    //   return Number(spanElement?.innerText?.replace(/[^0-9]/g,'')?.trim());
+    // });
+
     const product_price_currency = await page.evaluate(() => {
       const inputElement = document.querySelector('input#currencyOfPreference');
       if (inputElement) return inputElement?.getAttribute('value');
@@ -143,6 +148,8 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
     const product_image = await sourcegetter('picture[class="main-picture"] > img[src]');
 
     let product_rating = await textgetter('.product-header-reviews-count');
+    // const review_count =
+    //   Number((await textgetter('.product-header-reviews-container .link-body'))?.split(' ')?.[0]);
 
     let thumbnails = await page.evaluate(() => {
       const isUniqueNumber = (link) => {

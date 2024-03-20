@@ -1,5 +1,6 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
 import React, { FC } from 'react';
+import { toast } from 'react-toastify';
 
 interface Props {
   open: boolean;
@@ -7,27 +8,24 @@ interface Props {
 }
 
 export const PwaDialogue: FC<Props> = ({ onClose, open }) => {
-//   const handleInstallClick = () => {
-//     if ('serviceWorker' in navigator) {
-//       window.addEventListener('beforeinstallprompt', (event: Event) => {
-//         // Prevent Chrome 67 and earlier from automatically showing the prompt
-//         event.preventDefault();
-//         // Stash the event so it can be triggered later
-//         const deferredPrompt = event as any;
-//         // Show the install prompt
-//         deferredPrompt.prompt();
-//         // Wait for the user to respond to the prompt
-//         deferredPrompt.userChoice.then((choiceResult: any) => {
-//           if (choiceResult.outcome === 'accepted') {
-//             console.log('User accepted the install prompt');
-//           } else {
-//             console.log('User dismissed the install prompt');
-//           }
-//         });
-//       });
-//       onClose();
-//     }
-//   };
+  const handleInstallClick = () => {
+    if ('serviceWorker' in navigator) {
+      const deferredPrompt = (window as any).deferredPrompt;
+      if (!deferredPrompt) {
+        toast.error('Something went wrong in installation');
+        onClose();
+      }
+      deferredPrompt?.prompt();
+      deferredPrompt?.userChoice?.then((choiceResult: any) => {
+        if (choiceResult?.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+      });
+      onClose();
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -45,7 +43,9 @@ export const PwaDialogue: FC<Props> = ({ onClose, open }) => {
         >
           Close
         </Button>
-        <Button id='install-button'>Install</Button>
+        <Button id="install-button" onClick={handleInstallClick}>
+          Install
+        </Button>
       </DialogActions>
     </Dialog>
   );
