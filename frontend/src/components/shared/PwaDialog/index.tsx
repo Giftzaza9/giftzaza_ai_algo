@@ -10,19 +10,8 @@ interface Props {
 export const PwaDialogue: FC<Props> = ({ onClose, open }) => {
   const handleInstallClick = () => {
     if ('serviceWorker' in navigator) {
-      const deferredPrompt = (window as any).deferredPrompt;
-      if (!deferredPrompt) {
-        toast.error('Something went wrong in installation');
-        onClose();
-      }
-      deferredPrompt?.prompt();
-      deferredPrompt?.userChoice?.then((choiceResult: any) => {
-        if (choiceResult?.outcome === 'accepted') {
-          console.log('User accepted the install prompt');
-        } else {
-          console.log('User dismissed the install prompt');
-        }
-      });
+      const button = document.querySelector('#invisible-button')
+      if(button) (button as any)?.click()
       onClose();
     }
   };

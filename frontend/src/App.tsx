@@ -16,12 +16,13 @@ const App: React.FC = () => {
   const [pwaPromptOpen, setPwaPromptOpen] = useState(false);
 
   useEffect(() => {
+    console.log('defpropmpr' , (window as any).deferredPrompt)
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any)?.standalone;
-    if (deferredPrompt && isMobileBrowser() && !isInstalled) {
+    if (isMobileBrowser() && !isInstalled) {
       setPwaPromptOpen(true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deferredPrompt]);
+  }, []);
 
 
   return (
