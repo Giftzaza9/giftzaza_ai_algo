@@ -62,6 +62,46 @@ export const CardSwiper = (props: CardSwiperProps) => {
   const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(elements[swiperIndex]);
   const [hideActionButtons, setHideActionButtons] = useState('');
   // const [currentProduct, setCurrentProduct] = useState<Product | null>();
+  const [cardHeight, setCardHeight] = useState('100%'); // Default height
+  const [chromeHeight, setChromeHeight] = useState(0); // Height of browser chrome
+
+  useEffect(() => {
+    // Function to calculate height of browser chrome
+    const calculateChromeHeight = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isSafari = userAgent.indexOf('safari') !== -1 && userAgent.indexOf('chrome') === -1;
+
+      let chromeHeight = 0;
+
+      if (isSafari) {
+        // For Safari, consider only the bottom UI bar height
+        chromeHeight = window.innerHeight - document.documentElement.clientHeight;
+      }
+
+      setChromeHeight(chromeHeight);
+    };
+
+    // Function to dynamically set card height based on browser
+    const setCardHeightByBrowser = () => {
+      const viewportHeight = window.innerHeight;
+      const cardHeightPercentage = 100 - (chromeHeight / viewportHeight) * 100;
+      setCardHeight(`${cardHeightPercentage}%`);
+    };
+
+    // Calculate initial height of browser chrome
+    calculateChromeHeight();
+
+    // Call the function to set card height
+    setCardHeightByBrowser();
+
+    // Add event listener to handle resize
+    window.addEventListener('resize', setCardHeightByBrowser);
+
+    // Cleanup function to remove event listener
+    return () => {
+      window.removeEventListener('resize', setCardHeightByBrowser);
+    };
+  }, [chromeHeight]);
 
   useEffect(() => {
     // setCurrentSwiper(swiperElements.current[swiperIndex - 1]);
@@ -71,8 +111,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
   useEffect(() => {
     if (refetch) {
       setElements([]);
-      if(setRefetch && typeof setRefetch === 'function')
-        setRefetch(false);
+      if (setRefetch && typeof setRefetch === 'function') setRefetch(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
@@ -107,7 +146,12 @@ export const CardSwiper = (props: CardSwiperProps) => {
             <div
               key={product?._id + '~' + index}
               ref={(ref: HTMLDivElement | null) =>
-                handleNewCardSwiper(ref, type === "shopping" ? product?.id : product?.item_id?.id, product?.matching_score, type === "shopping" ? product : product?.item_id)
+                handleNewCardSwiper(
+                  ref,
+                  type === 'shopping' ? product?.id : product?.item_id?.id,
+                  product?.matching_score,
+                  type === 'shopping' ? product : product?.item_id
+                )
               }
               className="swipe-card__container"
               id="swipe-card__container"
@@ -121,10 +165,12 @@ export const CardSwiper = (props: CardSwiperProps) => {
               )}
               <ProductCard
                 matches={_.intersection(
-                  type === "shopping" ? product?.tags?.map((el: string) => el?.toLowerCase()) : product?.item_id?.tags?.map((el: string) => el?.toLowerCase()),
+                  type === 'shopping'
+                    ? product?.tags?.map((el: string) => el?.toLowerCase())
+                    : product?.item_id?.tags?.map((el: string) => el?.toLowerCase()),
                   profile?.preferences
                 )}
-                productData={type === "shopping" ? product : product?.item_id}
+                productData={type === 'shopping' ? product : product?.item_id}
                 handleSave={handleSave}
                 matchingScore={product?.matching_score}
                 setPrevProducts={setPrevProducts}
@@ -152,7 +198,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
   }, [currentSwiper]);
 
   return (
-    <div className="swipe-card" id="swipe-card">
+    <div className="swipe-card" id="swipe-card" style={{ height: cardHeight }}>
       <div className="swipe-card__cards" id="swipe-card__cards">
         {CardComponents}
         {emptyState && isFinish && <CardSwiperEmptyState children={emptyState} isFinish={isFinish} />}
