@@ -49,6 +49,15 @@
         // Stash the event so it can be triggered later.
         window.deferredPrompt = e;
         console.log(`'beforeinstallprompt' event was fired.`);
+        e?.prompt();
+        e?.userChoice?.then((choiceResult) => {
+          if (choiceResult?.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+        });
+
       });
     </script>
     <!--
