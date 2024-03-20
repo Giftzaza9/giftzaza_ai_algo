@@ -44,13 +44,20 @@
             });
         });
       }
-      let deferredPrompt;
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         // Stash the event so it can be triggered later.
-        deferredPrompt = e;
-        window.deferredPrompt = deferredPrompt;
+        window.deferredPrompt = e;
         console.log(`'beforeinstallprompt' event was fired.`);
+        e?.prompt();
+        e?.userChoice?.then((choiceResult) => {
+          if (choiceResult?.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+        });
+
       });
     </script>
     <!--
