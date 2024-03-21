@@ -3,10 +3,11 @@ import React from 'react';
 interface propType {
   width?: string;
   height?: string;
+  color?: string;
 }
 
 export const Bookmark: React.FC<propType> = (props) => {
-  const { width, height } = props;
+  const { width, height, color } = props;
   return (
     <svg
       width={width || '28'}
@@ -16,7 +17,7 @@ export const Bookmark: React.FC<propType> = (props) => {
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
     >
-      <rect width="28" height="30" fill="url(#pattern0)" />
+      <rect width="28" height="30" fill={color || "url(#pattern0)"} />
       <defs>
         <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
           <use xlinkHref="#image0_752_2490" transform="matrix(0.0104167 0 0 0.00972222 0 0.0333333)" />

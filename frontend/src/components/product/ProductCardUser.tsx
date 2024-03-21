@@ -17,7 +17,6 @@ import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { ProductPreviewModalUser } from './ProductPreviewModalUser';
 import { FC, useEffect, useState } from 'react';
 import { Product } from '../../constants/types';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { Save } from '../shared/Icons/Save';
 import { lowHeightCondition, lowWidthCondition } from '../../constants/constants';
 import _ from 'lodash';
@@ -34,6 +33,8 @@ interface Props {
 export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts }) => {
   const isSmallWidthScreen = useMediaQuery(lowWidthCondition);
   const isSmallHeightScreen = useMediaQuery(lowHeightCondition);
+  const imageBreak = useMediaQuery('(max-height: 790px)');
+  const imageBreak2 = useMediaQuery('(max-height: 674px)');
   const { title, description, source, thumbnails, image, price_currency, price, rating, id, link } = productData as Product;
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -44,12 +45,20 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
 
   return (
     <>
-      <Card sx={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px', height: '100%' }}>
+      <Card
+        sx={{
+          // boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px',
+          height: '100%',
+          borderRadius: '12px',
+          boxShadow: '0px 4px 4px 3px rgba(149, 157, 165, 0.2)',
+          mx: '-14px',
+        }}
+      >
         <Box
           sx={{
             position: 'absolute',
-            right: '10px',
-            top: '20px',
+            right: '16px',
+            top: '26px',
             display: 'flex',
             flexDirection: 'column',
             rowGap: '16px',
@@ -71,9 +80,6 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               </button>
             </RWebShare>
           </Box>
-          <Box sx={{ cursor: 'pointer' }}>
-            <BookmarkBorderIcon sx={{ fontSize: '28px' }} onClick={() => handleSave()} />
-          </Box>
         </Box>
 
         {matchingScore && (
@@ -93,10 +99,10 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
         >
           {thumbnails && thumbnails?.length > 1 ? (
             <Box sx={{ height: '60%' }}>
-              <Carousel>
+              <Carousel infiniteLoop swipeable>
                 {thumbnails?.map((thumb) => (
                   // <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
-                  <Box sx={{ width: '100%', height: '85%', marginTop: '20px' }}>
+                  <Box sx={{ width: '100%', height: imageBreak ? '60%' : imageBreak2 ? '70%' : '80%', marginTop: '20px' }}>
                     <CardMedia
                       component="img"
                       width={'100%'}
@@ -121,7 +127,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               />
             </Box>
           )}
-          <CardContent sx={{ width: '100%', height: '30%', minHeight: '165px', padding: 2 }}>
+          <CardContent sx={{ width: '100%', height: '30%', minHeight: '185px', padding: 2 }}>
             <Grid>
               <Chip
                 label={_.capitalize(source)}
@@ -164,8 +170,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                   </Typography>
                   <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
                     <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>
-                      {getCurrencySymbol(price_currency)}
-                      {price}
+                      {`${getCurrencySymbol(price_currency)} ${price?.toFixed(2)}`}
                     </Typography>
                     {rating - 0 > 0 && (
                       <>

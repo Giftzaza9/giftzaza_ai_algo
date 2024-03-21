@@ -92,11 +92,11 @@ export const MobileLayout = observer(({ children, profile, fetchProfile }: Props
     <Grid
       container
       component="main"
+      className={'full-screen'}
       sx={{
         backgroundColor: theme.palette.secondary.main,
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
         position: 'relative',
       }}
     >
