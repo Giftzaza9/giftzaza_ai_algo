@@ -106,10 +106,10 @@
   bottom: 0;
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 4vw;
   align-items: center;
   position: absolute;
-  bottom: 38px;
+  bottom: 4vh;
   margin-bottom: 22px;
   width: 100%;
   transition: all .7s ease;
@@ -195,7 +195,8 @@
 .saveProduct {
   width: 40px;
   height: 40px;
-  border: 2px solid yellowgreen;
+  border: 2px solid rgba(255, 200, 43, 1)
+;
   background: white;
 }
 
@@ -246,4 +247,9 @@
 
 .carousel.carousel-slider .control-arrow {
   padding: 40px!important;
+}
+
+.full-screen {
+  height: 100vh; /* Use vh as a fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
 }

@@ -32,25 +32,28 @@ export const BottomNav = observer(() => {
         bottom: 0,
         width: '100%',
         zIndex: 1000,
-        height: '50px',
+        height: '46px',
         backgroundColor: theme.palette.secondary.main,
         '& .Mui-selected': { color: 'rgba(221, 110, 63, 1)' },
       }}
     >
       <BottomNavigationAction
         value="home"
-        icon={<GoHomeFill style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />}
+        icon={<GoHomeFill style={{ fontSize: isSmallScreen ? '22px' : '26px' }} />}
         onClick={() => navigate('/')}
       />
       <BottomNavigationAction
         value="profiles"
-        icon={<GridViewRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />}
+        icon={<GridViewRoundedIcon style={{ fontSize: isSmallScreen ? '22px' : '26px' }} />}
         onClick={() => navigate('/profiles')}
       />
-      <BottomNavigationAction value="favorites" icon={<Bookmark style={{ fontSize: isSmallScreen ? '24px' : '28px' }} onClick={() => navigate('/saved')} />} />
+      <BottomNavigationAction
+        value="favorites"
+        icon={<Bookmark style={{ fontSize: isSmallScreen ? '22px' : '26px' }} onClick={() => navigate('/saved')} />}
+      />
       <BottomNavigationAction
         value="user"
-        icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '24px' : '28px' }} />}
+        icon={<PersonRoundedIcon style={{ fontSize: isSmallScreen ? '22px' : '26px' }} />}
         onClick={() => navigate('/user')}
       />
     </BottomNavigation>

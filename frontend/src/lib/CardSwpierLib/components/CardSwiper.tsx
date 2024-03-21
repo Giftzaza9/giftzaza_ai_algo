@@ -13,7 +13,8 @@ import { GradientClose } from '../../../components/shared/Icons/GradientClose';
 import { Love } from '../../../components/shared/Icons/Love';
 import { SwipeAction, iphoneSeCondition } from '../../../constants/constants';
 import _ from 'lodash';
-import { useMediaQuery } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
+import { Bookmark } from '@mui/icons-material';
 
 export const CardSwiper = (props: CardSwiperProps) => {
   const {
@@ -207,15 +208,16 @@ export const CardSwiper = (props: CardSwiperProps) => {
         <div className={`swipe-card__children ${hideActionButtons}`} id="swipe-card__children">
           {likeButton && dislikeButton ? (
             <>
-              {/* <CardSwiperActionButton
+              <CardSwiperActionButton
                 isCustom
                 direction={SwipeDirection.SIMILAR}
                 action={SwipeAction.SIMILAR}
                 onClick={actionHandler}
                 extraClass="similarProduct"
               >
-                <Similar />
-              </CardSwiperActionButton> */}
+                {/* <Similar /> */}
+                <Box></Box>
+              </CardSwiperActionButton>
               <CardSwiperActionButton
                 isCustom
                 direction={SwipeDirection.LEFT}
@@ -245,15 +247,15 @@ export const CardSwiper = (props: CardSwiperProps) => {
               >
                 <Love height={isSmallScreen ? '18' : '24'} />
               </CardSwiperActionButton>
-              {/* <CardSwiperActionButton
+              <CardSwiperActionButton
                 isCustom
                 direction={SwipeDirection.RIGHT}
                 action={SwipeAction.LIKE}
                 onClick={handleUserActivity}
                 extraClass="saveProduct"
               >
-                <Save />
-              </CardSwiperActionButton> */}
+                <Bookmark sx={{color: 'rgba(255, 200, 43, 1)'}} />
+              </CardSwiperActionButton>
             </>
           ) : (
             <>
