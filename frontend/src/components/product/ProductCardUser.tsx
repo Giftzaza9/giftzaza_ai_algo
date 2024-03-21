@@ -98,24 +98,24 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           }}
         >
           {thumbnails && thumbnails?.length > 1 ? (
-            <Box sx={{ height: '60%' }}>
-              <Carousel infiniteLoop swipeable>
-                {thumbnails?.map((thumb) => (
-                  // <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
-                  <Box sx={{ width: '100%', height: imageBreak ? '60%' : imageBreak2 ? '70%' : '80%', marginTop: '20px' }}>
-                    <CardMedia
-                      component="img"
-                      width={'100%'}
-                      height="100%"
-                      sx={{ objectFit: 'contain' }}
-                      image={thumb}
-                      alt="green iguana"
-                    />
-                  </Box>
-                ))}
-              </Carousel>
-            </Box>
+            // <Box>
+            <Carousel infiniteLoop swipeable dynamicHeight>
+              {thumbnails?.map((thumb) => (
+                // <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
+                <Box sx={{ width: '100%', height: 'calc(var(--vh, 1vh) * 50)', marginTop: '20px' }}>
+                  <CardMedia
+                    component="img"
+                    width={'100%'}
+                    height="90%"
+                    sx={{ objectFit: 'contain' }}
+                    image={thumb}
+                    alt="image"
+                  />
+                </Box>
+              ))}
+            </Carousel>
           ) : (
+            // </Box>
             <Box sx={{ width: '100%', height: '60%', marginTop: '20px' }}>
               <CardMedia
                 component="img"
@@ -127,7 +127,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               />
             </Box>
           )}
-          <CardContent sx={{ width: '100%', height: '30%', minHeight: '185px', padding: 2 }}>
+          <CardContent sx={{ width: '100%', height: '30%', minHeight: '185px', paddingX: 2, paddingBottom: 0 }}>
             <Grid>
               <Chip
                 label={_.capitalize(source)}
@@ -143,7 +143,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                 <Box display={'flex'} flexDirection={'column'} rowGap={1} mt={1}>
                   <Typography
                     sx={{
-                      fontSize: '20px',
+                      fontSize: imageBreak2 ? '16px' : imageBreak ? '18px' : '20px',
                       fontFamily: 'Inter',
                       fontWeight: '700',
                       overflow: 'hidden',
@@ -156,27 +156,38 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                   </Typography>
                   <Typography
                     sx={{
-                      fontSize: '12px',
+                      fontSize: imageBreak2 ? '9px' : imageBreak ? '10px' : '12px',
                       fontFamily: 'Inter',
                       maxWidth: isSmallWidthScreen ? '60vw' : '75vw',
                       display: '-webkit-box',
                       WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
-                      WebkitLineClamp: isSmallHeightScreen ? 1 : 2, // Limit to two lines
+                      WebkitLineClamp: imageBreak2 ? 1 : 2,
                     }}
                   >
                     {description}
-                    {/* {ellipsisText(description, isSmallScreen ? 64 : 95)} */}
                   </Typography>
                   <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-                    <Typography sx={{ fontSize: '20px', fontFamily: 'Inter', fontWeight: '700' }}>
+                    <Typography
+                      sx={{
+                        fontSize: imageBreak2 ? '16px' : imageBreak ? '18px' : '20px',
+                        fontFamily: 'Inter',
+                        fontWeight: '700',
+                      }}
+                    >
                       {`${getCurrencySymbol(price_currency)} ${price?.toFixed(2)}`}
                     </Typography>
                     {rating - 0 > 0 && (
                       <>
                         <StarIcon sx={{ ml: 1, color: '#f1c506' }} />
-                        <Typography sx={{ fontSize: '12px', fontFamily: 'Inter', fontWeight: '600' }}>
-                          {rating} / 5 (2400 ratings)
+                        <Typography
+                          sx={{
+                            fontSize: imageBreak2 ? '9px' : imageBreak ? '10px' : '12px',
+                            fontFamily: 'Inter',
+                            fontWeight: '600',
+                          }}
+                        >
+                          {rating} / 5
                         </Typography>
                       </>
                     )}
@@ -193,7 +204,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                       src={require('../../assets/arrow-down.png')}
                       alt="logo"
                       style={{
-                        width: '30px',
+                        width: imageBreak2 ? '24px' : imageBreak ? '26px' : '30px',
                         cursor: 'pointer',
                       }}
                       // onClick={() => navigate('/')}

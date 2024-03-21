@@ -1,10 +1,10 @@
 body {
 	overflow-x: hidden;
 	margin: 0px;
-	/* min-height: 100vh; */
-	position: fixed;
+	min-height: 100vh;
+	/* position: fixed; */
 	height: 100%;
-	width: 100%;
+	width: 100%; 
 	background: linear-gradient(180deg, rgba(233, 219, 240, 0.4) 0%, rgba(249, 225, 228, 0.4) 100%)
 }
 
@@ -78,4 +78,10 @@ a:hover {
 /* Optional: Provide a fallback color for scrollbar thumb */
 ::-webkit-scrollbar-thumb {
   background: transparent;
+}
+
+#invisible-button {
+  display: none;
+  height: 0px!important;
+  width: 0px!important;
 }
