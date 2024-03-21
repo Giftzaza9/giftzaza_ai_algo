@@ -45,15 +45,24 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
         justifyContent: 'space-between',
       }}
     >
-      <img
-        src={require('../../../assets/giftzaza-logo.png')}
-        alt="logo"
-        style={{
-          width: isSmallScreen ? '80px' : '100px',
-          cursor: 'pointer',
-        }}
-        onClick={() => navigate('/')}
-      />
+      <Box display={'flex'} alignItems={'center'} gap={'2px'} onClick={() => navigate('/')}>
+        <img
+          src={require('../../../assets/logo_gift.png')}
+          alt="logo"
+          style={{
+            height: isSmallScreen ? '16px' : '18px',
+            cursor: 'pointer',
+          }}
+        />
+        <img
+          src={require('../../../assets/giftzaza-logo.png')}
+          alt="logo"
+          style={{
+            width: isSmallScreen ? '70px' : '80px',
+            cursor: 'pointer',
+          }}
+        />
+      </Box>
       {profile && (
         <IconButton
           onClick={() => {
