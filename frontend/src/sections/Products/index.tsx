@@ -113,6 +113,7 @@ export const Products = observer(() => {
   }, [page]);
 
   const saveUserActivity = async (product_id: string, activity: SwipeAction) => {
+    if ([SwipeAction.FINISHED, SwipeAction.SIMILAR].includes(activity)) return;
     const payload: userActivityBody = {
       product_id,
       activity,
