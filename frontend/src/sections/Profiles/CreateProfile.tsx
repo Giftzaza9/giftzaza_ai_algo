@@ -152,6 +152,7 @@ export const CreateProfile = () => {
           flexDirection: 'column',
           justifyContent: 'flex-end',
           position: 'relative',
+          height: 'calc(var(--vh) * 100)'
         }}
       >
         {/* Progess bar and next & prev arrows */}

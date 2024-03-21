@@ -2,6 +2,8 @@ body {
 	overflow-x: hidden;
 	margin: 0px;
 	min-height: 100vh;
+	min-height: calc(var(--vh) * 100);
+	min-height: -webkit-fill-available;
 	/* position: fixed; */
 	height: 100%;
 	width: 100%; 
