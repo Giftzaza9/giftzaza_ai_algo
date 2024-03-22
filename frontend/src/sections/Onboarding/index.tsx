@@ -48,7 +48,7 @@ export const Onboarding = observer(() => {
         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
           <Box>
             <Typography noWrap color={textColor} fontWeight={800} fontSize={'22px'} lineHeight={'26px'}>
-              Welcome to Giftzaza, {user?.name?.split(' ')?.[0]}
+              Welcome to Giftalia, {user?.name?.split(' ')?.[0]}
             </Typography>
             <Typography sx={text} mt={1}>
               Please follow these House Rules.
