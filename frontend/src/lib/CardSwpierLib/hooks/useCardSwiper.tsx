@@ -30,7 +30,7 @@ export const useCardSwiper = ({
   useEffect(() => {
     // Update dynamicData when data changes
     if (data && data?.length > 0) {
-      console.log('USE EFFECT WORKING ', data);
+      // console.log('USE EFFECT WORKING ', data);
       swiperElements.current = [];
       setDynamicData(data);
       setSwiperIndex(data?.length);
@@ -38,9 +38,9 @@ export const useCardSwiper = ({
     }
   }, [data]);
 
-  console.log({ swiperIndex });
-  console.log({ elements });
-  console.log('CURR PROD ', currentProductRef.current);
+  // console.log({ swiperIndex });
+  // console.log({ elements });
+  // console.log('CURR PROD ', currentProductRef.current);
   const handleNewCardSwiper = (ref: HTMLDivElement | null, id: CardId, meta: CardMetaData, product: Product) => {
     if (ref) {
       const currentSwiper = new Swiper({ element: ref, id, meta, onDismiss: handleDismiss, swiperElements, product });
@@ -92,7 +92,7 @@ export const useCardSwiper = ({
   useEffect(() => {
     if (swiperIndex === prevProductsCount && onFinish) {
       setIsFinish(true);
-      console.log('SETTING ELEMENTS EMPTY ');
+      // console.log('SETTING ELEMENTS EMPTY ');
       setElements([]);
       onFinish(SwipeAction.FINISHED);
     }

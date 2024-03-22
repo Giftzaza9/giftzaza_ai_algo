@@ -1,4 +1,4 @@
-import { Container } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
 import { SwipeDirection } from '../../lib/CardSwpierLib/types/types';
@@ -14,16 +14,19 @@ import { storeUserActivity, userActivityBody } from '../../services/user';
 import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../store/ShowLoader';
 import { retrain } from '../../services/AI';
+import { useNavigate } from 'react-router-dom';
 
 export const Products = observer(() => {
   const { setLoading } = loaderState;
   const { profileId } = useParams();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [prevProducts, setPrevProducts] = useState(new Set());
   const [prevProductsCount, setPrevProductsCount] = useState<number>(1);
   const [profile, setProfile] = useState<Profile | undefined>();
   const [page, setPage] = useState<number>(1);
   const [refetch, setRefetch] = useState<boolean>(false);
+  const [haveMoreProducts, setHaveMoreProducts] = useState<boolean>(true);
 
   const fetchProfile = async () => {
     try {
@@ -83,6 +86,8 @@ export const Products = observer(() => {
     const payload: moreProductBody = {
       preferences: profile?.preferences!,
       top_n: curPage * 10,
+      min_price: profile?.min_price ?? 0,
+      max_price: profile?.max_price ?? 0,
     };
     const { data, error } = await moreProducts(payload);
     console.log({ ...products });
@@ -91,6 +96,7 @@ export const Products = observer(() => {
     else {
       // setProducts([...data?.map((item: any) => ({ ...item })).reverse()]);
       setPrevProductsCount(products?.length + 1);
+      // console.log({...products});
       setProducts((prev: any) => {
         // ...prev,
         // ...data?.map((item: any) => ({ ...item })).reverse()
@@ -100,13 +106,14 @@ export const Products = observer(() => {
         // Filter out items from data that are not already present in prev
         const newData = data?.filter((item: any) => !prevIds.has(item.item_id?.id));
 
-        // Concatenate the filtered newData with prev and reverse the order
-        return [...prev, ...(newData || []).reverse()];
+        setHaveMoreProducts(newData?.length > 0 ? true : false);
+        if (newData?.length > 0) return [...prev, ...(newData || []).reverse()];
+        else return [];
       });
     }
-    // setLoading(false);
+    setLoading(false);
   };
-
+  console.log({ products });
   useEffect(() => {
     if (page > 1) fetchMoreProducts(page);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -169,6 +176,43 @@ export const Products = observer(() => {
               </div>
             }
           />
+        )}
+        {!haveMoreProducts && (
+          <Box
+            sx={{
+              p: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              rowGap: 2,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {/* <Typography sx={heading}>No more products to show.</Typography> */}
+            <Typography
+              variant="h5"
+              sx={{ fontSize: '24px', fontFamily: 'Inter', lineHeight: '36px', textAlign: 'center', fontWeight: 600 }}
+            >
+              No more products to show
+            </Typography>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ width: '100%', padding: '6px 18px' }}
+              onClick={() => {
+                setHaveMoreProducts(true);
+                navigate('/');
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{ fontFamily: 'Inter', color: 'white', fontSize: '18px', fontWeight: 600, textTransform: 'none' }}
+              >
+                Try creating new Profile
+              </Typography>
+            </Button>
+          </Box>
         )}
       </Container>
     </MobileLayout>

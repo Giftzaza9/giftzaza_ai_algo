@@ -125,7 +125,8 @@ export const CardSwiper = (props: CardSwiperProps) => {
   const handleSave = () => {
     handleUserActivity(SwipeDirection.BLANK, SwipeAction.SAVE, false);
   };
-  console.log({ dynamicData });
+  // console.log({ dynamicData });
+  // console.log({ swiperIndex });
 
   useEffect(() => {
     if (swiperIndex - prevProductsCount! === 3) {
