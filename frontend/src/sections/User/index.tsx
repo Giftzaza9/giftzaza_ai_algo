@@ -11,7 +11,8 @@ import { iphoneSeCondition } from '../../constants/constants';
 import { ArrowForwardIos } from '@mui/icons-material';
 
 const containerStyles = {
-  height: '100vh',
+  // height: '100vh',
+  flexGrow: 1,
   backgroundColor: theme.palette.secondary.main,
   flexDirection: 'column',
   flexWrap: 'nowrap',
