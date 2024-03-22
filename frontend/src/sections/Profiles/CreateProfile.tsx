@@ -152,7 +152,6 @@ export const CreateProfile = () => {
           flexDirection: 'column',
           justifyContent: 'flex-end',
           position: 'relative',
-          // height: 'calc(var(--vh) * 100)'
           flexGrow: 1,
         }}
       >
