@@ -32,7 +32,7 @@ export const Onboarding = observer(() => {
   const navigate = useNavigate();
 
   return (
-    <Grid container component="main" width={'lg'} sx={{ height: '100vh', backgroundColor: theme.palette.secondary.main }}>
+    <Grid container component="main" width={'lg'} className='full-screen' sx={{ backgroundColor: theme.palette.secondary.main }}>
       <Container
         sx={{
           display: 'flex',
