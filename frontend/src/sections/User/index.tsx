@@ -3,18 +3,19 @@ import { userStore } from '../../store/UserStore';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { Avatar, Box, Button, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
 import { theme } from '../../utils/theme';
-import { logOut, stringToColor } from '../../utils/helperFunctions';
+import { getVH, logOut, stringToColor } from '../../utils/helperFunctions';
 import { bottomNavState } from '../../store/BottomNavState';
 import { useNavigate } from 'react-router-dom';
 import { FC } from 'react';
-import { iphoneSeCondition } from '../../constants/constants';
 import { ArrowForwardIos } from '@mui/icons-material';
 
 const containerStyles = {
-  height: '100vh',
+  // height: '100vh',
+  flexGrow: 1,
   backgroundColor: theme.palette.secondary.main,
   flexDirection: 'column',
   flexWrap: 'nowrap',
+  gap: getVH(1),
 };
 const itemStyles = { display: 'flex', justifyContent: 'center', alignItems: 'center' };
 const thumbContainerStyles = {
@@ -55,17 +56,19 @@ const StyledTextField: FC<_Props> = ({ label, value }) => {
 export const User = observer(() => {
   const { user, setUser } = userStore;
   const { setIsVisible } = bottomNavState;
-  const isSmallScreen = useMediaQuery(iphoneSeCondition);
+  const isSmallScreen = useMediaQuery('(max-height: 530px)');
   const navigate = useNavigate();
   return (
     <MobileLayout>
       <Grid container component="main" sx={containerStyles}>
-        <Grid item sx={{ ...itemStyles, padding: isSmallScreen ? '16px' : '32px' }}>
-          <Box sx={thumbContainerStyles}>
+        <Grid item sx={{ ...itemStyles, padding: isSmallScreen ? getVH(1) : getVH(4) }}>
+          <Box sx={{ ...thumbContainerStyles, height: getVH(20), width: getVH(20) }}>
             {user?.profile_picture ? (
               <Avatar sx={{ height: '100%', width: '100%' }} src={user?.profile_picture} />
             ) : (
-              <Avatar sx={{ bgcolor: stringToColor(user?.name as string), height: '100%', width: '100%', fontSize: '64px' }}>
+              <Avatar
+                sx={{ bgcolor: stringToColor(user?.name as string), height: '100%', width: '100%', fontSize: getVH(6) }}
+              >
                 {`${user?.name?.split(' ')?.[0]?.[0] || ''} ${user?.name?.split(' ')?.[1]?.[0] || ''}` || user?.name?.[0]}
               </Avatar>
             )}
@@ -80,20 +83,27 @@ export const User = observer(() => {
 
         <Grid item sx={{ ...itemStyles, flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
           <Box flexGrow={1}></Box>
-          <Box width={'75%'} sx={{ paddingBottom: isSmallScreen ? '16px' : '32px' }}>
+          <Box width={'75%'} sx={{ paddingBottom: isSmallScreen ? '0px' : getVH(6) }}>
             {user?.role === 'admin' && (
               <Button
                 variant="contained"
                 color="secondary"
                 sx={{ width: '100%', padding: '6px 18px', mb: '12px' }}
                 LinkComponent={'a'}
-                href='/dashboard/admin'
-                target='_blank'
-                endIcon={<ArrowForwardIos />}
+                href="/dashboard/admin"
+                target="_blank"
+                endIcon={<ArrowForwardIos fontSize="small" />}
+                size="small"
               >
                 <Typography
                   variant="subtitle1"
-                  sx={{ fontFamily: 'Inter', color: 'white', fontSize: '18px', fontWeight: 600, textTransform: 'none' }}
+                  sx={{
+                    fontFamily: 'Inter',
+                    color: 'white',
+                    fontSize: isSmallScreen ? getVH(3) : '16px',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                  }}
                 >
                   Admin Panel
                 </Typography>
@@ -109,10 +119,17 @@ export const User = observer(() => {
                 logOut();
                 navigate('/login');
               }}
+              size="small"
             >
               <Typography
                 variant="subtitle1"
-                sx={{ fontFamily: 'Inter', color: 'white', fontSize: '18px', fontWeight: 600, textTransform: 'none' }}
+                sx={{
+                  fontFamily: 'Inter',
+                  color: 'white',
+                  fontSize: isSmallScreen ? getVH(3) : '16px',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                }}
               >
                 Logout
               </Typography>

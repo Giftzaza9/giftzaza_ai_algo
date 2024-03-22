@@ -146,13 +146,13 @@ export const CreateProfile = () => {
   return (
     <MobileLayout>
       <Container
-        className={'full-screen'}
+        // className={'full-screen'}
         sx={{
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-end',
           position: 'relative',
-          height: 'calc(var(--vh) * 100)'
+          flexGrow: 1,
         }}
       >
         {/* Progess bar and next & prev arrows */}

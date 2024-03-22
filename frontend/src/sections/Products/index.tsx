@@ -120,12 +120,14 @@ export const Products = observer(() => {
   }, [page]);
 
   const saveUserActivity = async (product_id: string, activity: SwipeAction) => {
+    if ([SwipeAction.FINISHED, SwipeAction.SIMILAR].includes(activity)) return;
     const payload: userActivityBody = {
       product_id,
       activity,
       profile_id: profileId!,
     };
     const { data, error } = await storeUserActivity(payload);
+    if (data?.activity === SwipeAction.SAVE) toast.success('Product saved successfully', { autoClose: 1000 });
     console.log({ data, error });
   };
 

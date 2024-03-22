@@ -37,7 +37,7 @@ export const genderChipsStyle = {
 
 export const animationStyle = {
   animation: 'fadeIn 0.3s ease-in',
-  maxHeight: '66vh',
+  maxHeight: 'calc(var(--vh) * 66)',
   overflow: 'auto',
   mt: '64px'
 };

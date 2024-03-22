@@ -211,9 +211,9 @@ export const CardSwiper = (props: CardSwiperProps) => {
             <>
               <CardSwiperActionButton
                 isCustom
-                direction={SwipeDirection.SIMILAR}
-                action={SwipeAction.SIMILAR}
-                onClick={actionHandler}
+                direction={SwipeDirection.BLANK}
+                action={SwipeAction.NO_INTERACTION}
+                onClick={() => {}}
                 extraClass="similarProduct"
               >
                 {/* <Similar /> */}
@@ -250,12 +250,12 @@ export const CardSwiper = (props: CardSwiperProps) => {
               </CardSwiperActionButton>
               <CardSwiperActionButton
                 isCustom
-                direction={SwipeDirection.RIGHT}
-                action={SwipeAction.LIKE}
+                direction={SwipeDirection.BLANK}
+                action={SwipeAction.SAVE}
                 onClick={handleUserActivity}
                 extraClass="saveProduct"
               >
-                <Bookmark sx={{color: 'rgba(255, 200, 43, 1)'}} />
+                <Bookmark sx={{ color: 'rgba(255, 200, 43, 1)' }} />
               </CardSwiperActionButton>
             </>
           ) : (

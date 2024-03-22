@@ -98,4 +98,7 @@ export const comingUpOn = (date: string) => {
   return `coming up on ${dayjs(date).format('DD/MM/YYYY')}`;
 };
 
-export const isMobileBrowser = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+export const isMobileBrowser = () =>
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+export const getVH = (vH: number) => `calc(var(--vh) * ${vH})`;
