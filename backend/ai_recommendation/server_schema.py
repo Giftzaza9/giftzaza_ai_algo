@@ -33,6 +33,7 @@ class create_recommendation_schema(BaseModel):
     top_n : Optional[int] = 10
     min_price : Optional[int] = 0
     max_price : Optional[int] = None
+    semi_hard_filters : Optional[List[str]] = None
 
 class get_metrics_schema(BaseModel):
     at_k : int = 4

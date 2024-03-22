@@ -71,7 +71,8 @@ def create_recommendation(body : create_recommendation_schema):
                                      content_attr=body.content_attribute,
                                      N=body.top_n,
                                      min_budget=body.min_price,
-                                     max_budget=body.max_price)
+                                     max_budget=body.max_price,
+                                     explicit_semi_hard_filters=body.semi_hard_filters)
 
 @app.post("/model_retrain")
 def model_retrain():

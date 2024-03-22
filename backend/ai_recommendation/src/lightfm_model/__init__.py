@@ -19,9 +19,10 @@ class Global_cls:
             self.cat_odata.pop("gpt_assistance")
             self.attr_list= []
             self.attr_weights = {}
-            self.hard_filters=["gender","age_category"]
-            self.semi_hard_filters = ["interest"]
-            self.soft_filters=["occasion","relationship","style"]
+            self.category_filters = {}
+            self.category_filters["hard_filters"]=["gender","age_category"]
+            self.category_filters["semi_hard_filters"] = ["interest"]
+            self.category_filters["soft_filters"]=["occasion","relationship","style"]
             self.preprocess_str = lambda x: x.strip().lower()
             self.cat_dict = {}
             for i in self.cat_odata:
@@ -31,7 +32,7 @@ class Global_cls:
                 else:
                     keys=list(map(self.preprocess_str,self.cat_odata[i]['category']))
                     self.cat_dict[i] = keys
-                # if i not in self.hard_filters and i not in self.semi_hard_filters: ### Hard Filters removed from the model parameters
+                # if i not in self.category_filters["hard_filters"] and i not in self.category_filters["semi_hard_filters"]: ### Hard Filters removed from the model parameters
                 #     self.attr_list.extend(keys)
                 self.attr_list.extend(keys)
                 self.attr_weights.update(dict(zip(keys,[self.cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
@@ -42,16 +43,16 @@ LightFM_Obj = LightFM_cls()
 Mongodb_Obj = Mongodb_cls()
 Global_Obj = Global_cls()          
 
-def filter_attributes(Global_Obj,new_attributes_list):
+def filter_attributes(hard_filters,soft_filters,semi_hard_filters,new_attributes_list):
     filter_dict = {}
     hard_filter_attrs = []
     semi_hard_filter_attrs=[]
-    for i in Global_Obj.hard_filters:
+    for i in hard_filters:
         common_list = list(set(Global_Obj.cat_dict[i]) & set(new_attributes_list))
         hard_filter_attrs.extend(common_list)
         filter_dict.update({i: common_list})
 
-    for i in Global_Obj.semi_hard_filters:
+    for i in semi_hard_filters:
         common_list = list(set(Global_Obj.cat_dict[i]) & set(new_attributes_list))
         semi_hard_filter_attrs.extend(common_list)
         filter_dict.update({i: common_list})
@@ -71,11 +72,13 @@ def similar_items_endpoint(item_id,N=10):
     idf.rename(columns={'left_all_unique_id':'item_id','left_score':'matching_score'},inplace=True)
     return idf.to_dict(orient='records')
 
-def cs_similar_user(new_user_attributes,N=10):
-    
-    filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_user_attributes)
+def cs_similar_user(new_user_attributes,N=10,explicit_filters=None):
+    if explicit_filters:
+        filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**explicit_filters,new_attributes_list=new_user_attributes)
+    else:
+        filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**Global_Obj.category_filters,new_attributes_list=new_user_attributes)
 
-    udf = LightFM_Obj.cold_start_similar_user(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N)
+    udf = LightFM_Obj.cold_start_similar_user(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,explicit_filters=explicit_filters)
     udf = udf[['left_all_unique_id','left_score']].copy()
     udf.rename(columns={'left_all_unique_id':'user_id','left_score':'matching_score'},inplace=True)
     udf.reset_index(drop=True,inplace=True)
@@ -86,11 +89,13 @@ def cs_similar_user(new_user_attributes,N=10):
     
     return udf.to_dict(orient='records')
 
-def cs_similar_items(new_item_attributes,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
+def cs_similar_items(new_item_attributes,N=10,min_budget=0,max_budget=None,test_sample_flag=False,explicit_filters=None):
+    if explicit_filters:
+        filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**explicit_filters,new_attributes_list=new_item_attributes)
+    else:
+        filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**Global_Obj.category_filters,new_attributes_list=new_item_attributes)
 
-    filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_item_attributes)
-
-    idf = LightFM_Obj.new_cold_start_similar_items(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
+    idf = LightFM_Obj.new_cold_start_similar_items(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag,explicit_filters=explicit_filters)
     if idf.shape[0]==0:
         return []
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
@@ -106,9 +111,12 @@ def user_item_recommendation(user_id,N=10):
     idf = LightFM_Obj.user_item_recommendation(user_id)[['all_unique_id','title','matching_score']]
     return idf.head(N).to_dict(orient='records')
 
-def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
+def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_budget=0,max_budget=None,test_sample_flag=False,explicit_filters=None):
     
-    filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_user_attributes)
+    if explicit_filters:
+        filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**explicit_filters,new_attributes_list=new_user_attributes)
+    else:
+        filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**Global_Obj.category_filters,new_attributes_list=new_user_attributes)
 
     idf = LightFM_Obj.cold_start_user_item_recommendation(new_user_attributes,similar_user_id,min_budget=min_budget,max_budget=max_budget)[['all_unique_id','title','tags','matching_score']]
     idf.reset_index(drop=True,inplace=True)
@@ -120,7 +128,7 @@ def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_bud
 
     idf = idf[idf['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))]
     idf.reset_index(drop=True,inplace=True)
-    for each_semi_hard_filter in Global_Obj.semi_hard_filters:
+    for each_semi_hard_filter in explicit_filters["semi_hard_filters"] if explicit_filters else Global_Obj.category_filters["semi_hard_filters"]:
         idf = idf[idf['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
         idf.reset_index(drop=True,inplace=True)
     if idf['matching_score'].max()>1 or idf['matching_score'].min()<0:
@@ -130,11 +138,14 @@ def cs_user_item_recommendation(new_user_attributes,similar_user_id,N=10,min_bud
     return idf.head(N).to_dict(orient='records')
     # return idf.to_dict(orient='records')
 
-def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,min_budget=0,max_budget=None,test_sample_flag=False):
+def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,min_budget=0,max_budget=None,test_sample_flag=False,explicit_filters=None):
 
-    filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(Global_Obj=Global_Obj,new_attributes_list=new_item_attributes)
+    if explicit_filters:
+        filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**explicit_filters,new_attributes_list=new_item_attributes)
+    else:
+        filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**Global_Obj.category_filters,new_attributes_list=new_item_attributes)
 
-    idf = LightFM_Obj.new_cold_start_similar_items_with_text_sim(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
+    idf = LightFM_Obj.new_cold_start_similar_items_with_text_sim(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,content_attr=content_attr,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag,explicit_filters=explicit_filters)
     if idf.shape[0]==0:
         return []
     idf = idf[['left_all_unique_id','title','tags','left_score']].copy()
@@ -234,8 +245,18 @@ def test_with_sample(N):
             f"recall_at_{N}":ts_df['recall_at_k'].agg("mean")}
 
 
-def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budget=0,max_budget=None,test_sample_flag=False):
-    df_similar_profile = pd.DataFrame(cs_similar_user(new_attributes,N=10))
+def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budget=0,max_budget=None,test_sample_flag=False,explicit_semi_hard_filters=None):
+    explicit_filters = None
+    if type(explicit_semi_hard_filters) == list:
+        explicit_filters = {}
+        explicit_filters["hard_filters"] = Global_Obj.category_filters["hard_filters"]
+        if bool(set(explicit_filters["hard_filters"]).intersection(set(explicit_semi_hard_filters))):
+            raise Exception(f'Given One of the field is the Mandatory Hard Filter : {set(explicit_filters["hard_filters"]).intersection(set(explicit_semi_hard_filters))}')
+        explicit_filters["semi_hard_filters"] = list(set(Global_Obj.cat_dict.keys()).intersection(set(explicit_semi_hard_filters)))
+        explicit_filters["soft_filters"] = list(set(Global_Obj.cat_dict.keys()).difference(set(explicit_filters['hard_filters']+explicit_filters['semi_hard_filters'])))
+        if len(explicit_filters["soft_filters"])==0:
+            raise Exception("Atleast One Soft Filter is Needed")
+    df_similar_profile = pd.DataFrame(cs_similar_user(new_attributes,N=10,explicit_filters=explicit_filters))
     if df_similar_profile.shape[0] > 0:
         similar_profile_cutoff = df_similar_profile[df_similar_profile['matching_score']>0.7][:5]
         if similar_profile_cutoff.shape[0] > 0: ### No similar Profile
@@ -243,13 +264,13 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budg
             if profile_user_id:
                 for profile_id in profile_user_id:
                     if LightFM_Obj.check_profile_interaction(profile_id=profile_id):
-                        return cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_id,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag = test_sample_flag)
+                        return cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_id,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag = test_sample_flag,explicit_filters=explicit_filters)
             ####  If No Similar profile from same user - Popular recommendation from all profile
             popular_recommdendations = []
             for profile_id in similar_profile_cutoff['user_id'].to_list():
                 try:
                     if LightFM_Obj.check_profile_interaction(profile_id=profile_id):
-                        popular_recommdendations.extend(cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_id,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag = test_sample_flag))
+                        popular_recommdendations.extend(cs_user_item_recommendation(new_user_attributes=new_attributes,similar_user_id=profile_id,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag = test_sample_flag,explicit_filters=explicit_filters))
                 except Exception as e:
                     raise Exception(f"Error in Getting Similar Profile recommdendation : {e}")
             if popular_recommdendations:
@@ -259,7 +280,7 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budg
                 return popular_recommdendations.to_dict(orient='records')[:N]
     #### if No interaction for any of the profiles
     if content_attr:
-        return cs_similar_items_with_text_sim(new_item_attributes=new_attributes,content_attr=content_attr,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
-    return cs_similar_items(new_item_attributes=new_attributes,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag)
+        return cs_similar_items_with_text_sim(new_item_attributes=new_attributes,content_attr=content_attr,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag,explicit_filters=explicit_filters)
+    return cs_similar_items(new_item_attributes=new_attributes,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag,explicit_filters=explicit_filters)
 
 
