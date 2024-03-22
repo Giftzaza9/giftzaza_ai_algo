@@ -107,11 +107,11 @@ interface Props {
   open: boolean;
   onClose: () => void;
   product: Product;
-  matches: string[];
+  matches?: string[];
 }
 
 export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, matches }) => {
-  const { title, description, source, thumbnails, image, price_currency, price, rating, link } = product;
+  const { title, description, source, thumbnails, image, price_currency, price, rating, link } = product || {};
 
   return (
     <Dialog
@@ -263,15 +263,17 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, mat
             </Grid>
           </ContentWrapper>
 
-          <ContentWrapper title="Matches">
-            <Grid container gap={'4px'}>
-              {matches?.map((el) => (
-                <Grid item key={el}>
-                  <Chip variant="outlined" label={_.capitalize(el)} sx={selectedChipStyle} />
-                </Grid>
-              ))}
-            </Grid>
-          </ContentWrapper>
+          {matches && matches?.length > 0 && (
+            <ContentWrapper title="Matches">
+              <Grid container gap={'4px'}>
+                {matches?.map((el) => (
+                  <Grid item key={el}>
+                    <Chip variant="outlined" label={_.capitalize(el)} sx={selectedChipStyle} />
+                  </Grid>
+                ))}
+              </Grid>
+            </ContentWrapper>
+          )}
 
           <ContentWrapper title="Description">
             <Typography

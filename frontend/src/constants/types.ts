@@ -75,3 +75,9 @@ export type Profile = {
   recommended_products: RecommendedProduct[];
   budget: string;
 };
+
+export type SavedItem = {
+  profile_id: string;
+  profile_title: string;
+  savedProducts: Product[];
+};
