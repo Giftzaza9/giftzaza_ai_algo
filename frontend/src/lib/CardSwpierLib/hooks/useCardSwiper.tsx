@@ -82,7 +82,7 @@ export const useCardSwiper = ({
   };
 
   const handleUserActivity = (direction: SwipeDirection, action: SwipeAction, callAction: Boolean) => {
-    if (callAction) actionHandler(direction, action, currentProductRef.current?.id);
+    if (callAction || action === SwipeAction.SAVE) actionHandler(direction, action, currentProductRef.current?.id);
     if (action === SwipeAction.BUY) {
       actionHandler(direction, action, currentProductRef.current?.id);
       window.open(currentProductRef.current?.link, '_blank');
@@ -96,6 +96,7 @@ export const useCardSwiper = ({
       setElements([]);
       onFinish(SwipeAction.FINISHED);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swiperIndex]);
 
   useEffect(() => {

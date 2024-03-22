@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
+const { availableActivities } = require('../variables/constants');
 
 const userActivityschema = new mongoose.Schema(
   {
@@ -14,6 +15,7 @@ const userActivityschema = new mongoose.Schema(
     },
     activity: {
       type: String,
+      enum: availableActivities,
     },
     profile_id: {
       type: mongoose.Schema.Types.ObjectId,
