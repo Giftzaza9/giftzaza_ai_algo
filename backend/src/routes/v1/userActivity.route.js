@@ -8,9 +8,15 @@ const { userActivityController } = require('../../controllers');
 const auth = require('../../middlewares/auth');
 const router = express.Router();
 const { rightsEnum } = require('../../config/roles');
+const { userActivityValidation } = require('../../validations');
 
 router
   .route('/')
-  .post(auth(rightsEnum.MANAGE_USERS), validate(productValidation.userActivity), userActivityController.storeUserActivity);
+  .get(auth(), userActivityController.getUserActivity)
+  .post(
+    auth(rightsEnum.MANAGE_USERS),
+    validate(userActivityValidation.createUserActivity),
+    userActivityController.createUserActivity
+  );
 
 module.exports = router;

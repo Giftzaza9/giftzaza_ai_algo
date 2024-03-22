@@ -96,6 +96,7 @@ export const useCardSwiper = ({
       setElements([]);
       onFinish(SwipeAction.FINISHED);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swiperIndex]);
 
   useEffect(() => {

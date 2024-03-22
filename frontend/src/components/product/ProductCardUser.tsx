@@ -18,7 +18,7 @@ import { ProductPreviewModalUser } from './ProductPreviewModalUser';
 import { FC, useEffect, useState } from 'react';
 import { Product } from '../../constants/types';
 import { Save } from '../shared/Icons/Save';
-import { lowHeightCondition, lowWidthCondition } from '../../constants/constants';
+import { lowWidthCondition } from '../../constants/constants';
 import _ from 'lodash';
 import { RWebShare } from 'react-web-share';
 
@@ -32,7 +32,6 @@ interface Props {
 
 export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts }) => {
   const isSmallWidthScreen = useMediaQuery(lowWidthCondition);
-  const isSmallHeightScreen = useMediaQuery(lowHeightCondition);
   const imageBreak = useMediaQuery('(max-height: 790px)');
   const imageBreak2 = useMediaQuery('(max-height: 674px)');
   const { title, description, source, thumbnails, image, price_currency, price, rating, id, link } = productData as Product;
