@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Box, Button, Container, Grid, Typography } from '@mui/material';
+import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { useGoogleLogin } from '@react-oauth/google';
 import { loginWithFacebook, loginWithGoogle } from '../../services/auth';
 import { toast } from 'react-toastify';
@@ -84,7 +84,7 @@ export const Auth = observer(() => {
           marginBottom: 'calc(var(--vh) * 7)',
         }}
       >
-        <Box position={'relative'}>
+        <Stack position={'relative'} alignItems={'center'}>
           <img
             src={require('../../assets/logo_gift.png')}
             alt="logo"
@@ -108,13 +108,13 @@ export const Auth = observer(() => {
               fontSize: '10px',
               lineHeight: '12.1px',
               position: 'absolute',
-              bottom: '10px',
-              right: '56px',
+              bottom: '4px',
+              right: '4px',
             }}
           >
             YOUR PERSONAL AI GIFTING ASSISTANT
           </Typography>
-        </Box>
+        </Stack>
         <Typography fontWeight={'500'} fontSize={'12px'} color={'black'}>
           By tapping Create Account or Sign In, you agree to our Terms. Learn how we process your data in our Privacy Policy
           and Cookies Policy.
