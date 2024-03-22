@@ -32,7 +32,9 @@ const similarProducts = {
 const moreProducts = {
   body: Joi.object().keys({
     preferences: Joi.array().required(),
-    top_n: Joi.number().integer()
+    top_n: Joi.number().integer(),
+    min_price: Joi.number(),
+    max_price: Joi.number()
   }),
 };
 
