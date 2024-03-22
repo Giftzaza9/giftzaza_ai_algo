@@ -20,3 +20,12 @@ export const storeUserActivity = async (payload: userActivityBody): Promise<ApiR
     return generateErrorMessage(error);
   }
 };
+
+export const getSavedProducts = async (): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.get(`/user-activity/saved`);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};

@@ -18,7 +18,7 @@ const createUserActivity = async (body) => {
   }
 };
 
-const getUserActivity = async (userId) => {
+const getSavedProducts = async (userId) => {
   try {
     return await UserActivity.aggregate([
       {
@@ -46,8 +46,22 @@ const getUserActivity = async (userId) => {
       {
         $group: {
           _id: '$profile._id',
-          profile: { $first: '$profile' },
+          profile_id: { $first: '$profile._id' },
+          profile_title: { $first: '$profile.title' },
           savedProducts: { $push: '$product' },
+        },
+      },
+      {
+        $project: {
+          profile_id: 1,
+          profile_title: 1,
+          savedProducts: {
+            $reduce: {
+              input: '$savedProducts',
+              initialValue: [],
+              in: { $concatArrays: ['$$value', '$$this'] },
+            },
+          },
         },
       },
     ]);
@@ -58,5 +72,5 @@ const getUserActivity = async (userId) => {
 
 module.exports = {
   createUserActivity,
-  getUserActivity,
+  getSavedProducts,
 };

@@ -57,7 +57,6 @@
     });
 
     document.querySelector('#invisible-button').addEventListener('click', (e) => {
-      console.log(`'invisible-button' event was triggered.`);
       window?.deferredPrompt?.prompt();
       window?.deferredPrompt?.userChoice?.then((choiceResult) => {
         if (choiceResult?.outcome === 'accepted') {

@@ -8,9 +8,9 @@ const createUserActivity = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(activity);
 });
 
-const getUserActivity = catchAsync(async (req, res) => {
-  const activity = await userActivityService.getUserActivity(req.user._id);
+const getSavedProducts = catchAsync(async (req, res) => {
+  const activity = await userActivityService.getSavedProducts(req.user._id);
   res.status(httpStatus.OK).send(activity);
 });
 
-module.exports = { createUserActivity, getUserActivity };
+module.exports = { createUserActivity, getSavedProducts };

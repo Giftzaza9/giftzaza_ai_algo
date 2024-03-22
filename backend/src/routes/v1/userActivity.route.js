@@ -12,11 +12,12 @@ const { userActivityValidation } = require('../../validations');
 
 router
   .route('/')
-  .get(auth(), userActivityController.getUserActivity)
   .post(
     auth(rightsEnum.MANAGE_USERS),
     validate(userActivityValidation.createUserActivity),
     userActivityController.createUserActivity
   );
+
+router.route('/saved').get(auth(), userActivityController.getSavedProducts);
 
 module.exports = router;
