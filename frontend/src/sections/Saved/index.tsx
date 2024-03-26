@@ -6,8 +6,12 @@ import { useEffect, useState } from 'react';
 import { getSavedProducts } from '../../services/user';
 import { Product, SavedItem } from '../../constants/types';
 import { ProductPreviewModalUser } from '../../components/product/ProductPreviewModalUser';
+import { observer } from 'mobx-react-lite';
+import { loaderState } from '../../store/ShowLoader';
 
-export const Saved = () => {
+export const Saved = observer(() => {
+  const { setLoading } = loaderState;
+
   const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
   const [previewProduct, setPreviewProduct] = useState<Product | undefined>();
   const [previewModalOpen, setPreviewModalOpen] = useState<boolean>(false);
@@ -24,15 +28,19 @@ export const Saved = () => {
 
   const fetchSavedProducts = async () => {
     try {
+      setLoading(true)
       const { data, error } = await getSavedProducts();
       if (!error) setSavedItems(data);
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.log(error);
     }
   };
 
   useEffect(() => {
     fetchSavedProducts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -139,4 +147,4 @@ export const Saved = () => {
       <ProductPreviewModalUser product={previewProduct!} open={previewModalOpen} onClose={handlePreviewClose} />
     </MobileLayout>
   );
-};
+});
