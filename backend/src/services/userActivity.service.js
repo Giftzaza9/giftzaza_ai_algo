@@ -18,6 +18,17 @@ const createUserActivity = async (body) => {
   }
 };
 
+const deleteSavedProduct = async (body, user_id) => {
+  try {
+    const { product_id, profile_id } = body;
+    const activity = await UserActivity.findOne({ product_id, user_id, profile_id, activity: 'save' });
+    if (!activity) throw new ApiError(httpStatus.NOT_FOUND, 'Activity not found');
+    return await activity.remove();
+  } catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, error?.message || 'Something went wrong!');
+  }
+};
+
 const getSavedProducts = async (userId) => {
   try {
     return await UserActivity.aggregate([
@@ -49,6 +60,7 @@ const getSavedProducts = async (userId) => {
           profile_id: { $first: '$profile._id' },
           profile_title: { $first: '$profile.title' },
           savedProducts: { $push: '$product' },
+          updatedAt: { $first: '$profile.updatedAt' },
         },
       },
       {
@@ -62,7 +74,16 @@ const getSavedProducts = async (userId) => {
               in: { $concatArrays: ['$$value', '$$this'] },
             },
           },
+          updatedAt: 1,
         },
+      },
+      {
+        $match: {
+          savedProducts: { $ne: [] },
+        },
+      },
+      {
+        $sort: { updatedAt: -1 },
       },
     ]);
   } catch (error) {
@@ -73,4 +94,5 @@ const getSavedProducts = async (userId) => {
 module.exports = {
   createUserActivity,
   getSavedProducts,
+  deleteSavedProduct,
 };
