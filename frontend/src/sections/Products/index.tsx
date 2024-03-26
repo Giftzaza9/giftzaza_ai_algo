@@ -194,7 +194,7 @@ export const Products = observer(() => {
               variant="h5"
               sx={{ fontSize: '24px', fontFamily: 'Inter', lineHeight: '36px', textAlign: 'center', fontWeight: 600 }}
             >
-              No more products to show
+              Meanwhile, we are curating new products for you...
             </Typography>
             <Button
               variant="contained"
