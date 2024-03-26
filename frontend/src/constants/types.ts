@@ -28,6 +28,7 @@ export type GPTTagging = {
 
 export type Product = {
   id: string;
+  _id?: string;
   title: string;
   description: string;
   source: 'bloomingdale' | 'amazon';

@@ -13,4 +13,9 @@ const getSavedProducts = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(activity);
 });
 
-module.exports = { createUserActivity, getSavedProducts };
+const removeSavedProduct = catchAsync(async (req, res) => {
+  const activity = await userActivityService.deleteSavedProduct(req.body, req.user._id);
+  res.status(httpStatus.OK).send(activity);
+});
+
+module.exports = { createUserActivity, getSavedProducts, removeSavedProduct };

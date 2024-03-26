@@ -10,6 +10,14 @@ const createUserActivity = {
   }),
 };
 
+const removeSavedProduct = {
+  body: Joi.object().keys({
+    profile_id: Joi.string().custom(objectId),
+    product_id: Joi.string().custom(objectId),
+  }),
+};
+
 module.exports = {
   createUserActivity,
+  removeSavedProduct,
 };

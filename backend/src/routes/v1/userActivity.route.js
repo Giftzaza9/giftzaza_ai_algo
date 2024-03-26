@@ -18,6 +18,9 @@ router
     userActivityController.createUserActivity
   );
 
-router.route('/saved').get(auth(), userActivityController.getSavedProducts);
+router
+  .route('/saved')
+  .get(auth(), userActivityController.getSavedProducts)
+  .delete(auth(), validate(userActivityValidation.removeSavedProduct), userActivityController.removeSavedProduct);
 
 module.exports = router;

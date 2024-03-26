@@ -45,13 +45,14 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
         justifyContent: 'space-between',
       }}
     >
-      <Box display={'flex'} alignItems={'center'} gap={'2px'} onClick={() => navigate('/')}>
+      <Box display={'flex'} alignItems={'center'} gap={'3px'} onClick={() => navigate('/')}>
         <img
           src={require('../../../assets/logo_gift.png')}
           alt="logo"
           style={{
-            height: isSmallScreen ? '16px' : '18px',
+            height: isSmallScreen ? '20px' : '22px',
             cursor: 'pointer',
+            alignSelf: 'baseline',
           }}
         />
         <img

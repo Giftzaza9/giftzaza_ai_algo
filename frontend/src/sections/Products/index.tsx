@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { Product, Profile } from '../../constants/types';
 import { SimilarProductBody, getSimilarProducts, moreProductBody, moreProducts } from '../../services/product';
 import { SwipeAction } from '../../constants/constants';
-import { storeUserActivity, userActivityBody } from '../../services/user';
+import { storeUserActivity, UserActivityBody } from '../../services/user';
 import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../store/ShowLoader';
 import { retrain } from '../../services/AI';
@@ -143,7 +143,7 @@ export const Products = observer(() => {
 
   const saveUserActivity = async (product_id: string, activity: SwipeAction) => {
     if ([SwipeAction.FINISHED, SwipeAction.SIMILAR].includes(activity)) return;
-    const payload: userActivityBody = {
+    const payload: UserActivityBody = {
       product_id,
       activity,
       profile_id: profileId!,
