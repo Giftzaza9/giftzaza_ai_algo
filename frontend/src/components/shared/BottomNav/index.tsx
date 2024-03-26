@@ -34,7 +34,7 @@ export const BottomNav = observer(() => {
         zIndex: 1000,
         height: '46px',
         backgroundColor: theme.palette.secondary.main,
-        '& .Mui-selected': { color: 'rgba(221, 110, 63, 1)' },
+        '& .MuiBottomNavigationAction-root.Mui-selected': { color: 'rgba(221, 110, 63, 1)' },
       }}
     >
       <BottomNavigationAction

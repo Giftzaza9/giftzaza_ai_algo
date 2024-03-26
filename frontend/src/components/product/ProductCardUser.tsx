@@ -108,7 +108,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                     height="90%"
                     sx={{ objectFit: 'contain' }}
                     image={thumb}
-                    alt="image"
+                    alt="product"
                   />
                 </Box>
               ))}
@@ -122,7 +122,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                 height="100%"
                 sx={{ objectFit: 'contain' }}
                 image={image}
-                alt="green iguana"
+                alt="product"
               />
             </Box>
           )}
