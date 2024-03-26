@@ -56,7 +56,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
         <Box
           sx={{
             position: 'absolute',
-            right: '16px',
+            right: '2px',
             top: '26px',
             display: 'flex',
             flexDirection: 'column',

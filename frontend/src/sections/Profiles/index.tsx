@@ -2,7 +2,7 @@ import { Grid, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { useEffect, useState } from 'react';
 import { Profile } from '../../constants/types';
-import { getProfiles } from '../../services/profile';
+import { deleteProfile, getProfiles } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
@@ -10,6 +10,7 @@ import { loaderState } from '../../store/ShowLoader';
 import { Add } from '@mui/icons-material';
 import { ProfileCard } from '../../components/profile/ProfileCard';
 import { EditProfileModal } from '../../components/profile/EditProfileModal';
+import { getSwalConfirmation } from '../../utils/swalConfirm';
 
 export const Profiles = observer(() => {
   const { setLoading } = loaderState;
@@ -41,6 +42,18 @@ export const Profiles = observer(() => {
   const handleProfileToEdit = (profile: Profile) => {
     setProfileToEdit(profile);
     setEditProfileModalOpen(true);
+  };
+
+  const handleDeleteProfile = async (id: string) => {
+    try {
+      if (!(await getSwalConfirmation())) return;
+      setLoading(true);
+      await deleteProfile(id);
+      setProfiles((prev) => prev?.filter((profile) => profile?.id !== id));
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -87,7 +100,12 @@ export const Profiles = observer(() => {
           </Typography>
         </Grid>
         {profiles?.map((profile) => (
-          <ProfileCard handleProfileToEdit={handleProfileToEdit} profile={profile} key={profile?.id} />
+          <ProfileCard
+            onEditProfile={handleProfileToEdit}
+            onDeleteProfile={handleDeleteProfile}
+            profile={profile}
+            key={profile?.id}
+          />
         ))}
         <EditProfileModal onClose={handleEditProfileModalClose} open={editProfileModalOpen} profile={profileToEdit!} />
       </Grid>

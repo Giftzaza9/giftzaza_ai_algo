@@ -62,3 +62,12 @@ export const updateProfile = async (profileId: string, body: UpdateProfileBody):
     return generateErrorMessage(error);
   }
 };
+
+export const deleteProfile = async (profileId: string): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.delete(`/profiles/${profileId}`);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};
