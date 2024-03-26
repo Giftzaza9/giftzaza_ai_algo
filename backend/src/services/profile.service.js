@@ -116,6 +116,8 @@ const updateProfile = async (profileBody, profileId) => {
     user_id: profileBody?.user_id,
     new_attributes: preferences,
     top_n: 10,
+    min_price: profileBody?.min_price,
+    max_price: profileBody?.max_price,
   };
   try {
     profileBody.recommended_products = await getRecommendedProducts(payload);
