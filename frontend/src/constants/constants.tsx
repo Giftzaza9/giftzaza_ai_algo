@@ -169,21 +169,24 @@ export const bottomNavIcons = [
   {
     value: 'home',
     Icon: GoHomeFill,
-    href: '/'
+    href: '/',
   },
   {
     value: 'profiles',
     Icon: GridViewRounded,
-    href: '/profiles'
+    href: '/profiles',
   },
   {
     value: 'saved',
     Icon: Bookmark,
-    href: '/saved'
+    href: '/saved',
   },
   {
     value: 'user',
     Icon: PersonRounded,
-    href: '/user'
+    href: '/user',
   },
-]
+];
+
+// eslint-disable-next-line no-useless-escape
+export const errorMessages = ['Error: No auth token', `\"refreshToken\" must be a string`, `Please authenticate`];

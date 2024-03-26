@@ -62,7 +62,7 @@ const roleBasedRouteAccess = (app_role: roleEnum) => {
 };
 
 const Router = observer(() => {
-  const token = localStorage.getItem('__giftzaza__');
+  const token = localStorage.getItem('access_giftalia');
   let user: any;
   if (token) {
     user = decodeToken(token);

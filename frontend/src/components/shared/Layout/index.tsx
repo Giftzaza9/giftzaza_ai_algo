@@ -12,11 +12,12 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { userStore } from '../../../store/UserStore';
-import { logOut, stringAvatar } from '../../../utils/helperFunctions';
+import { stringAvatar } from '../../../utils/helperFunctions';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { navbarLinks, navbarSettings } from '../../../constants/constants';
 import { roleEnum } from '../../../constants/types';
 import { bottomNavState } from '../../../store/BottomNavState';
+import { logout } from '../../../services/auth';
 
 export function Layout({ children }: React.PropsWithChildren) {
   const { user, setUser } = userStore;
@@ -43,12 +44,12 @@ export function Layout({ children }: React.PropsWithChildren) {
     setAnchorElUser(null);
   };
 
-  const handleProfileMenu = (action: any) => {
+  const handleProfileMenu = async (action: any) => {
     console.log(action);
     if (action === 'Logout') {
       setUser(undefined);
       setIsVisible(false);
-      logOut();
+      await logout();
       navigate('/login');
     }
     handleCloseNavMenu();

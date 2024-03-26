@@ -7,7 +7,7 @@ import { userStore } from "../../store/UserStore";
 
 const ProtectedRoute = () => {
   const {setUser} = userStore;
-  const token = localStorage.getItem("__giftzaza__");
+  const token = localStorage.getItem("access_giftalia");
 
   useEffect(() => {
 

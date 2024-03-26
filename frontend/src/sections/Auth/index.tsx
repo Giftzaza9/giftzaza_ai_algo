@@ -19,7 +19,7 @@ export const Auth = observer(() => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.name && localStorage.getItem('__giftzaza__')) {
+    if (user?.name && localStorage.getItem('access_giftalia')) {
       // navigate('/');
     }
   }, [navigate, user]);
