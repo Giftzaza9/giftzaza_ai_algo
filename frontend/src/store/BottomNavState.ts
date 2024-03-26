@@ -3,7 +3,12 @@ import { bottomNavHidePaths } from '../constants/constants';
 
 const path = window.location.pathname;
 export class BottomNavState {
-  isVisible: boolean = bottomNavHidePaths.some((el) => path.includes(el)) ? false : true;
+  isVisible: boolean = bottomNavHidePaths.some((el) => {
+    console.log(path);
+    return !path.includes(el);
+  })
+    ? true
+    : false;
   constructor() {
     makeObservable(this, {
       isVisible: observable,
