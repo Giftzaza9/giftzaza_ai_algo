@@ -211,8 +211,8 @@
   display: flex;
   position: absolute;
   text-align: center;
-  top: 34px;
-  left: 0px;
+  top: 26px;
+  left: -14px;
   z-index: 2;
   min-width: 100px;
 }
