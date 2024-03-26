@@ -27,6 +27,7 @@ export const Products = observer(() => {
   const [page, setPage] = useState<number>(1);
   const [refetch, setRefetch] = useState<boolean>(false);
   const [haveMoreProducts, setHaveMoreProducts] = useState<boolean>(true);
+  const [moreProductsCase, setMoreProductsCase] = useState<number>(1);
 
   const fetchProfile = async () => {
     try {
@@ -81,43 +82,64 @@ export const Products = observer(() => {
     }
   };
 
-  const fetchMoreProducts = async (curPage: number) => {
+  const fetchMoreProducts = async (curPage: number, payload: moreProductBody) => {
     // setLoading(true);
-    const payload: moreProductBody = {
-      preferences: profile?.preferences!,
-      top_n: curPage * 10,
-      min_price: profile?.min_price ?? 0,
-      max_price: profile?.max_price ?? 0,
-    };
     const { data, error } = await moreProducts(payload);
-    console.log({ ...products });
     console.log({ data });
     if (error) toast.error(error || 'Faild to fetch more products !');
     else {
-      // setProducts([...data?.map((item: any) => ({ ...item })).reverse()]);
+      
       setPrevProductsCount(products?.length + 1);
-      // console.log({...products});
-      setProducts((prev: any) => {
-        // ...prev,
-        // ...data?.map((item: any) => ({ ...item })).reverse()
-        // Create a Set of existing _id values in prev
-        const prevIds = new Set(prev.map((item: any) => item.item_id?.id));
-
+      const prevIds = new Set(products.map((item: any) => item.item_id?.id));
         // Filter out items from data that are not already present in prev
-        const newData = data?.filter((item: any) => !prevIds.has(item.item_id?.id));
+      const uniqueNewProducts = data?.filter((item: any) => !prevIds.has(item.item_id?.id));
 
-        setHaveMoreProducts(newData?.length > 0 ? true : false);
-        if (newData?.length > 0) return [...prev, ...(newData || []).reverse()];
-        else return [];
+      if (uniqueNewProducts?.length === 0 && moreProductsCase < 3) {
+        setMoreProductsCase((prev) => prev + 1);
+        return ;
+      }
+      console.log({moreProductsCase, uniqueNewProducts})
+      if (moreProductsCase === 3 && uniqueNewProducts?.length === 0) {
+        setHaveMoreProducts(uniqueNewProducts?.length > 0 ? true : false);
+        setProducts([]);
+        return ;
+      }
+
+      setProducts((prev: any) => {
+        return [...prev, ...(uniqueNewProducts || []).reverse()];
       });
     }
     setLoading(false);
   };
-  console.log({ products });
+
   useEffect(() => {
-    if (page > 1) fetchMoreProducts(page);
+    const payload: moreProductBody = {
+      preferences: profile?.preferences!,
+      top_n: page * 10,
+      semi_soft_filter: ["interest"],
+    };
+
+    if (page > 1 && moreProductsCase < 4) {
+
+      let newPayload = {...payload};
+      if(moreProductsCase === 1) {
+        newPayload = {
+          ...payload,
+          min_price: profile?.min_price ?? 0,
+          max_price: profile?.max_price ?? 0,
+        }
+      }
+      else if(moreProductsCase === 3) {
+        newPayload = {
+          ...payload,
+          semi_soft_filter: [],
+        }
+      }
+
+      fetchMoreProducts(page, newPayload);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, moreProductsCase]);
 
   const saveUserActivity = async (product_id: string, activity: SwipeAction) => {
     if ([SwipeAction.FINISHED, SwipeAction.SIMILAR].includes(activity)) return;
