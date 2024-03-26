@@ -189,4 +189,4 @@ export const bottomNavIcons = [
 ];
 
 // eslint-disable-next-line no-useless-escape
-export const errorMessages = ['Error: No auth token', `\"refreshToken\" must be a string`, `Please authenticate`];
+export const kickOutMessages = ['Error: No auth token', `\"refreshToken\" must be a string`, `Please authenticate`];
