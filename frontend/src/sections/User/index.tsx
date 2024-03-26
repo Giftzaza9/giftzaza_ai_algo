@@ -3,11 +3,12 @@ import { userStore } from '../../store/UserStore';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { Avatar, Box, Button, Grid, TextField, Typography, useMediaQuery } from '@mui/material';
 import { theme } from '../../utils/theme';
-import { getVH, logOut, stringToColor } from '../../utils/helperFunctions';
+import { getVH, stringToColor } from '../../utils/helperFunctions';
 import { bottomNavState } from '../../store/BottomNavState';
 import { useNavigate } from 'react-router-dom';
 import { FC } from 'react';
 import { ArrowForwardIos } from '@mui/icons-material';
+import { logout } from '../../services/auth';
 
 const containerStyles = {
   // height: '100vh',
@@ -113,10 +114,10 @@ export const User = observer(() => {
               variant="contained"
               color="secondary"
               sx={{ width: '100%', padding: '6px 18px' }}
-              onClick={() => {
+              onClick={async () => {
                 setUser(undefined);
                 setIsVisible(false);
-                logOut();
+                await logout();
                 navigate('/login');
               }}
               size="small"
