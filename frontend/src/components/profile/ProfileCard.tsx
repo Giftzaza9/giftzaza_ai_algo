@@ -1,4 +1,4 @@
-import { AccessTimeFilled } from '@mui/icons-material';
+import { AccessTimeFilled, Delete } from '@mui/icons-material';
 import { Grid, Stack, Box, Typography, IconButton } from '@mui/material';
 import { EditProfile } from '../shared/Icons/EditProfile';
 import { Profile } from '../../constants/types';
@@ -8,10 +8,11 @@ import { comingUpOn, daysRemaining, ellipsisText } from '../../utils/helperFunct
 
 interface Props {
   profile: Profile;
-  handleProfileToEdit: (profile: Profile) => void;
+  onEditProfile: (profile: Profile) => void;
+  onDeleteProfile: (id: string) => void;
 }
 
-export const ProfileCard: FC<Props> = ({ profile, handleProfileToEdit }) => {
+export const ProfileCard: FC<Props> = ({ profile, onEditProfile, onDeleteProfile }) => {
   const navigate = useNavigate();
   return (
     <Grid
@@ -75,15 +76,26 @@ export const ProfileCard: FC<Props> = ({ profile, handleProfileToEdit }) => {
             </Typography>
           </Box>
 
-          <IconButton
-            sx={{ bgcolor: '#F7E38D' }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleProfileToEdit(profile);
-            }}
-          >
-            <EditProfile />
-          </IconButton>
+          <Stack flexDirection={'row'} gap={'4px'}>
+            <IconButton
+              sx={{ bgcolor: '#F7E38D' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteProfile(profile?.id);
+              }}
+            >
+              <Delete sx={{ height: '12px', width: '12px', color: '#660985' }} />
+            </IconButton>
+            <IconButton
+              sx={{ bgcolor: '#F7E38D' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditProfile(profile);
+              }}
+            >
+              <EditProfile />
+            </IconButton>
+          </Stack>
         </Stack>
 
         <Typography
