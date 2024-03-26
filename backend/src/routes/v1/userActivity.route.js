@@ -13,7 +13,7 @@ const { userActivityValidation } = require('../../validations');
 router
   .route('/')
   .post(
-    auth(rightsEnum.MANAGE_USERS),
+    auth(),
     validate(userActivityValidation.createUserActivity),
     userActivityController.createUserActivity
   );
