@@ -99,13 +99,10 @@ function convertToObjectId(itemIds) {
  * @returns {Promise<Product>}
  */
 const getMoreProducts = async (productBody) => {
-  const { user_id, preferences, top_n, min_price, max_price } = productBody;
+  const { preferences } = productBody;
   const payload = {
-    user_id,
-    new_attributes: preferences,
-    top_n,
-    min_price,
-    max_price,
+    ...productBody,
+    new_attributes: preferences
   };
   return await getRecommendedProducts(payload)
     .then(async (res) => {

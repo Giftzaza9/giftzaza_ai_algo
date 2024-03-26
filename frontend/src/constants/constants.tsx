@@ -159,6 +159,7 @@ export enum SwipeAction {
   SIMILAR = 'similar',
   NO_INTERACTION = 'no interaction',
   FINISHED = 'FINISHED',
+  REWIND = 'rewind',
 }
 
 export const iphoneSeCondition = '(max-width: 389px) or (max-height: 700px)';

@@ -15,6 +15,7 @@ import { SwipeAction, iphoneSeCondition } from '../../../constants/constants';
 import _ from 'lodash';
 import { Box, useMediaQuery } from '@mui/material';
 import { Bookmark } from '@mui/icons-material';
+import ReplayIcon from '@mui/icons-material/Replay';
 
 export const CardSwiper = (props: CardSwiperProps) => {
   const {
@@ -212,12 +213,11 @@ export const CardSwiper = (props: CardSwiperProps) => {
               <CardSwiperActionButton
                 isCustom
                 direction={SwipeDirection.BLANK}
-                action={SwipeAction.NO_INTERACTION}
-                onClick={() => {}}
+                action={SwipeAction.REWIND}
+                onClick={handleUserActivity}
                 extraClass="similarProduct"
               >
-                {/* <Similar /> */}
-                <Box></Box>
+                <ReplayIcon sx={{ color: '#85C6E2' }} />
               </CardSwiperActionButton>
               <CardSwiperActionButton
                 isCustom
