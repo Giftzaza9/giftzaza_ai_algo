@@ -1,5 +1,7 @@
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { Product, roleEnum } from './types';
+import { GoHomeFill } from 'react-icons/go';
+import { Bookmark, GridViewRounded, PersonRounded } from '@mui/icons-material';
 
 const iconStyle = {
   fontSize: 'large',
@@ -163,8 +165,28 @@ export const iphoneSeCondition = '(max-width: 389px) or (max-height: 700px)';
 export const lowWidthCondition = '(max-width: 420px)';
 export const lowHeightCondition = '(max-height: 550px)';
 
-export const profileCardImages = {
-  parent: '/_parent_.jpeg',
-  wife: '/_wife_.jpeg',
-  friend: '/_friend_.jpeg',
-};
+export const bottomNavIcons = [
+  {
+    value: 'home',
+    Icon: GoHomeFill,
+    href: '/',
+  },
+  {
+    value: 'profiles',
+    Icon: GridViewRounded,
+    href: '/profiles',
+  },
+  {
+    value: 'saved',
+    Icon: Bookmark,
+    href: '/saved',
+  },
+  {
+    value: 'user',
+    Icon: PersonRounded,
+    href: '/user',
+  },
+];
+
+// eslint-disable-next-line no-useless-escape
+export const errorMessages = ['Error: No auth token', `\"refreshToken\" must be a string`, `Please authenticate`];

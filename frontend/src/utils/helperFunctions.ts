@@ -20,17 +20,8 @@ export const generateErrorMessage = (error: Error | unknown): ApiResponse => {
   }
 };
 
-export const logOut = () => {
-  try {
-    localStorage.removeItem('__giftzaza__');
-  } catch (error) {
-    console.log(error, 'err');
-    return generateErrorMessage(error);
-  }
-};
-
 export const userInfo = () => {
-  const token = localStorage.getItem('__giftzaza__');
+  const token = localStorage.getItem('access_giftalia');
   return token ? decodeToken(token) : null;
 };
 
