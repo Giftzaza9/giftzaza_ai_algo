@@ -2,7 +2,7 @@ import { Box, CardMedia, Chip, Dialog, Grid, IconButton, Rating, Slide, Stack, T
 import React, { FC, PropsWithChildren } from 'react';
 import { theme } from '../../utils/theme';
 import { Product } from '../../constants/types';
-import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
+import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { TransitionProps } from '@mui/material/transitions';
 import _ from 'lodash';
 import { ArrowForwardIos } from '@mui/icons-material';
@@ -111,7 +111,7 @@ interface Props {
 }
 
 export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, matches }) => {
-  const { title, description, source, thumbnails, image, price_currency, price, rating, link } = product || {};
+  const { title, description, source, thumbnails, image, price_currency, price, rating, link, features } = product || {};
 
   return (
     <Dialog
@@ -134,9 +134,13 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, mat
                   fontFamily: 'Inter',
                   fontWeight: '600',
                   lineHeight: '24px',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  maxWidth: 'calc(100vw - 82px)',
                 }}
               >
-                {ellipsisText(title, 30)}
+                {title}
               </Typography>
               <Typography
                 sx={{
@@ -275,20 +279,43 @@ export const ProductPreviewModalUser: FC<Props> = ({ onClose, open, product, mat
             </ContentWrapper>
           )}
 
-          <ContentWrapper title="Description">
-            <Typography
-              variant="body1"
-              sx={{
-                fontSize: '14px',
-                fontFamily: 'Inter',
-                fontWeight: '500',
-                lineHeight: '20px',
-                color: 'rgba(93, 94, 97, 1)',
-              }}
-            >
-              {description}
-            </Typography>
-          </ContentWrapper>
+          {!!description && !(source === 'amazon' && features?.length) && (
+            <ContentWrapper title="Description">
+              <Typography
+                variant="body1"
+                sx={{
+                  fontSize: '14px',
+                  fontFamily: 'Inter',
+                  fontWeight: '500',
+                  lineHeight: '20px',
+                  color: 'rgba(93, 94, 97, 1)',
+                }}
+              >
+                {description}
+              </Typography>
+            </ContentWrapper>
+          )}
+
+          {!!features && features?.length > 0 && (
+            <ContentWrapper title="Features">
+              <Typography
+                variant="body1"
+                sx={{
+                  fontSize: '14px',
+                  fontFamily: 'Inter',
+                  fontWeight: '500',
+                  lineHeight: '20px',
+                  color: 'rgba(93, 94, 97, 1)',
+                }}
+              >
+                <ul>
+                  {features?.map((feat, index) => (
+                    <li key={index}>{feat}</li>
+                  ))}
+                </ul>
+              </Typography>
+            </ContentWrapper>
+          )}
         </Grid>
       </Grid>
     </Dialog>

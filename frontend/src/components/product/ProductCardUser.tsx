@@ -34,7 +34,8 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
   const isSmallWidthScreen = useMediaQuery(lowWidthCondition);
   const imageBreak = useMediaQuery('(max-height: 790px)');
   const imageBreak2 = useMediaQuery('(max-height: 674px)');
-  const { title, description, source, thumbnails, image, price_currency, price, rating, id, link } = productData as Product;
+  const { title, description, source, thumbnails, image, price_currency, price, rating, id, link, features } =
+    productData as Product;
   const [previewOpen, setPreviewOpen] = useState(false);
 
   useEffect(() => {
@@ -164,7 +165,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                       WebkitLineClamp: imageBreak2 ? 1 : 2,
                     }}
                   >
-                    {description}
+                    {source !== 'amazon' ? description || features?.join('. ') : features?.join('. ')}
                   </Typography>
                   <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
                     <Typography
