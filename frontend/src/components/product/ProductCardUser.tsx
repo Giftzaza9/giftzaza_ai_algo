@@ -165,7 +165,9 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                       WebkitLineClamp: imageBreak2 ? 1 : 2,
                     }}
                   >
-                    {source !== 'amazon' ? description || features?.join('. ') : features?.join('. ')}
+                    {!!description && !(source === 'amazon' && features?.length)
+                      ? description || features?.join('. ')
+                      : features?.join('. ')}
                   </Typography>
                   <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
                     <Typography
