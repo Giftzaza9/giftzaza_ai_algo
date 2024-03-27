@@ -81,12 +81,23 @@ export const useCardSwiper = ({
     }
   };
 
+  const handleRewind = () => {
+    if(swiperIndex < elements?.length) {
+      const swiper = elements[swiperIndex];
+      swiper?.rewind(swiper.element);
+      setSwiperIndex((prev) => prev + 1);
+    }
+  }
+
   const handleUserActivity = (direction: SwipeDirection, action: SwipeAction, callAction: Boolean) => {
     if (callAction || action === SwipeAction.SAVE) actionHandler(direction, action, currentProductRef.current?.id);
     if (action === SwipeAction.BUY) {
       actionHandler(direction, action, currentProductRef.current?.id);
       window.open(currentProductRef.current?.link, '_blank');
-    } else handleClickEvents(direction, action, currentProductRef.current?.id as string);
+    }
+    else if(action === SwipeAction.REWIND) 
+      handleRewind(); 
+    else handleClickEvents(direction, action, currentProductRef.current?.id as string);
   };
 
   useEffect(() => {
