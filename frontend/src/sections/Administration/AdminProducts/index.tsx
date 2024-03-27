@@ -66,7 +66,7 @@ export const AdminProducts = () => {
   };
 
   const replaceProduct = (product: Product) => {
-    setProducts((prev) => prev?.map((p) => (p?._id === product?._id ? product : p)));
+    setProducts((prev) => prev?.map((p) => (p?._id === product?.id ? product : p)));
   };
 
   const handleAddNewModalClose = async () => {
