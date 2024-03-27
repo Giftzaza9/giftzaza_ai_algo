@@ -49,8 +49,8 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
     try {
       const isConfirm = await getSwalConfirmation();
       if (!isConfirm) return;
-      await deleteProduct(product?.id);
-      removeProduct(product?.id);
+      await deleteProduct(product?._id as string);
+      removeProduct(product?._id as string);
     } catch (error) {
       console.error(error);
     }
