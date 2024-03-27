@@ -18,7 +18,6 @@ import { ProductPreviewModalUser } from './ProductPreviewModalUser';
 import { FC, useEffect, useState } from 'react';
 import { Product } from '../../constants/types';
 import { Save } from '../shared/Icons/Save';
-import { lowWidthCondition } from '../../constants/constants';
 import _ from 'lodash';
 import { RWebShare } from 'react-web-share';
 
@@ -31,7 +30,6 @@ interface Props {
 }
 
 export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts }) => {
-  const isSmallWidthScreen = useMediaQuery(lowWidthCondition);
   const imageBreak = useMediaQuery('(max-height: 790px)');
   const imageBreak2 = useMediaQuery('(max-height: 674px)');
   const { title, description, source, thumbnails, image, price_currency, price, rating, id, link, features } =
@@ -149,7 +147,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
-                      maxWidth: isSmallWidthScreen ? '60vw' : '75vw',
+                      maxWidth: `calc(85vw - ${imageBreak2 ? '24px' : imageBreak ? '26px' : '30px'})`,
                     }}
                   >
                     {title}
@@ -158,7 +156,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
                     sx={{
                       fontSize: imageBreak2 ? '9px' : imageBreak ? '10px' : '12px',
                       fontFamily: 'Inter',
-                      maxWidth: isSmallWidthScreen ? '60vw' : '75vw',
+                      maxWidth: `calc(85vw - ${imageBreak2 ? '24px' : imageBreak ? '26px' : '30px'})`,
                       display: '-webkit-box',
                       WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
