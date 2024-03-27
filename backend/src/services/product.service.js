@@ -41,6 +41,12 @@ const queryProducts = async (queryObject) => {
       case 'alpha-asc':
         optionsObject.sort = { title: 1 };
         break;
+      case 'likes-desc':
+        optionsObject.sort = { likes: -1 };
+        break;
+      case 'likes-asc':
+        optionsObject.sort = { likes: 1 };
+        break;
       default:
         optionsObject.sort = { createdAt: -1 };
     }
@@ -53,7 +59,53 @@ const queryProducts = async (queryObject) => {
   if (typeof is_active === 'boolean') filterObject.is_active = is_active;
   if (search) filterObject.title = { $regex: new RegExp(search, 'i') };
   if (filter) filterObject.tags = { $all: filter?.split(',')?.map((el) => (el?.trim() === '65' ? '65 +' : el)) };
-  return await Product.paginate(filterObject, optionsObject);
+
+  const [total, products] = await Promise.all([
+    Product.count(filterObject),
+    Product.aggregate([
+      {
+        $match: filterObject,
+      },
+      {
+        $lookup: {
+          from: 'useractivities',
+          localField: '_id',
+          foreignField: 'product_id',
+          as: 'activities',
+        },
+      },
+      {
+        $addFields: {
+          likes: {
+            $size: {
+              $filter: {
+                input: '$activities',
+                as: 'activity',
+                cond: { $eq: ['$$activity.activity', 'like'] },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          activities: 0,
+        },
+      },
+      {
+        $sort: optionsObject.sort,
+      },
+      {
+        $skip: (optionsObject.page - 1) * optionsObject.limit,
+      },
+      {
+        $limit: optionsObject.limit,
+      },
+    ]).collation({ locale: 'en', strength: 2 }),
+  ]);
+  const totalPages = Math.ceil(total / limit);
+  const hasNextPage = page < totalPages;
+  return { hasNextPage, totalDocs: total, page, limit, docs: products };
 };
 
 /**
@@ -102,7 +154,7 @@ const getMoreProducts = async (productBody) => {
   const { preferences } = productBody;
   const payload = {
     ...productBody,
-    new_attributes: preferences
+    new_attributes: preferences,
   };
   return await getRecommendedProducts(payload)
     .then(async (res) => {

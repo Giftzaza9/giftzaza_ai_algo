@@ -100,19 +100,19 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                   borderRadius={'50%'}
                   height={32}
                   width={32}
-                  bgcolor={'rgba(168, 108, 198, 0.4)'}
+                  bgcolor={'rgba(168, 108, 198, 0.7)'}
                   display={'flex'}
                   justifyContent={'center'}
                   alignItems={'center'}
                 >
                   <Typography variant="body2" fontSize={'12px'} sx={{ color: '#fff' }} textAlign={'center'}>
-                    0
+                    {product?.likes || 0}
                   </Typography>
                 </Box>
               </Grid>
               <Grid item>
                 <Typography variant="body2" fontSize={'8px'} sx={{ color: 'rgba(125, 141, 160, 1)' }} textAlign={'center'}>
-                  Clicks
+                  Likes
                 </Typography>
               </Grid>
             </Grid>
