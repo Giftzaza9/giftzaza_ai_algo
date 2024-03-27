@@ -31,6 +31,15 @@ export const BottomNav = observer(() => {
     setValue(newValue);
   };
 
+  React.useEffect(() => {
+    if (window.location.pathname === '/dashboard' || window.location.pathname.includes('create-profile')) setValue('home');
+    if (window.location.pathname === '/dashboard/profiles' || window.location.pathname.includes('profiles'))
+      setValue('profiles');
+    if (window.location.pathname === '/dashboard/saved' || window.location.pathname.includes('saved')) setValue('saved');
+    if (window.location.pathname === '/dashboard/user' || window.location.pathname.includes('user')) setValue('user');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [window.location.pathname]);
+
   return (
     <BottomNavigation
       value={value}
