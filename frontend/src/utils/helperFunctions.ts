@@ -92,4 +92,10 @@ export const comingUpOn = (date: string) => {
 export const isMobileBrowser = () =>
   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+export const isIPhoneAndPWA = () => {
+  const isiPhone = /iPhone/i.test(navigator.userAgent);
+  const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+  return isiPhone && isInStandaloneMode;
+};
+
 export const getVH = (vH: number) => `calc(var(--vh) * ${vH})`;

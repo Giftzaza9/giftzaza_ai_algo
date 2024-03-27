@@ -122,11 +122,14 @@ const scrapeAndAddProduct = async (productBody) => {
   const productDB = await Product.findOne({ link: product_link });
   const scrapedProduct = await scrapeProduct(product_link, user_id);
 
-  if (!scrapedProduct || !scrapedProduct.title || !scrapedProduct.description) {
+  if (!scrapedProduct || !scrapedProduct.title) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
 
-  const gptData = await GPTbasedTagging(scrapedProduct.description, scrapedProduct.title);
+  const gptData = await GPTbasedTagging(
+    scrapedProduct.description || scrapedProduct.features.join('. '),
+    scrapedProduct.title
+  );
   scrapedProduct.tags = gptData.preferenceData;
   scrapedProduct.gptTagging = gptData.JSON_response;
   scrapedProduct.curated = false;
@@ -306,12 +309,13 @@ const updateProductById = async (productId, updateBody) => {
 
   // From scraping
   if (scrape) {
-    const { title, price, image, link, rating, description, thumbnails, price_currency } = await scrapeProduct(product.link);
+    const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(product.link);
     product.title = title;
     product.price = price;
     product.image = image;
     product.thumbnails = thumbnails;
     product.description = description;
+    product.features = features;
     product.rating = rating;
     product.link = link;
     product.price_currency = price_currency;

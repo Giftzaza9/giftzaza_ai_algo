@@ -64,6 +64,7 @@ async function GPTbasedTagging(content, title) {
     console.log({ content, preferenceData, JSON_response });
     return { JSON_response, preferenceData };
   } catch (err) {
+    console.error('GPTbasedTagging ~ err:', err)
     return {};
   }
 }

@@ -8,13 +8,15 @@ import { useMediaQuery } from '@mui/material';
 import { bottomNavIcons, iphoneSeCondition } from '../../../constants/constants';
 import { theme } from '../../../utils/theme';
 import { userStore } from '../../../store/UserStore';
+import { isIPhoneAndPWA } from '../../../utils/helperFunctions';
 
 const bottomNavStyles = {
   position: 'fixed',
   bottom: 0,
   width: '100%',
   zIndex: 1000,
-  height: '46px',
+  height: isIPhoneAndPWA() ? '60px' : '46px',
+  pb: isIPhoneAndPWA() ? '14px' : '0px',
   backgroundColor: theme.palette.secondary.main,
   '& .MuiBottomNavigationAction-root.Mui-selected': { color: 'rgba(221, 110, 63, 1)' },
 };
