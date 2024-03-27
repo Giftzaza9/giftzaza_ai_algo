@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -15,7 +14,7 @@ import {
 } from '@mui/material';
 import { Product } from '../../constants/types';
 import { Dispatch, FC, SetStateAction, useState } from 'react';
-import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
+import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { deleteProduct } from '../../services/product';
 import { getSwalConfirmation } from '../../utils/swalConfirm';
 import { filterObject } from '../../constants/constants';
@@ -179,9 +178,14 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                     fontWeight: 500,
                     lineHeight: '20px',
                     fontFamily: 'Manrope',
+                    overflow: 'hidden',
+                    maxWidth: '100%',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 2,
                   }}
                 >
-                  {ellipsisText(product?.title, 50)}
+                  {product?.title}
                 </Typography>
               }
             />
@@ -194,6 +198,11 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                 fontWeight: 500,
                 lineHeight: '20px',
                 fontFamily: 'Manrope',
+                overflow: 'hidden',
+                maxWidth: '100%',
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 2,
               }}
             >
               {product?.title}
@@ -201,8 +210,11 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
           )}
 
           {/* PRICE + RATING */}
-          <Stack direction={'row'} justifyContent={'space-between'}>
-            <Typography variant="h6" sx={{ fontFamily: 'Inter', fontSize: '15px', fontWeight: 600, lineHeight: '18.15px' }}>
+          <Grid container direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+            <Typography
+              variant="h6"
+              sx={{ fontFamily: 'Inter', fontSize: '15px', fontWeight: 600, lineHeight: '18.15px', textWrap: 'nowrap' }}
+            >
               {getCurrencySymbol(product?.price_currency)} {product?.price?.toFixed(2)}
             </Typography>
             {product?.hil && (
@@ -221,24 +233,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                 />
               </Box>
             </Tooltip>
-          </Stack>
-
-          {!isAdminView && (
-            <Button variant="contained" color="primary" sx={{ textTransform: 'none' }}>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontFamily: 'Manrope',
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  lineHeight: '21px',
-                  color: 'rgba(253, 251, 254, 1)',
-                }}
-              >
-                Buy Now
-              </Typography>
-            </Button>
-          )}
+          </Grid>
 
           <Grid container gap={1} height={'56px'}>
             {showTags.map((tag) => (

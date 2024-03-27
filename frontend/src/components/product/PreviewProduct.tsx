@@ -1,7 +1,7 @@
 import { Box, Button, Chip, Fade, Grid, Rating, Stack, Tooltip, Typography } from '@mui/material';
 import { FC } from 'react';
 import { Product } from '../../constants/types';
-import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
+import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { Amazon } from '../shared/Icons/Amazon';
 import { Bloomingdales } from '../shared/Icons/Bloomingdales';
 import _ from 'lodash';
@@ -78,11 +78,16 @@ export const PreviewProduct: FC<Props> = ({ product }) => {
                   color: 'rgba(43, 50, 59, 1)',
                   fontSize: '20px',
                   fontWeight: 600,
-                  lineHeight: '20px',
+                  lineHeight: '28px',
                   fontFamily: 'Manrope',
+                  overflow: 'hidden',
+                  maxWidth: '100%',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 2,
                 }}
               >
-                {ellipsisText(product?.title, 120)}
+                {product?.title}
               </Typography>
             }
           />
@@ -130,18 +135,39 @@ export const PreviewProduct: FC<Props> = ({ product }) => {
       </Grid>
 
       <Grid item>
-        <Typography
-          variant="body1"
-          sx={{
-            color: 'rgba(125, 141, 160, 1)',
-            fontSize: '12px',
-            fontWeight: 500,
-            lineHeight: '16px',
-            fontFamily: 'Manrope',
-          }}
-        >
-          {product?.description}
-        </Typography>
+        {!!product?.description && !(product?.source === 'amazon' && product?.features?.length) && (
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'rgba(125, 141, 160, 1)',
+              fontSize: '12px',
+              fontWeight: 500,
+              lineHeight: '16px',
+              fontFamily: 'Manrope',
+            }}
+          >
+            {product?.description}
+          </Typography>
+        )}
+
+        {!!product?.features && product?.features?.length > 0 && (
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'rgba(125, 141, 160, 1)',
+              fontSize: '12px',
+              fontWeight: 500,
+              lineHeight: '16px',
+              fontFamily: 'Manrope',
+            }}
+          >
+            <ul>
+              {product?.features?.map((feat, index) => (
+                <li key={index}>{feat}</li>
+              ))}
+            </ul>
+          </Typography>
+        )}
       </Grid>
 
       <Grid item>

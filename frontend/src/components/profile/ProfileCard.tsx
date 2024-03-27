@@ -4,7 +4,7 @@ import { EditProfile } from '../shared/Icons/EditProfile';
 import { Profile } from '../../constants/types';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { comingUpOn, daysRemaining, ellipsisText } from '../../utils/helperFunctions';
+import { comingUpOn, daysRemaining } from '../../utils/helperFunctions';
 
 interface Props {
   profile: Profile;
@@ -100,9 +100,20 @@ export const ProfileCard: FC<Props> = ({ profile, onEditProfile, onDeleteProfile
 
         <Typography
           variant="h5"
-          sx={{ color: 'white', fontSize: '24px', fontFamily: 'Inter', lineHeight: '24px', fontWeight: 600 }}
+          sx={{
+            color: 'white',
+            fontSize: '24px',
+            fontFamily: 'Inter',
+            lineHeight: '24px',
+            fontWeight: 600,
+            maxWidth: '100%',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            WebkitLineClamp: 4,
+          }}
         >
-          {ellipsisText(profile?.title, 64)}
+          {profile?.title}
         </Typography>
 
         <Box>
