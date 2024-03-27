@@ -48,6 +48,7 @@ export type Product = {
   curated: boolean;
   price_currency: string;
   thumbnails?: string[];
+  likes?: number;
 };
 
 export interface RecommendedProduct {
