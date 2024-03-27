@@ -62,11 +62,11 @@ export const AdminProducts = () => {
   );
 
   const removeProduct = (id: string) => {
-    setProducts((prev) => prev?.filter((p) => p.id !== id));
+    setProducts((prev) => prev?.filter((p) => p?._id !== id));
   };
 
   const replaceProduct = (product: Product) => {
-    setProducts((prev) => prev?.map((p) => (p.id === product.id ? product : p)));
+    setProducts((prev) => prev?.map((p) => (p?._id === product?._id ? product : p)));
   };
 
   const handleAddNewModalClose = async () => {
@@ -217,7 +217,7 @@ export const AdminProducts = () => {
               sm={6}
               md={4}
               lg={3}
-              key={product?.id}
+              key={product?._id}
               onClick={() => {
                 setPreviewProduct(product);
                 setPreviewModalOpen(true);

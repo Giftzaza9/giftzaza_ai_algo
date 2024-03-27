@@ -23,7 +23,7 @@ export const EditProductModal: FC<Props> = ({ onClose, open, product }) => {
     if (!updateProductBody) return;
     try {
       setLoading(true);
-      const { data } = await updateProduct(product?.id, updateProductBody);
+      const { data } = await updateProduct(product?._id as string, updateProductBody);
       setLoading(false);
       if (data) toast.success('Updated the product successfully !');
       onClose(data);
