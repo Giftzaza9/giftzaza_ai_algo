@@ -156,12 +156,12 @@ export class Swiper implements SwiperProps {
       60 * direction
     }deg)`;
     this.element.classList.add('dismissing');
-    // setTimeout(() => this?.element?.remove(), 300);
-    setTimeout(() => {
-      if (this.element) {
-        this.element.style.display = 'none';
-      }
-    }, 300);
+    setTimeout(() => this?.element?.remove(), 300);
+    // setTimeout(() => {
+    //   if (this.element) {
+    //     this.element.style.display = 'none';
+    //   }
+    // }, 300);
 
     if (typeof this.onDismiss === 'function') {
       const swipeDirection = direction === 1 ? SwipeAction.LIKE : SwipeAction.DISLIKE;
@@ -176,7 +176,9 @@ export class Swiper implements SwiperProps {
   rewind = (lastSwipedCard: HTMLDivElement) => {
     if (!lastSwipedCard) return; // If there are no swiped cards, return
     lastSwipedCard.classList.remove('dismissing');
-    lastSwipedCard.style.display = 'block';
+    var swipeCardParent = document.getElementById('swipe-card__cards');
+    swipeCardParent?.appendChild(lastSwipedCard);
+    // lastSwipedCard.style.display = 'block';
     setTimeout(() => {
       lastSwipedCard.style.transition = 'all 0.6s';
       lastSwipedCard.style.transform = `translate(0, 0) rotate(0deg)`;
