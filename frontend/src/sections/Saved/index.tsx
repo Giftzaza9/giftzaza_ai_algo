@@ -49,11 +49,11 @@ export const Saved = observer(() => {
       };
       await removeSavedProduct(payload);
       setSavedItems((prev) =>
-        prev?.map((el) => {
-          if (el.profile_id === profile_id) {
-            return { ...el, savedProducts: el?.savedProducts?.filter((sp) => sp._id !== product_id) };
-          } else return el;
-        })
+        prev?.map((el) =>
+          el.profile_id === profile_id
+            ? { ...el, savedProducts: el?.savedProducts?.filter((sp) => sp._id !== product_id) }
+            : el
+        )
       );
       setLoading(false);
     } catch (error) {

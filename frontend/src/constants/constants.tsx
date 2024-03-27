@@ -29,6 +29,8 @@ export const sortOptions = [
   { label: 'Price: high to low', value: 'price-hi-to-lo' },
   { label: 'Alphabetic: ascending', value: 'alpha-asc' },
   { label: 'Alphabetic: descending', value: 'alpha-desc' },
+  { label: 'Likes: ascending', value: 'likes-asc' },
+  { label: 'Likes: descending', value: 'likes-desc' },
 ];
 
 export const filterObject = {
