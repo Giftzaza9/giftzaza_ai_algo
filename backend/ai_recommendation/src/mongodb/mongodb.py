@@ -2,12 +2,10 @@ import numpy as np
 import pandas as pd
 from pymongo import MongoClient
 
-username = "hitesh"
-password = "mFTpCQIeJZa38bKH"
 
 
 class Mongodb_cls:
-    def __init__(self) -> None:
+    def __init__(self,username,password) -> None:
         self.uri = f"mongodb+srv://{username}:{password}@giftzaza.hr6do3t.mongodb.net/?retryWrites=true&w=majority"
         self.client = None
     

@@ -2,6 +2,7 @@ import os
 import sys
 import ast
 from pathlib import Path
+from settings import env
 from src.lightfm_model.model import LightFM_cls
 from src.mongodb.mongodb import Mongodb_cls
 from sklearn.preprocessing import MinMaxScaler
@@ -40,7 +41,7 @@ class Global_cls:
             self.user_activity_types = json.load(fr)
 
 LightFM_Obj = LightFM_cls()
-Mongodb_Obj = Mongodb_cls()
+Mongodb_Obj = Mongodb_cls(username=env.DATABASE_USER,password=env.DATABASE_PWD)
 Global_Obj = Global_cls()          
 
 def filter_attributes(hard_filters,soft_filters,semi_hard_filters,new_attributes_list):
@@ -162,7 +163,7 @@ def train_with_mongodb(hil_flag = False,is_active_flag=True,weight_flag=True):
         try:
             Mongodb_Obj.connect()
                 
-            df_items = Mongodb_Obj.get_collection_as_dataframe("test","products")
+            df_items = Mongodb_Obj.get_collection_as_dataframe(env.DATABASE_NAME,"products")
             filter_condition = True
             if is_active_flag:
                 filter_condition = (filter_condition) & (df_items["is_active"]==is_active_flag)
@@ -170,11 +171,11 @@ def train_with_mongodb(hil_flag = False,is_active_flag=True,weight_flag=True):
                 filter_condition = (filter_condition) & (df_items['hil']==hil_flag)
             df_items = df_items[filter_condition]
 
-            df_users = Mongodb_Obj.get_collection_as_dataframe("test","profiles")
+            df_users = Mongodb_Obj.get_collection_as_dataframe(env.DATABASE_NAME,"profiles")
             df_users.rename({"preferences":"tags",
                              "user_id":"userId"},inplace=True, axis=1)
             
-            df_interactions = Mongodb_Obj.get_collection_as_dataframe("test","useractivities")
+            df_interactions = Mongodb_Obj.get_collection_as_dataframe(env.DATABASE_NAME,"useractivities")
             df_interactions.dropna(inplace=True)
             df_interactions.rename({"product_id":"productId",
                                     "user_id":"userId",
