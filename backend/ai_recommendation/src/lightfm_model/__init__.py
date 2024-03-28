@@ -78,7 +78,7 @@ def cs_similar_user(new_user_attributes,N=10,explicit_filters=None):
     else:
         filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**Global_Obj.category_filters,new_attributes_list=new_user_attributes)
 
-    udf = LightFM_Obj.cold_start_similar_user(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,Global_Obj=Global_Obj,N=N,explicit_filters=explicit_filters)
+    udf = LightFM_Obj.cold_start_similar_user(filter_dict,hard_filter_attrs=hard_filter_attrs,soft_filter_attrs=soft_filter_attrs,all_user_attribute_list=new_user_attributes,Global_Obj=Global_Obj,N=N,explicit_filters=explicit_filters)
     udf = udf[['left_all_unique_id','left_score']].copy()
     udf.rename(columns={'left_all_unique_id':'user_id','left_score':'matching_score'},inplace=True)
     udf.reset_index(drop=True,inplace=True)
@@ -258,7 +258,7 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budg
             raise Exception("Atleast One Soft Filter is Needed")
     df_similar_profile = pd.DataFrame(cs_similar_user(new_attributes,N=10,explicit_filters=explicit_filters))
     if df_similar_profile.shape[0] > 0:
-        similar_profile_cutoff = df_similar_profile[df_similar_profile['matching_score']>0.7][:5]
+        similar_profile_cutoff = df_similar_profile[df_similar_profile['matching_score']>0.85][:5]
         if similar_profile_cutoff.shape[0] > 0: ### No similar Profile
             profile_user_id = LightFM_Obj.get_userid_of_profile(similar_profile_cutoff,user_id) ### similar profile from same user
             if profile_user_id:

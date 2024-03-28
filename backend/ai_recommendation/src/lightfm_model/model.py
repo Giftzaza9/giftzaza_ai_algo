@@ -44,6 +44,15 @@ class LightFM_cls:
     def encode_textual_data(self, textual_data):
         """Encode textual data using the sentence transformer model."""
         return self.text_encoder.encode(textual_data, convert_to_tensor=True)
+    
+    def get_score(self,attr_list,user_dataframe,Global_Obj,weighted=False):
+        if weighted:
+            user_dataframe['score'] = user_dataframe['tags'].apply(lambda eachList : sum([*map(Global_Obj.attr_weights.get,list(set(attr_list).intersection(set(eachList))))])/sum([*map(Global_Obj.attr_weights.get,list(set(attr_list+eachList)))]))
+        else:
+            user_dataframe["score"] = user_dataframe['tags'].apply(lambda eachList : len(set(attr_list).intersection(set(eachList)))/len(set(attr_list+eachList)))
+        user_dataframe.sort_values(by=['score'],ascending=False,inplace=True)
+        user_dataframe.reset_index(drop=True,inplace=True)
+        return user_dataframe
 
     def similar_existing_user(self,original_user_id,N=10):
         try:
@@ -73,7 +82,7 @@ class LightFM_cls:
         matched_item_meta = idf.merge(self.item_meta,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
         return matched_item_meta
     
-    def cold_start_similar_user(self,filter_dict,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,explicit_filters=None):
+    def cold_start_similar_user(self,filter_dict,hard_filter_attrs,soft_filter_attrs,all_user_attribute_list,Global_Obj,N=10,explicit_filters=None):
         filter_udf = self.user_meta[self.user_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
         filter_udf.reset_index(drop=True,inplace=True)
         for each_semi_hard_filter in explicit_filters["semi_hard_filters"] if explicit_filters else Global_Obj.category_filters["semi_hard_filters"]:
@@ -86,24 +95,28 @@ class LightFM_cls:
         if filter_udf.shape[0] == 0:
             return pd.DataFrame(columns=['left_all_unique_id','left_score'])
 
-        summation = 0
-        for idx in range(len(feat_idxs)):
-            summation += (self.model.user_embeddings[feat_idxs[idx]] )
-        filter_user_embeddings = []
-        for idx in filter_udf['all_unique_id'].tolist():
-            filter_user_embeddings.append(user_representations[self.user_fmapper[idx]])
-        filter_user_embeddings = np.array(filter_user_embeddings)
-        scores = filter_user_embeddings.dot(summation)
-        user_norms = np.linalg.norm(filter_user_embeddings, axis=1)
-        user_vec_norm = np.linalg.norm(summation)
-        scores = np.squeeze(scores / user_norms / user_vec_norm)
-        scores = scores.reshape(-1)
-        best = np.argsort(-scores)[0 : N]
-        udf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
-        udf = pd.DataFrame(udf,columns=['userID','score'])
-        udf['all_unique_id'] = udf['userID'].map(filter_udf['all_unique_id'].to_dict())
-        udf.columns = 'left_' + udf.columns.values
-        matched_user_meta = udf.merge(filter_udf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
+        # summation = 0
+        # for idx in range(len(feat_idxs)):
+        #     summation += (self.model.user_embeddings[feat_idxs[idx]] )
+        # filter_user_embeddings = []
+        # for idx in filter_udf['all_unique_id'].tolist():
+        #     filter_user_embeddings.append(user_representations[self.user_fmapper[idx]])
+        # filter_user_embeddings = np.array(filter_user_embeddings)
+        # scores = filter_user_embeddings.dot(summation)
+        # user_norms = np.linalg.norm(filter_user_embeddings, axis=1)
+        # user_vec_norm = np.linalg.norm(summation)
+        # scores = np.squeeze(scores / user_norms / user_vec_norm)
+        # scores = scores.reshape(-1)
+        # best = np.argsort(-scores)[0 : N]
+        # udf = sorted(zip(best, scores[best]), key=lambda x: -x[1])
+        # udf = pd.DataFrame(udf,columns=['userID','score'])
+        # udf['all_unique_id'] = udf['userID'].map(filter_udf['all_unique_id'].to_dict())
+        # udf.columns = 'left_' + udf.columns.values
+        # matched_user_meta = udf.merge(filter_udf,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
+        
+        matched_user_meta = self.get_score(all_user_attribute_list,filter_udf.copy(),Global_Obj=Global_Obj,weighted=True)
+        matched_user_meta.columns = 'left_' + matched_user_meta.columns.values
+
         return matched_user_meta
     
     def cold_start_similar_items(self,hard_filter_attrs,soft_filter_attrs,Global_Obj,N=10,test_sample_flag=False):
