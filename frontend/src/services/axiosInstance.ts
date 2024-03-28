@@ -37,7 +37,7 @@ axiosInstance.interceptors.response.use(
       await refreshToken();
       return axiosInstance(originalRequest);
     } else if (error.response.status === 401 && kickOutMessages.some((el) => el === errorMessage)) {
-      window.location.pathname = '/dashboard/login';
+      window.location.pathname = '/login';
     }
     return Promise.reject(error);
   }
