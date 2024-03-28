@@ -199,9 +199,12 @@ class LightFM_cls:
     
     def cold_start_user_item_recommendation(self,new_user_attributes,similar_user_id,min_budget=0,max_budget=None):
         new_user_features = self.dataset.build_user_features([(similar_user_id,new_user_attributes)])
-        scores_new_user = self.model.predict(user_ids = self.user_mapper[similar_user_id],item_ids = np.arange(len(self.item_mapper)), user_features=new_user_features)
-        top_items_new = self.item_meta.iloc[np.argsort(-scores_new_user)].copy()
-        top_items_new.insert(0, 'matching_score', list(-np.sort(-scores_new_user)))
+        list_item_ids = list(self.item_mapper.values())
+        scores_new_user = self.model.predict(user_ids = self.user_mapper[similar_user_id],item_ids = list_item_ids, user_features=new_user_features)
+        score_mapper = pd.DataFrame(list(zip(list_item_ids,scores_new_user)),columns = ["item_mapping_id","matching_score"])
+        score_mapper["matched_item_id"] = score_mapper['item_mapping_id'].map(self.ritem_mapper)
+        top_items_new = score_mapper.merge(self.item_meta,left_on=['matched_item_id'],right_on=['all_unique_id'],copy=True)
+        top_items_new.sort_values(by=["matching_score"],ascending=False,inplace=True)
         top_items_new.reset_index(drop=True,inplace=True)
         def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
         top_items_new = top_items_new[top_items_new['price'].apply(def_budget_filter)]
