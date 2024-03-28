@@ -91,7 +91,7 @@ export const User = observer(() => {
                 color="secondary"
                 sx={{ width: '100%', padding: '6px 18px', mb: '12px' }}
                 LinkComponent={'a'}
-                href="/dashboard/admin"
+                href="/admin"
                 target="_blank"
                 endIcon={<ArrowForwardIos fontSize="small" />}
                 size="small"
