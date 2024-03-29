@@ -147,19 +147,11 @@ def cs_profile_item_recommendation(new_profile_attributes,similar_profile_id,N=1
     else:
         filter_dict,hard_filter_attrs,soft_filter_attrs,semi_hard_filter_attrs = filter_attributes(**Global_Obj.category_filters,new_attributes_list=new_profile_attributes)
 
-    item_df = LightFM_Obj.cold_start_profile_item_recommendation(new_profile_attributes,similar_profile_id,min_budget=min_budget,max_budget=max_budget)[['all_unique_id','title','tags','matching_score']]
+    item_df = LightFM_Obj.cold_start_profile_item_recommendation(filter_dict,hard_filter_attrs,new_profile_attributes,similar_profile_id,Global_Obj=Global_Obj,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag,explicit_filters=explicit_filters)[['all_unique_id','title','tags','matching_score']]
     item_df.reset_index(drop=True,inplace=True)
     if item_df.shape[0]==0:
         return []
-    if test_sample_flag:
-        item_df = item_df[item_df['test_set']==True].copy()
-        item_df.reset_index(drop=True,inplace=True)
-
-    item_df = item_df[item_df['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))]
-    item_df.reset_index(drop=True,inplace=True)
-    for each_semi_hard_filter in explicit_filters["semi_hard_filters"] if explicit_filters else Global_Obj.category_filters["semi_hard_filters"]:
-        item_df = item_df[item_df['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
-        item_df.reset_index(drop=True,inplace=True)
+    
     if item_df['matching_score'].max()>1 or item_df['matching_score'].min()<0:
         scaler = MinMaxScaler(feature_range=(0.1,0.90))
         item_df['matching_score'] = pd.Series(scaler.fit_transform(item_df['matching_score'].to_numpy().reshape(-1, 1)).reshape(-1))

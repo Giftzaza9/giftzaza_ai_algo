@@ -173,18 +173,28 @@ class LightFM_cls:
         top_items.reset_index(drop=True,inplace=True)
         return top_items
     
-    def cold_start_profile_item_recommendation(self,new_profile_attributes,similar_profile_id,min_budget=0,max_budget=None):
+    def cold_start_profile_item_recommendation(self,filter_dict,hard_filter_attrs,new_profile_attributes,similar_profile_id,Global_Obj,min_budget=0,max_budget=None,test_sample_flag=False,explicit_filters=None):
+        filter_item_df = self.item_meta[self.item_meta['tags'].apply(lambda eachList : set(hard_filter_attrs).issubset(set(eachList)))].copy()
+        filter_item_df.reset_index(drop=True,inplace=True)
+        for each_semi_hard_filter in explicit_filters["semi_hard_filters"] if explicit_filters else Global_Obj.category_filters["semi_hard_filters"]:
+            filter_item_df = filter_item_df[filter_item_df['tags'].apply(lambda eachList : bool(set(filter_dict[each_semi_hard_filter]).intersection(eachList)))]
+            filter_item_df.reset_index(drop=True,inplace=True)
+        if test_sample_flag:
+            filter_item_df = filter_item_df[filter_item_df['test_set']==True].copy()
         new_profile_features = self.dataset.build_user_features([(similar_profile_id,new_profile_attributes)])
-        list_item_ids = list(self.item_mapper.values())
-        scores_new_profile = self.model.predict(user_ids = self.profile_mapper[similar_profile_id],item_ids = list_item_ids, user_features=new_profile_features)
-        score_mapper = pd.DataFrame(list(zip(list_item_ids,scores_new_profile)),columns = ["item_mapping_id","matching_score"])
-        score_mapper["matched_item_id"] = score_mapper['item_mapping_id'].map(self.ritem_mapper)
-        top_items_new = score_mapper.merge(self.item_meta,left_on=['matched_item_id'],right_on=['all_unique_id'],copy=True)
-        top_items_new.sort_values(by=["matching_score"],ascending=False,inplace=True)
-        top_items_new.reset_index(drop=True,inplace=True)
-        def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
-        top_items_new = top_items_new[top_items_new['price'].apply(def_budget_filter)]
-        top_items_new.reset_index(drop=True,inplace=True)
+        list_item_ids = filter_item_df['all_unique_id'].map(self.item_mapper).to_list()
+        if len(list_item_ids)!=0:
+            scores_new_profile = self.model.predict(user_ids = self.profile_mapper[similar_profile_id],item_ids = list_item_ids, user_features=new_profile_features)
+            score_mapper = pd.DataFrame(list(zip(list_item_ids,scores_new_profile)),columns = ["item_mapping_id","matching_score"])
+            score_mapper["matched_item_id"] = score_mapper['item_mapping_id'].map(self.ritem_mapper)
+            top_items_new = score_mapper.merge(filter_item_df,left_on=['matched_item_id'],right_on=['all_unique_id'],copy=True)
+            top_items_new.sort_values(by=["matching_score"],ascending=False,inplace=True)
+            top_items_new.reset_index(drop=True,inplace=True)
+            def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
+            top_items_new = top_items_new[top_items_new['price'].apply(def_budget_filter)]
+            top_items_new.reset_index(drop=True,inplace=True)
+        else:
+            return pd.DataFrame(columns = ['all_unique_id','title','tags','matching_score'])
         return top_items_new
     
     
