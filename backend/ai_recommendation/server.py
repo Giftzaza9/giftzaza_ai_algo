@@ -9,11 +9,11 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from src import lightfm_model as lfm
 from server_schema import ( similar_existing_item_schema,
-                           similar_existing_user_schema,
-                           cs_similar_user_schema,
+                           similar_existing_profile_schema,
+                           cs_similar_profile_schema,
                            cs_similar_item_schema,
-                           user_item_recommendation_schema,
-                           cs_user_item_recommendation_schema,
+                           profile_item_recommendation_schema,
+                           cs_profile_item_recommendation_schema,
                            create_recommendation_schema,
                            get_metrics_schema)
 
@@ -40,29 +40,31 @@ app.add_middleware(
 def health_check():
     return "Hello"
 
-@app.post("/get_similar_user")
-def get_similar_user(body : similar_existing_user_schema):
-    return lfm.similar_users_endpoint(user_id=body.user_id,N=body.top_n)
+@app.post("/get_similar_profile")
+def get_similar_profile(body : similar_existing_profile_schema):
+    return lfm.similar_profiles_endpoint(profile_id=body.profile_id,N=body.top_n)
 
 @app.post("/get_similar_item")
 def get_similar_item(body : similar_existing_item_schema):
     return lfm.similar_items_endpoint(item_id=body.item_id,N=body.top_n)
 
-@app.post("/cs_similar_user")
-def cs_similar_user(body : cs_similar_user_schema):
-    return lfm.cs_similar_user(new_user_attributes=body.new_user_attributes,N=body.top_n)
+@app.post("/cs_similar_profile")
+def cs_similar_profile(body : cs_similar_profile_schema):
+    return lfm.cs_similar_profile(new_profile_attributes=body.new_profile_attributes,N=body.top_n)
 
 @app.post("/cs_similar_item")
 def cs_similar_item(body : cs_similar_item_schema):
     return lfm.cs_similar_items(new_item_attributes=body.new_item_attributes,N=body.top_n)
 
-@app.post("/user_item_recommendation")
-def user_item_recommendation(body : user_item_recommendation_schema):
-    return lfm.user_item_recommendation(user_id = body.user_id,N=body.top_n)
+@app.post("/profile_item_recommendation")
+def profile_item_recommendation(body : profile_item_recommendation_schema):
+    return lfm.profile_item_recommendation(profile_id = body.profile_id,N=body.top_n)
 
-@app.post("/cs_user_item_recommendation")
-def cs_user_item_recommendation(body : cs_user_item_recommendation_schema):
-    return lfm.cs_user_item_recommendation(new_user_attributes=body.new_user_attributes,N=body.top_n)
+@app.post("/cs_profile_item_recommendation")
+def cs_profile_item_recommendation(body : cs_profile_item_recommendation_schema):
+    return lfm.cs_profile_item_recommendation(new_profile_attributes=body.new_profile_attributes,
+                                              similar_profile_id=body.profile_id,
+                                              N=body.top_n)
 
 @app.post("/create_recommendation")
 def create_recommendation(body : create_recommendation_schema):

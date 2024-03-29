@@ -6,24 +6,25 @@ class similar_existing_item_schema(BaseModel):
     item_id : str
     top_n : Optional[int] = 10
 
-class similar_existing_user_schema(BaseModel):
-    user_id : str
+class similar_existing_profile_schema(BaseModel):
+    profile_id : str
     top_n : Optional[int] = 10
 
-class cs_similar_user_schema(BaseModel):
-    new_user_attributes :  List[str]
+class cs_similar_profile_schema(BaseModel):
+    new_profile_attributes :  List[str]
     top_n : Optional[int] = 10
 
 class cs_similar_item_schema(BaseModel):
     new_item_attributes :  List[str]
     top_n : Optional[int] = 10
 
-class user_item_recommendation_schema(BaseModel):
-    user_id : str
+class profile_item_recommendation_schema(BaseModel):
+    profile_id : str
     top_n : Optional[int] = 10
 
-class cs_user_item_recommendation_schema(BaseModel):
-    new_user_attributes :  List[str]
+class cs_profile_item_recommendation_schema(BaseModel):
+    new_profile_attributes :  List[str]
+    profile_id : str
     top_n : Optional[int] = 10
 
 class create_recommendation_schema(BaseModel):
