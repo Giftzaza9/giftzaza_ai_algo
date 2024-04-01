@@ -118,8 +118,7 @@ export const User = observer(() => {
                 setUser(undefined);
                 setIsVisible(false);
                 await logout();
-                // navigate('/login');
-                window.location.href = "/login";
+                navigate('/login');
               }}
               size="small"
             >
