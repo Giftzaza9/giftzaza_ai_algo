@@ -23,6 +23,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 COPY requirements.txt .
+COPY .env /app
 COPY ./server_schema.py /app
 COPY ./server.py /app
 COPY ./settings.py /app
