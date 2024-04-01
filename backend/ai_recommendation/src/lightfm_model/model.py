@@ -11,6 +11,7 @@ from pathlib import Path
 from lightfm import LightFM
 from lightfm.cross_validation import random_train_test_split
 from lightfm.data import Dataset
+from copy import deepcopy
 import numpy as numpy
 from recommenders.utils.timer import Timer
 from recommenders.models.lightfm.lightfm_utils import (
@@ -25,20 +26,15 @@ Backup_DIR = "lib_backup"
 
 class LightFM_cls:
     def __init__(self) -> None:
-        self.model = pickle.load(open(os.path.join(BASE_PATH, Read_DIR, "model.pkl"), 'rb'))
-        self.profile_features = pickle.load(open(os.path.join(BASE_PATH, Read_DIR, "user_features.pkl"), 'rb'))
-        self.item_features = pickle.load(open(os.path.join(BASE_PATH, Read_DIR, "item_features.pkl"), 'rb'))
-        self.dataset = pickle.load(open(os.path.join(BASE_PATH, Read_DIR, "dataset_builder.pkl"), 'rb'))
-        self.profile_mapper,self.profile_fmapper,self.item_mapper,self.item_fmapper = self.dataset.mapping()
-        self.rprofile_mapper = dict([(v,k) for k,v in self.profile_mapper.items()])
-        self.ritem_mapper = dict([(v,k) for k,v in self.item_mapper.items()])
-        self.rprofile_fmapper = dict([(v,k) for k,v in self.profile_fmapper.items()])
-        self.ritem_fmapper = dict([(v,k) for k,v in self.item_fmapper.items()])
-        self.profile_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR,"user_meta.csv"))
-        self.item_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR, "item_meta.csv"))
-        self.interaction_meta = pd.read_csv(os.path.join(BASE_PATH, Read_DIR, "interaction_meta.csv"))
-        self.profile_meta['tags'] = self.profile_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),ast.literal_eval(eachList))))
-        self.item_meta['tags'] = self.item_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),ast.literal_eval(eachList))))
+        self.model = None
+        self.profile_features = None
+        self.item_features = None
+        self.dataset = None
+        self.profile_mapper = self.profile_fmapper = self.item_mapper = self.item_fmapper = None
+        self.rprofile_mapper = self.ritem_mapper = self.rprofile_fmapper = self.ritem_fmapper = None
+        self.profile_meta = None
+        self.item_meta = None
+        self.interaction_meta = None
         self.text_encoder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
     def encode_textual_data(self, textual_data):
@@ -289,24 +285,39 @@ class LightFM_cls:
         with Timer() as Train_timer:
             model = LightFM(no_components= n_components, loss=loss, random_state = 1616)
             model.fit(interactions,  user_features= user_features, item_features= item_features, epochs=epoch,num_threads = num_thread, sample_weight = weights)
+
+        # shutil.copytree(os.path.join(BASE_PATH, Read_DIR),os.path.join(BASE_PATH, Backup_DIR,"Backup-"+str(datetime.datetime.now())))
+
+        # with open(os.path.join(BASE_PATH, Read_DIR, 'model.pkl'), 'wb') as fle:
+        #     pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
+        # with open(os.path.join(BASE_PATH, Read_DIR, 'user_features.pkl'), 'wb') as fle:
+        #     pickle.dump(user_features, fle, protocol=pickle.HIGHEST_PROTOCOL)
+        # with open(os.path.join(BASE_PATH, Read_DIR, 'item_features.pkl'), 'wb') as fle:
+        #     pickle.dump(item_features, fle, protocol=pickle.HIGHEST_PROTOCOL)
+        # with open(os.path.join(BASE_PATH, Read_DIR, 'dataset_builder.pkl'), 'wb') as fle:
+        #     pickle.dump(dataset, fle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        # df_users.to_csv(os.path.join(BASE_PATH, Read_DIR, "user_meta.csv"))
+        # df_items.to_csv(os.path.join(BASE_PATH, Read_DIR, "item_meta.csv"))
+        # df_interactions.to_csv(os.path.join(BASE_PATH, Read_DIR, "interaction_meta.csv"))
+
+        #### Re-Initialize the Model Variables
+        self.model = deepcopy(model)
+        self.profile_features = deepcopy(user_features)
+        self.item_features = deepcopy(item_features)
+        self.dataset = deepcopy(dataset)
+        self.profile_mapper, self.profile_fmapper, self.item_mapper, self.item_fmapper = self.dataset.mapping()
+        self.rprofile_mapper = dict([(v,k) for k,v in self.profile_mapper.items()])
+        self.ritem_mapper = dict([(v,k) for k,v in self.item_mapper.items()])
+        self.rprofile_fmapper = dict([(v,k) for k,v in self.profile_fmapper.items()])
+        self.ritem_fmapper = dict([(v,k) for k,v in self.item_fmapper.items()])
+        self.profile_meta = df_users.copy()
+        self.item_meta = df_items.copy()
+        self.interaction_meta = df_interactions.copy()
+        self.profile_meta['tags'] = self.profile_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),eachList)))
+        self.item_meta['tags'] = self.item_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),eachList)))
         print(f"Took {Train_timer.interval:.1f} seconds for Training the Model.")
 
-        shutil.copytree(os.path.join(BASE_PATH, Read_DIR),os.path.join(BASE_PATH, Backup_DIR,"Backup-"+str(datetime.datetime.now())))
-
-        with open(os.path.join(BASE_PATH, Read_DIR, 'model.pkl'), 'wb') as fle:
-            pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
-        with open(os.path.join(BASE_PATH, Read_DIR, 'user_features.pkl'), 'wb') as fle:
-            pickle.dump(user_features, fle, protocol=pickle.HIGHEST_PROTOCOL)
-        with open(os.path.join(BASE_PATH, Read_DIR, 'item_features.pkl'), 'wb') as fle:
-            pickle.dump(item_features, fle, protocol=pickle.HIGHEST_PROTOCOL)
-        with open(os.path.join(BASE_PATH, Read_DIR, 'dataset_builder.pkl'), 'wb') as fle:
-            pickle.dump(dataset, fle, protocol=pickle.HIGHEST_PROTOCOL)
-
-        df_users.to_csv(os.path.join(BASE_PATH, Read_DIR, "user_meta.csv"))
-        df_items.to_csv(os.path.join(BASE_PATH, Read_DIR, "item_meta.csv"))
-        df_interactions.to_csv(os.path.join(BASE_PATH, Read_DIR, "interaction_meta.csv"))
-        
-        self.__init__()  #### Re-Initialize the Model Variables
         return True
     
     def get_userid_of_profile(self,profile_df,current_user_id):

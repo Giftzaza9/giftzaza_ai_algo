@@ -38,11 +38,7 @@ class Global_cls:
                 self.attr_list.extend(keys)
                 self.attr_weights.update(dict(zip(keys,[self.cat_odata[i].get("manual_weights",1) for _ in range(len(keys))])))
         with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "useractivity.json"),'r') as fr:
-            self.user_activity_types = json.load(fr)
-
-LightFM_Obj = LightFM_cls()
-Mongodb_Obj = Mongodb_cls(username=env.DATABASE_USER,password=env.DATABASE_PWD)
-Global_Obj = Global_cls()          
+            self.user_activity_types = json.load(fr)          
 
 def filter_attributes(hard_filters,soft_filters,semi_hard_filters,new_attributes_list):
     filter_dict = {}
@@ -329,3 +325,8 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budg
     return cs_similar_items(new_item_attributes=new_attributes,N=N,min_budget=min_budget,max_budget=max_budget,test_sample_flag=test_sample_flag,explicit_filters=explicit_filters)
 
 
+LightFM_Obj = LightFM_cls()
+Mongodb_Obj = Mongodb_cls(username=env.DATABASE_USER,password=env.DATABASE_PWD)
+Global_Obj = Global_cls()
+# Calling Model Re-Train While On Start
+train_with_mongodb()
