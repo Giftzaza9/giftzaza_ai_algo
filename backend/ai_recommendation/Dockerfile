@@ -25,6 +25,7 @@ WORKDIR /app
 COPY requirements.txt .
 COPY ./server_schema.py /app
 COPY ./server.py /app
+COPY ./settings.py /app
 COPY ./src /app/src
 
 RUN python -m pip install --upgrade pip setuptools
