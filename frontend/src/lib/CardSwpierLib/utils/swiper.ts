@@ -91,16 +91,36 @@ export class Swiper implements SwiperProps {
   private showRibbons = () => {
     const ribbonLike = this.element.querySelector('.swipe-card__ribbon-like');
     const ribbonDislike = this.element.querySelector('.swipe-card__ribbon-dislike');
-
+    const dislikeButton: any = document.getElementById('swipe-card__dislike-action-button');
+    const likeButton: any = document.getElementById('swipe-card__like-action-button');
+    console.log({dislikeButton});
     if (this.offsetX > 10) {
       ribbonLike?.classList?.add('show');
       ribbonDislike?.classList?.remove('show');
+      likeButton?.classList?.add('liked');
+      dislikeButton?.classList?.remove('disliked');
+      document.getElementById('like1')?.setAttribute('stop-color', '#FFFFFF')
+      document.getElementById('like2')?.setAttribute('stop-color', '#FFFFFF')
+      document.getElementById('close1')?.setAttribute('stop-color', '#EA4080')
+      document.getElementById('close2')?.setAttribute('stop-color', '#EE805F')
     } else if (this.offsetX < -10) {
       ribbonLike?.classList?.remove('show');
       ribbonDislike?.classList?.add('show');
+      likeButton?.classList?.remove('liked');
+      dislikeButton?.classList?.add('disliked');
+      document.getElementById('close1')?.setAttribute('stop-color', '#FFFFFF')
+      document.getElementById('close2')?.setAttribute('stop-color', '#FFFFFF')
+      document.getElementById('like1')?.setAttribute('stop-color', '#6DE5B5')
+      document.getElementById('like2')?.setAttribute('stop-color', '#73ECDD')
     } else {
       ribbonLike?.classList?.remove('show');
       ribbonDislike?.classList?.remove('show');
+      likeButton?.classList?.remove('liked');
+      dislikeButton?.classList?.remove('disliked');
+      document.getElementById('close1')?.setAttribute('stop-color', '#EA4080')
+      document.getElementById('close2')?.setAttribute('stop-color', '#EE805F')
+      document.getElementById('like1')?.setAttribute('stop-color', '#6DE5B5')
+      document.getElementById('like2')?.setAttribute('stop-color', '#73ECDD')
     }
   };
 
@@ -162,7 +182,12 @@ export class Swiper implements SwiperProps {
     //     this.element.style.display = 'none';
     //   }
     // }, 300);
-
+    document.getElementById('close1')?.setAttribute('stop-color', '#EA4080')
+    document.getElementById('close2')?.setAttribute('stop-color', '#EE805F')
+    document.getElementById('like1')?.setAttribute('stop-color', '#6DE5B5')
+    document.getElementById('like2')?.setAttribute('stop-color', '#73ECDD')
+    document.getElementById('swipe-card__dislike-action-button')?.classList?.remove('disliked');;
+    document.getElementById('swipe-card__like-action-button')?.classList?.remove('liked');;
     if (typeof this.onDismiss === 'function') {
       const swipeDirection = direction === 1 ? SwipeAction.LIKE : SwipeAction.DISLIKE;
       this.onDismiss(this.element, this.meta, this.id, swipeDirection, swipeOperation);

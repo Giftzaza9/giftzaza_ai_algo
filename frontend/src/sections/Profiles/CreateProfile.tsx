@@ -83,7 +83,7 @@ export const CreateProfile = () => {
       toast.error(error || 'Failed to create profile !');
     } else {
       console.log(data);
-      toast.success('Profile Created');
+      // toast.success('Profile Created');
       navigate(`/profiles/${data?.id}`);
     }
   };
@@ -193,20 +193,22 @@ export const CreateProfile = () => {
                     Done
                   </Typography>
                 </Button>
-              ) : page === 8 ? (
-                <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
-                  <Typography
-                    sx={{
-                      fontSize: '16px',
-                      fontFamily: 'Inter',
-                      fontWeight: 600,
-                      textTransform: 'none',
-                    }}
-                  >
-                    Next
-                  </Typography>
-                </Button>
-              ) : (
+              ) 
+              // : page === 8 ? (
+              //   <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
+              //     <Typography
+              //       sx={{
+              //         fontSize: '16px',
+              //         fontFamily: 'Inter',
+              //         fontWeight: 600,
+              //         textTransform: 'none',
+              //       }}
+              //     >
+              //       Next
+              //     </Typography>
+              //   </Button>
+              // ) 
+              : (
                 <ArrowForwardIosIcon
                   sx={{
                     cursor: 'pointer',
