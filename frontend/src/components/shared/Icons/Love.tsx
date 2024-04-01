@@ -21,8 +21,8 @@ export const Love : FC<Props> = ({height , width}) => {
           y2="3.19103"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#6DE5B5" />
-          <stop offset="1" stop-color="#73ECDD" />
+          <stop id='like1' stop-color="#6DE5B5" />
+          <stop id='like2' offset="1" stop-color="#73ECDD" />
         </linearGradient>
       </defs>
     </svg>

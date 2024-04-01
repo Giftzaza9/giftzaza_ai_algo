@@ -23,8 +23,8 @@ export const GradientClose: FC<Props> = ({ height, width }) => {
           y2="-13.2757"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#EA4080" />
-          <stop offset="1" stop-color="#EE805F" />
+          <stop id='close1' stop-color="#EA4080" />
+          <stop id='close2' offset="1" stop-color="#EE805F" />
         </linearGradient>
       </defs>
     </svg>

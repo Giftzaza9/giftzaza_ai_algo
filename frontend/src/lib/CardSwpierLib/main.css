@@ -260,3 +260,11 @@
   height: 100vh; /* Use vh as a fallback for browsers that do not support Custom Properties */
   height: calc(var(--vh, 1vh) * 100);
 }
+
+.disliked {
+  background: linear-gradient(180deg, #EA4080 0%, #EE805F 68.16%)
+}
+
+.liked {
+  background: linear-gradient(180deg, #6DE5B5 0%, #73ECDD 100%);
+}

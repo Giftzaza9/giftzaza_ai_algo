@@ -145,7 +145,7 @@ export const Auth = observer(() => {
           callback={responseFacebook}
         />
         <Button variant="text">
-          <Typography fontWeight={'500'} fontSize={'14.11px'} color={'black'} component={'a'} href="mailto:amit.kumar@aidetic.in?subject=Trouble Signing In&body=Hi, I'm unable to signing in Giftalia !!">
+          <Typography fontWeight={'500'} fontSize={'14.11px'} color={'black'} component={'a'} href="mailto:giftzaza108@gmail.com?subject=Trouble Signing In&body=Hi, I'm unable to signing in Giftalia !!">
             Trouble Signing In ?
           </Typography>
         </Button>
