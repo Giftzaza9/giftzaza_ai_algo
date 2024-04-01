@@ -2,3 +2,6 @@
 __pycache__
 .vscode
 lib_backup
+backend/ai_recommendation/src/lightfm_model/lib
+backend/ai_recommendation/src/lightfm_model/lib_backup
+backend/ai_recommendation/src/lib/category.json
