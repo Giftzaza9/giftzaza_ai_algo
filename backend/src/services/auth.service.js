@@ -27,9 +27,9 @@ const loginUserWithGoogle = async (token) => {
   console.log("USER INFO ",userInfo);
   const user = await User.findOne({email: userInfo?.email})
   if(!user) {
-    return await User.create({...userInfo, password: uuidv4()});
+    return await User.create({...userInfo, profile_picture: userInfo?.picture , password: uuidv4()});
   }
-  return user;  
+  return user;
 }
 
 const loginUserWithFacebook = async (name, email) => {

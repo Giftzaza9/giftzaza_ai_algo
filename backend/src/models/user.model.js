@@ -41,6 +41,9 @@ const userSchema = mongoose.Schema(
       enum: roles,
       default: 'user',
     },
+    profile_picture : {
+      type: String,
+    }
   },
   {
     timestamps: true,

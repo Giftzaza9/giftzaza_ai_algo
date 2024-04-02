@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { decodeToken } from "./shared/DecodeToken";
-import { userStore } from "../store/UserStore";
+import { decodeToken } from "../../utils/decodeToken";
+import { userStore } from "../../store/UserStore";
 // import { decodeToken } from './decodeToken';
 // import { userStore } from '../store/store';
 
