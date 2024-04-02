@@ -17,6 +17,8 @@ import { Suspense } from 'react';
 import { Loader } from '../components/shared/Loader';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Saved } from '../sections/Saved';
+import { PrivacyPolicy } from '../sections/PrivacyPolicy';
+import { DataDeletion } from '../sections/DataDeletion';
 
 const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
@@ -80,6 +82,8 @@ const Router = observer(() => {
         <Routes>
           <Route path={'/login'} element={<Auth />} />
           <Route path="/404" element={<NotFound />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/data-deletion" element={<DataDeletion />} />
           <Route path="/" element={<ProtectedRoute />}>
             {roleBasedRouteAccess(user_role)}
           </Route>
