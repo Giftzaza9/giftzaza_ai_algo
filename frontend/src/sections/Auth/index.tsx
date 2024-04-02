@@ -142,7 +142,6 @@ export const Auth = observer(() => {
               Sign in with Facebook
             </Button>
           )}
-          redirectUri={"https://app.giftalia.ai"}
           callback={responseFacebook}
         />
         <Button variant="text">
