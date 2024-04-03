@@ -129,7 +129,7 @@ export const Auth = observer(() => {
         >
           Sign in with Google
         </Button>
-        <FacebookLogin
+        {/* <FacebookLogin
           appId={process.env.REACT_APP_FB_APP_ID as string}
           fields="name,email,picture"
           render={(renderProps) => (
@@ -144,7 +144,7 @@ export const Auth = observer(() => {
             </Button>
           )}
           callback={responseFacebook}
-        />
+        /> */}
         <Button variant="text">
           <Typography fontWeight={'500'} fontSize={'14.11px'} color={'black'} component={'a'} href="mailto:giftzaza108@gmail.com?subject=Trouble Signing In&body=Hi, I'm unable to signing in Giftalia !!">
             Trouble Signing In ?
