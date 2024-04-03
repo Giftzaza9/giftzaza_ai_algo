@@ -84,3 +84,12 @@ export type SavedItem = {
   profile_title: string;
   savedProducts: Product[];
 };
+export interface Budget {
+  category: string[];
+}
+export interface BudgetMap {
+  [key: string]: {
+    min: number;
+    max: number;
+  };
+}

@@ -2,7 +2,7 @@
 /* eslint-disable no-extend-native */
 /* eslint-disable no-new-func */
 const OpenAI = require('openai');
-const category_data = require('./category.json');
+const category_data = require('../../../category.json');
 const { gpt_assistance, ...category_jsonData } = category_data;
 
 gpt_assistance.map((each_prompt) =>
@@ -21,9 +21,9 @@ String.prototype.interpolate = function (params) {
 
 prompt_template = Object.entries(category_jsonData).map(([key, value]) => {
   if (value['keyword_search']) {
-    return value.gpt_template.interpolate({ list: "'" + Object.keys(value.category).join("','") + "'" });
+    return value.gpt_template?.interpolate({ list: "'" + Object.keys(value.category).join("','") + "'" });
   } else {
-    return value.gpt_template.interpolate({ list: "'" + value.category.join("','") + "'" });
+    return value.gpt_template?.interpolate({ list: "'" + value.category.join("','") + "'" });
   }
 });
 
