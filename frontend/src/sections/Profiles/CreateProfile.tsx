@@ -328,7 +328,25 @@ export const CreateProfile = () => {
               Gender
             </Typography>
             <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
-              <Chip
+              {
+                filterObject?.gender.map((item) => (
+                 <Chip
+                  variant="outlined"
+                  color="primary"
+                  icon={
+                    profileData?.gender === item ? (
+                      <TripOriginIcon style={{ marginRight: '1px', fontSize: '36px' }} />
+                    ) : (
+                      <PanoramaFishEyeIcon style={{ marginRight: '5px', fontSize: '30px' }} />
+                    )
+                  }
+                  sx={genderChipsStyle}
+                  label={item}
+                  onClick={() => handleCreateProfileData('gender', item, 1)}
+                />
+                ))
+              }
+              {/* <Chip
                 variant="outlined"
                 color="primary"
                 icon={
@@ -355,7 +373,7 @@ export const CreateProfile = () => {
                 sx={genderChipsStyle}
                 label="Female"
                 onClick={() => handleCreateProfileData('gender', 'Female', 1)}
-              />
+              /> */}
             </Box>
           </Grid>
         )}
