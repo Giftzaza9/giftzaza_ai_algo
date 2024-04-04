@@ -23,7 +23,7 @@ from recommenders.models.lightfm.lightfm_utils import (
 )
 from sentence_transformers import SentenceTransformer
 
-cache = Cache(Cache.REDIS, endpoint="localhost", port=6379, namespace="main",serializer=PickleSerializer())
+cache = Cache(Cache.REDIS, endpoint="redis", port=6379, namespace="main",serializer=PickleSerializer())
 
 BASE_PATH = os.path.dirname(__file__)
 Read_DIR = "lib"
