@@ -20,6 +20,8 @@ class Global_cls:
         with open(os.path.join(Path(BASE_PATH).parent.absolute(), "lib", "category.json"),'r') as fr:
             self.cat_odata = json.load(fr)
             self.cat_odata.pop("gpt_assistance")
+            if "budget" in self.cat_odata.keys():
+                self.cat_odata.pop("budget")
             self.attr_list= []
             self.attr_weights = {}
             self.category_filters = {}
