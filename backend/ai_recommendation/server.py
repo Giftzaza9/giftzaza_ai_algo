@@ -17,16 +17,16 @@ from server_schema import ( similar_existing_item_schema,
                            create_recommendation_schema,
                            get_metrics_schema)
 
-# @asynccontextmanager
-# async def app_lifespan(app: FastAPI):
-#     print("Calling Model Re-Train While On Start")
-#     model_retrain()
-#     yield
-#     # code to execute when app is shutting down
+@asynccontextmanager
+async def app_lifespan(app: FastAPI):
+    print("Calling Model Re-Train While On Start")
+    await model_retrain()
+    yield
+    # code to execute when app is shutting down
 
-# app = FastAPI(lifespan=app_lifespan)
+app = FastAPI(lifespan=app_lifespan)
 
-app = FastAPI()
+# app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -67,8 +67,8 @@ def cs_profile_item_recommendation(body : cs_profile_item_recommendation_schema)
                                               N=body.top_n)
 
 @app.post("/create_recommendation")
-def create_recommendation(body : create_recommendation_schema):
-    return lfm.create_recommendation(user_id=body.user_id,
+async def create_recommendation(body : create_recommendation_schema):
+    return await lfm.create_recommendation(user_id=body.user_id,
                                      new_attributes=body.new_attributes,
                                      content_attr=body.content_attribute,
                                      N=body.top_n,
@@ -77,8 +77,8 @@ def create_recommendation(body : create_recommendation_schema):
                                      explicit_semi_hard_filters=body.semi_hard_filters)
 
 @app.post("/model_retrain")
-def model_retrain():
-    return lfm.train_with_mongodb()
+async def model_retrain():
+    return await lfm.train_with_mongodb()
 
 @app.post("/get_metrics")
 def get_metrics(body : get_metrics_schema):
@@ -86,4 +86,4 @@ def get_metrics(body : get_metrics_schema):
 
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=8001, reload=False)
+    uvicorn.run("server:app", host="0.0.0.0", port=8001, reload=False, workers=3)

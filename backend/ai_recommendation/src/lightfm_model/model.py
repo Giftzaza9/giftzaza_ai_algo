@@ -11,6 +11,9 @@ from pathlib import Path
 from lightfm import LightFM
 from lightfm.cross_validation import random_train_test_split
 from lightfm.data import Dataset
+from datetime import datetime
+from aiocache import Cache
+from aiocache.serializers import PickleSerializer
 from copy import deepcopy
 import numpy as numpy
 from recommenders.utils.timer import Timer
@@ -19,6 +22,8 @@ from recommenders.models.lightfm.lightfm_utils import (
     similar_items,
 )
 from sentence_transformers import SentenceTransformer
+
+cache = Cache(Cache.REDIS, endpoint="localhost", port=6379, namespace="main",serializer=PickleSerializer())
 
 BASE_PATH = os.path.dirname(__file__)
 Read_DIR = "lib"
@@ -35,7 +40,76 @@ class LightFM_cls:
         self.profile_meta = None
         self.item_meta = None
         self.interaction_meta = None
+        self.updated_at = None
         self.text_encoder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        self.save_model_to_cache
+    
+    async def add_to_cache(self,var_name,var_ref) -> None:
+        await cache.set(var_name,var_ref)
+
+    async def clear_cache(self) -> None:
+        await cache.clear(namespace="main")
+
+    async def load_from_cache(self,var_name):
+        exist_flag = await cache.exists(var_name)
+        if exist_flag:
+            return await cache.get(var_name)
+        else:
+            return None
+        
+    
+    async def save_model_to_cache(self):
+        print("Saving to Cache")
+        await self.add_to_cache("model",self.model)
+        await self.add_to_cache("profile_features",self.profile_features)
+        await self.add_to_cache("item_features",self.item_features)
+        await self.add_to_cache("dataset",self.dataset)
+        await self.add_to_cache("profile_meta",self.profile_meta)
+        await self.add_to_cache("item_meta",self.item_meta)
+        await self.add_to_cache("interaction_meta",self.interaction_meta)
+
+        await self.add_to_cache("updated_at",self.updated_at)
+        return None
+    
+    async def load_model_from_cache(self):
+        print("Loading From Cache")
+        self.model = await self.load_from_cache("model")
+        self.profile_features = await self.load_from_cache("profile_features")
+        self.item_features = await self.load_from_cache("item_features")
+        self.dataset = await self.load_from_cache("dataset")
+        self.profile_mapper, self.profile_fmapper, self.item_mapper, self.item_fmapper = self.dataset.mapping()
+        self.rprofile_mapper = dict([(v,k) for k,v in self.profile_mapper.items()])
+        self.ritem_mapper = dict([(v,k) for k,v in self.item_mapper.items()])
+        self.rprofile_fmapper = dict([(v,k) for k,v in self.profile_fmapper.items()])
+        self.ritem_fmapper = dict([(v,k) for k,v in self.item_fmapper.items()])
+        self.profile_meta = await self.load_from_cache("profile_meta")
+        self.item_meta = await self.load_from_cache("item_meta")
+        self.interaction_meta = await self.load_from_cache("interaction_meta")
+
+        self.updated_at = await self.load_from_cache("updated_at")
+        return None
+    
+    async def model_cache_loader(self):
+        print("Loading :",os.getpid())
+        updated_at_in_cache = await self.load_from_cache("updated_at")
+        if updated_at_in_cache!=None:
+            print(self.updated_at,updated_at_in_cache)
+            if updated_at_in_cache > self.updated_at:
+                await self.load_model_from_cache()
+        else:
+            await self.load_model_from_cache()
+        return None
+    
+    async def model_cache_saver(self):
+        print("Saving :",os.getpid())
+        updated_at_in_cache = await self.load_from_cache("updated_at")
+        if updated_at_in_cache!=None:
+            print(self.updated_at,updated_at_in_cache)
+            if (self.updated_at > updated_at_in_cache):
+                await self.save_model_to_cache()
+        else:
+            await self.save_model_to_cache()
+        return None
 
     def encode_textual_data(self, textual_data):
         """Encode textual data using the sentence transformer model."""
@@ -266,6 +340,7 @@ class LightFM_cls:
         return matched_item_meta
 
     def Re_Train(self,new_profile_meta,new_item_meta,new_profile_item_interactions,attr_list,df_users,df_items,df_interactions,Global_Obj):
+        print(os.getpid())
         dataset = Dataset()
         dataset.fit(users=new_profile_meta['profileID'], ## new 
             items=new_item_meta['itemID'],
@@ -316,6 +391,7 @@ class LightFM_cls:
         self.interaction_meta = df_interactions.copy()
         self.profile_meta['tags'] = self.profile_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),eachList)))
         self.item_meta['tags'] = self.item_meta['tags'].apply(lambda eachList : list(map(lambda x: x.strip().lower(),eachList)))
+        self.updated_at = datetime.now()
         print(f"Took {Train_timer.interval:.1f} seconds for Training the Model.")
 
         return True

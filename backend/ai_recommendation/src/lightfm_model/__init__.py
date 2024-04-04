@@ -8,7 +8,9 @@ from src.mongodb.mongodb import Mongodb_cls
 from sklearn.preprocessing import MinMaxScaler
 import json
 import itertools
+import time
 import pandas as pd
+import asyncio
 import numpy as np
 
 BASE_PATH = os.path.dirname(__file__) 
@@ -177,7 +179,7 @@ def cs_similar_items_with_text_sim(new_item_attributes,content_attr=None,N=10,mi
     
     return item_df.to_dict(orient='records')
 
-def train_with_mongodb(hil_flag = False,is_active_flag=True,weight_flag=True):
+async def train_with_mongodb(hil_flag = False,is_active_flag=True,weight_flag=True):
     """
     Retrain the Model
     re-train the model by extracting the latest available data from mongodb(Products, Profiles and Useractivites collection).
@@ -247,6 +249,8 @@ def train_with_mongodb(hil_flag = False,is_active_flag=True,weight_flag=True):
                 df_interactions,
                 Global_Obj
                 )
+        await LightFM_Obj.model_cache_saver()
+
     except Exception as e:
         return {"status":False,
                 "message" : f"Error in re-train :{e}"}
@@ -274,7 +278,7 @@ def test_with_sample(N):
             f"recall_at_{N}":ts_df['recall_at_k'].agg("mean")}
 
 
-def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budget=0,max_budget=None,test_sample_flag=False,explicit_semi_hard_filters=None):
+async def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budget=0,max_budget=None,test_sample_flag=False,explicit_semi_hard_filters=None):
     """
     Generates Recommendations for the given user
         create recommendation for the respective user_id based upon the scenario.
@@ -287,6 +291,7 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budg
         :max_budget - int : maximum price of the prodcut
         :explicit_semi_hard_filters - list[str] : to create custom semi hard filter for infinite scrolling
     """
+    await LightFM_Obj.model_cache_loader()
     explicit_filters = None
     if type(explicit_semi_hard_filters) == list:
         explicit_filters = {}
@@ -328,5 +333,13 @@ def create_recommendation(user_id,new_attributes,content_attr=None,N=20,min_budg
 LightFM_Obj = LightFM_cls()
 Mongodb_Obj = Mongodb_cls(username=env.DATABASE_USER,password=env.DATABASE_PWD)
 Global_Obj = Global_cls()
-# Calling Model Re-Train While On Start
-train_with_mongodb()
+# asyncio.run(train_with_mongodb())
+
+# loop = asyncio.get_event_loop()
+
+# policy = asyncio.get_event_loop_policy()
+# policy.set_event_loop(policy.new_event_loop())
+# loop = asyncio.get_event_loop()
+
+# loop.run_until_complete(train_with_mongodb())
+# loop.close()
