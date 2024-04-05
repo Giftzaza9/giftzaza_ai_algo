@@ -8,6 +8,8 @@ const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleane
 const axiosInstance = require('../utils/axiosInstance');
 const { getRecommendedProducts } = require('../services/profile.service');
 const userActivity = require('../models/useractivity.model');
+const fs = require('fs').promises;
+
 
 /**
  * Query for products
