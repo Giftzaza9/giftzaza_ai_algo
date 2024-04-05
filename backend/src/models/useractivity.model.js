@@ -1,29 +1,31 @@
 /* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
 const { toJSON } = require('./plugins');
+const { availableActivities } = require('../variables/constants');
 
-const userActivityschema = new mongoose.Schema({
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
+const userActivityschema = new mongoose.Schema(
+  {
+    product_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+    },
+    user_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    activity: {
+      type: String,
+      enum: availableActivities,
+    },
+    profile_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Profile',
+    },
   },
-  user_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  },
-  activity_type: {
-    type: String,
-  },
-  activity_time: {
-    "type": Date, 
-    "default": Date.now 
-  },
-  profile_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Profile',
-  },
-
-});
+  {
+    timestamps: true,
+  }
+);
 
 userActivityschema.plugin(toJSON);
 

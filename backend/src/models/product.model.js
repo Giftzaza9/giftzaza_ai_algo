@@ -10,15 +10,21 @@ const productSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
+    },
+    features: {
+      type: [String],
     },
     link: {
       type: String,
       required: true,
+      index: true,
     },
     image: {
       type: String,
       required: true,
+    },
+    thumbnails: {
+      type: [String]
     },
     price: {
       type: Number,
@@ -52,6 +58,10 @@ const productSchema = new mongoose.Schema(
     hil: {
       type: Boolean,
       default: false,
+    },
+    is_active: {
+      type: Boolean,
+      default: true,
     },
     added_by: {
       type: mongoose.Schema.Types.ObjectId,

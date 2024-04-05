@@ -1,7 +1,9 @@
 const httpStatus = require('http-status');
+const pick = require('../utils/pick');
 const catchAsync = require('../utils/catchAsync');
 const ApiError = require('../utils/ApiError');
 const { profileService } = require('../services');
+const { Profile } = require('../models');
 
 const getProfile = catchAsync(async (req, res) => {
   const profile = await profileService.getProfileById(req.params.profileId);
@@ -11,9 +13,15 @@ const getProfile = catchAsync(async (req, res) => {
   res.send(profile);
 });
 
+const getProfiles = catchAsync(async (req, res) => {
+  // const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  // console.log({options});
+  const result = await profileService.queryProfiles(req.user._id);
+  res.send(result);
+});
+
 const createProfile = catchAsync(async (req, res) => {
-	console.log("profile preference", req.body.preferences)
- req.body.preferences = JSON.parse(req.body.preferences);
+  req.body.user_id = req.user._id;
   const profile = await profileService.createProfile(req.body);
   res.status(httpStatus.CREATED).send(profile);
 });
@@ -24,17 +32,18 @@ const deleteProfile = catchAsync(async (req, res) => {
 });
 
 const updateProfile = catchAsync(async (req, res) => {
-  let profile = await profileService.getProfileById(req.params.profileId);
-  if (!profile) {
+  req.body.user_id = req.user._id;
+  let profile = await Profile.findById(req.params.profileId);
+  if (!profile || profile.user_id?.toString() !== req.user._id.toString()) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
   }
-  req.body.preferences = JSON.parse(req.body.preferences);
-  profile = await profileService.updateProfile(profile, req.body);
+  profile = await profileService.updateProfile(req.body, req.params.profileId);
   res.status(httpStatus.CREATED).send(profile);
 });
 
 module.exports = {
   getProfile,
+  getProfiles,
   createProfile,
   deleteProfile,
   updateProfile,

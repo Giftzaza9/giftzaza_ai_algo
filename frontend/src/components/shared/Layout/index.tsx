@@ -12,20 +12,22 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { userStore } from '../../../store/UserStore';
-import { logOut, stringAvatar } from '../../../utils/helperFunctions';
+import { stringAvatar } from '../../../utils/helperFunctions';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { navbarLinks, navbarSettings } from '../../../constants/constants';
+import { roleEnum } from '../../../constants/types';
+import { bottomNavState } from '../../../store/BottomNavState';
+import { logout } from '../../../services/auth';
 
 export function Layout({ children }: React.PropsWithChildren) {
-  const { user } = userStore;
+  const { user, setUser } = userStore;
+  const { setIsVisible } = bottomNavState;
   const location = useLocation();
   const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const activeLink = location?.pathname?.substring(
-    location?.pathname?.lastIndexOf("/") + 1
-  );
+  const activeLink = location?.pathname?.substring(location?.pathname?.lastIndexOf('/') + 1);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -42,22 +44,22 @@ export function Layout({ children }: React.PropsWithChildren) {
     setAnchorElUser(null);
   };
 
-  const handleProfileMenu = (action: any) => {
+  const handleProfileMenu = async (action: any) => {
     console.log(action);
     if (action === 'Logout') {
-      logOut();
+      setUser(undefined);
+      setIsVisible(false);
+      await logout();
       navigate('/login');
     }
     handleCloseNavMenu();
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, }}>
-      <AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <AppBar position="sticky" sx={{ backgroundColor: 'rgb(250 240 255)', boxShadow: 'none', top: 0, px: 2 }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex', color: "black" }, mr: 1 }} /> */}
-
             {/* WEB-LOGO */}
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
               <img
@@ -103,14 +105,18 @@ export function Layout({ children }: React.PropsWithChildren) {
                   display: { xs: 'block', md: 'none' },
                 }}
               >
-                {navbarLinks.map((item, index) => (
-                  item?.access?.includes(user?.role) ? <MenuItem key={item?.name + '-' + index} onClick={() => navigate(item?.link)}>
-                    {item?.icon}
-                    <Typography textAlign="center" sx={{ fontSize: 'medium', color: '#dfc9ea' }}>
-                      {item?.name}
-                    </Typography>
-                  </MenuItem> : <></>
-                ))}
+                {navbarLinks.map((item, index) =>
+                  item?.access?.includes(user?.role as roleEnum) ? (
+                    <MenuItem key={item?.name + '-' + index} onClick={() => navigate(item?.link)}>
+                      {item?.icon}
+                      <Typography textAlign="center" sx={{ fontSize: 'medium', color: '#dfc9ea' }}>
+                        {item?.name}
+                      </Typography>
+                    </MenuItem>
+                  ) : (
+                    <></>
+                  )
+                )}
               </Menu>
             </Box>
 
@@ -131,34 +137,39 @@ export function Layout({ children }: React.PropsWithChildren) {
 
             {/* WEB-TABS-MENU */}
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {navbarLinks.map((item, index) => (
-                item?.access?.includes(user?.role) ? <Button
-                  key={index + '--' + item?.name}
-                  onClick={() => navigate(item?.link)}
-                  sx={{
-                    my: 3,
-                    mx: 1,
-                    display: 'block',
-                    textTransform: 'unset',
-                    fontSize: 'medium',
-                    color: 'rgb(132, 64, 165)',
-                    fontWeight: activeLink === item?.link ? "600" : "none"
-                  }}
-                >
-                  {item?.icon}
-                  {item?.name}
-                </Button> : <></>
-              ))}
+              {navbarLinks.map((item, index) =>
+                item?.access?.includes(user?.role as roleEnum) ? (
+                  <Button
+                    key={index + '--' + item?.name}
+                    onClick={() => navigate(item?.link)}
+                    sx={{
+                      my: 3,
+                      mx: 1,
+                      display: 'block',
+                      textTransform: 'unset',
+                      fontSize: 'medium',
+                      color: 'rgb(132, 64, 165)',
+                      fontWeight: activeLink === item?.link ? '600' : 'none',
+                    }}
+                  >
+                    {item?.icon}
+                    {item?.name}
+                  </Button>
+                ) : (
+                  <></>
+                )
+              )}
             </Box>
 
             {/* RIGHT-SETTINGS */}
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title={user?.name}>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  { user?.profile_picture ?
-                  <Avatar src={user?.profile_picture || user?.name} /> :
-                  <Avatar {...stringAvatar(user?.name || '')} /> 
-                }
+                  {user?.profile_picture ? (
+                    <Avatar src={user?.profile_picture || user?.name} />
+                  ) : (
+                    <Avatar {...stringAvatar(user?.name || '')} />
+                  )}
                 </IconButton>
               </Tooltip>
               <Menu

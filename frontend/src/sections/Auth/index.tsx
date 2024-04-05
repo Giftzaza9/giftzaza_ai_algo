@@ -1,22 +1,27 @@
+import React from 'react';
 import { useEffect } from 'react';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { useGoogleLogin } from '@react-oauth/google';
-import { loginWithFacebook, loginWithGoogle } from '../../services/Auth';
+import { loginWithFacebook, loginWithGoogle } from '../../services/auth';
 import { toast } from 'react-toastify';
 // import FacebookLogin from 'react-facebook-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
-import GoogleIcon from '@mui/icons-material/Google';
-import FacebookIcon from '@mui/icons-material/Facebook';
+// import GoogleIcon from '@mui/icons-material/Google';
+// import FacebookIcon from '@mui/icons-material/Facebook';
 import { userStore } from '../../store/UserStore';
 import { useNavigate } from 'react-router-dom';
+import { theme } from '../../utils/theme';
+import { observer } from 'mobx-react-lite';
+import { bottomNavState } from '../../store/BottomNavState';
 
-export const Auth = () => {
+export const Auth = observer(() => {
   const { setUser, user } = userStore;
+  const { setIsVisible } = bottomNavState;
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.name && localStorage.getItem("__giftzaza__")) {
-      navigate('/');
+    if (user?.name && localStorage.getItem('access_giftalia')) {
+      // navigate('/');
     }
   }, [navigate, user]);
 
@@ -34,11 +39,11 @@ export const Auth = () => {
     const { data, error } = await loginWithGoogle(payload);
     if (data) {
       setUser(data?.user);
-      console.log('Logged in ', data);
-      navigate('/');
+      setIsVisible(false);
+      navigate('/welcome');
     } else {
       console.log('ERROR ', error);
-      toast.error(error);
+      toast.error(error?.message as string);
     }
   };
 
@@ -50,48 +55,102 @@ export const Auth = () => {
       email: response?.email,
     };
     const { data, error } = await loginWithFacebook(payload);
-    if (data) console.log('Logged in ', data);
-    else {
+    if (data) {
+      setUser(data?.user);
+      setIsVisible(false);
+      navigate('/welcome');
+    } else {
       console.log('ERROR ', error);
-      toast.error(error);
+      toast.error(error?.message as string);
     }
   };
 
   return (
-    <Grid container component="main" sx={{ height: '100vh' }}>
-      <Box
-        sx={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center', rowGap: 4, marginTop: '40px' }}
+    <Grid
+      container
+      className="full-screen"
+      component="main"
+      width={'lg'}
+      sx={{ backgroundColor: theme.palette.secondary.main }}
+    >
+      <Container
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexGrow: 1,
+          alignItems: 'center',
+          rowGap: 4,
+          textAlign: 'center',
+          justifyContent: 'flex-end',
+          marginBottom: 'calc(var(--vh) * 7)',
+        }}
       >
-        <img
-          src={require('../../assets/giftzaza-logo.png')}
-          alt="logo"
-          style={{
-            width: '150px',
-            height: '55px',
-          }}
-        />
-        <Typography variant="h6" fontWeight={'bold'} component="h1">
-          Welcome! How do you want to get started?
+        <Stack position={'relative'} alignItems={'center'}>
+          <img
+            src={require('../../assets/logo_gift.png')}
+            alt="logo"
+            style={{
+              width: '100px',
+              height: '100px',
+            }}
+          />
+          <img
+            src={require('../../assets/giftzaza-logo.png')}
+            alt="logo"
+            style={{
+              width: '260px',
+              // height: '55px',
+            }}
+          />
+          <Typography
+            sx={{
+              fontFamily: 'Inter',
+              fontWeight: '500',
+              fontSize: '10px',
+              lineHeight: '12.1px',
+              position: 'absolute',
+              bottom: '4px',
+              right: '4px',
+            }}
+          >
+            YOUR PERSONAL AI GIFTING ASSISTANT
+          </Typography>
+        </Stack>
+        <Typography fontWeight={'500'} fontSize={'12px'} color={'black'}>
+          By tapping Create Account or Sign In, you agree to our Terms. Learn how we process your data in our Privacy Policy
+          and Cookies Policy.
         </Typography>
-        <Button onClick={() => loginGoogle()} variant="contained" startIcon={<GoogleIcon />} sx={{ width: 'fit-content' }}>
+        <Button
+          onClick={() => loginGoogle()}
+          variant="contained"
+          color="secondary"
+          // startIcon={<GoogleIcon />}
+          sx={{ width: '100%' }}
+        >
           Sign in with Google
         </Button>
-        <FacebookLogin
+        {/* <FacebookLogin
           appId={process.env.REACT_APP_FB_APP_ID as string}
           fields="name,email,picture"
           render={(renderProps) => (
             <Button
               onClick={renderProps.onClick}
-              variant="contained"
-              startIcon={<FacebookIcon />}
-              sx={{ width: 'fit-content', marginTop: '-20px' }}
+              variant="outlined"
+              color="secondary"
+              // startIcon={<FacebookIcon />}
+              sx={{ width: '100%', marginTop: '-20px' }}
             >
               Sign in with Facebook
             </Button>
           )}
           callback={responseFacebook}
-        />
-      </Box>
+        /> */}
+        <Button variant="text">
+          <Typography fontWeight={'500'} fontSize={'14.11px'} color={'black'} component={'a'} href="mailto:giftzaza108@gmail.com?subject=Trouble Signing In&body=Hi, I'm unable to signing in Giftalia !!">
+            Trouble Signing In ?
+          </Typography>
+        </Button>
+      </Container>
     </Grid>
   );
-};
+});

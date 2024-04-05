@@ -1,26 +1,21 @@
-/* eslint-disable camelcase */
-/* eslint-disable object-shorthand */
-/* eslint-disable prettier/prettier */
+const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
-const { userActivity } = require('../models');
+const { userActivityService } = require('../services');
 
-const getUserClick = catchAsync(async (req, res) => {
-  const { productId, activity_type, profile_id, userId } = req.body;
-  try {
-    if ((productId, userId)) {
-      userActivity.create({
-        productId,
-        user_id: userId,
-        activity_type,
-        profile_id
-      });
-      res.status(200).send('user activity captured');
-    } else {
-      res.status(202).send('productId or userId missing');
-    }
-  } catch (error) {
-    res.status(202).send('something went wrong');
-  }
+const createUserActivity = catchAsync(async (req, res) => {
+  req.body.user_id = req.user._id;
+  const activity = await userActivityService.createUserActivity(req.body);
+  res.status(httpStatus.OK).send(activity);
 });
 
-module.exports = { getUserClick };
+const getSavedProducts = catchAsync(async (req, res) => {
+  const activity = await userActivityService.getSavedProducts(req.user._id);
+  res.status(httpStatus.OK).send(activity);
+});
+
+const removeSavedProduct = catchAsync(async (req, res) => {
+  const activity = await userActivityService.deleteSavedProduct(req.body, req.user._id);
+  res.status(httpStatus.OK).send(activity);
+});
+
+module.exports = { createUserActivity, getSavedProducts, removeSavedProduct };

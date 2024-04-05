@@ -7,6 +7,14 @@ const getProfile = {
   }),
 };
 
+const getProfiles = {
+  query: Joi.object().keys({
+    sortBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+  }),
+};
+
 const deleteProfile = {
   params: Joi.object().keys({
     profileId: Joi.string(),
@@ -15,31 +23,41 @@ const deleteProfile = {
 
 const createProfile = {
   body: Joi.object().keys({
-    preferences: Joi.string(),
+    title: Joi.string(),
+    age: Joi.string(),
+    gender: Joi.string(),
+    relation: Joi.string(),
+    occasion: Joi.string(),
+    occasion_date: Joi.date(),
     min_price: Joi.number(),
     max_price: Joi.number(),
-    gender: Joi.string(),
-    relationship: Joi.string(),
-    Occassion: Joi.string(),
-    occasion_date: Joi.date(),
-    userId: Joi.string().custom(objectId),
+    styles: Joi.array(),
+    interests: Joi.array(),
   }),
 };
 
 const updateProfile = {
-  body: Joi.object().keys({
+  params: Joi.object().keys({
     profileId: Joi.string(),
-    preferences: Joi.array(),
+  }),
+  body: Joi.object().keys({
+    title: Joi.string(),
+    age: Joi.string(),
+    gender: Joi.string(),
+    relation: Joi.string(),
+    occasion: Joi.string(),
+    occasion_date: Joi.date(),
     min_price: Joi.number(),
     max_price: Joi.number(),
-    gender: Joi.string(),
-    relationship: Joi.string(),
-    Occassion: Joi.string(),
+    styles: Joi.array(),
+    interests: Joi.array(),
+    recommended_products: Joi.array(),
   }),
 };
 
 module.exports = {
   getProfile,
+  getProfiles,
   createProfile,
   deleteProfile,
   updateProfile,
