@@ -100,7 +100,7 @@ function generateBudgetMap(budget: any): BudgetMap {
 
     if (range?.length === 1) {
       // Handle "< $200" and "$200+" cases
-      const max = range[0].includes('<') ? parseInt(range[0].slice(2)) : parseInt(range[0].slice(1));
+      const max = range[0].includes('<') ? parseInt(range[0].slice(3)) : parseInt(range[0].slice(1));
       budgetMap[category] = { min: 0, max: max };
     } else {
       // Handle "$200-$400" to "$1000-$2000" cases
@@ -117,7 +117,6 @@ function generateBudgetMap(budget: any): BudgetMap {
   
   return budgetMap;
 }
-
 export const budgetMap: BudgetMap = generateBudgetMap(categoryData.budget.category);
 
 // export const budgetMap = {

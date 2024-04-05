@@ -86,6 +86,5 @@ module.exports = {
   createProduct,
   deleteProduct,
   updateProduct,
-  userActivity,
   createAnalysisProduct,
 };
