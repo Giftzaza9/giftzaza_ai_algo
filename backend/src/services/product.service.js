@@ -390,7 +390,6 @@ const createAnalysisProduct = async (productBody) => {
       product_data.gptTagging = gptdata.JSON_response;
       product_data.curated = false;
       product_data.hil = false;
-      console.log({product_data});
       scraped.push(product_data);
       console.log(`${count}/${productBody.product_links?.length} scraped, link: ${link}`);
       await sleepy(Math.floor(Math.random() * (2001 - 1000) + 1000));
