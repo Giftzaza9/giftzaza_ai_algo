@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
     ### Posting request to server to add products to collection
 
-    post_product_url = "https://giftzaza.com/ai/v1/products/analysis"
+    post_product_url = "https://app.giftalia.ai/api/v1/products/analysis"
     payload = json.dumps({"product_links": all_product_links})
     Bearer_token = None
     headers = {
