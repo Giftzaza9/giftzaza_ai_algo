@@ -370,7 +370,7 @@ const createAnalysisProduct = async (productBody) => {
 
     for await (const link of productBody.product_links) {
       count++;
-      const productDB = await AnalysisProduct.findOne({ link: link });
+      const productDB = await Product.findOne({ link: link });
       if (productDB) {
         console.log(`${count}th failed: Existing product`);
         continue;
@@ -396,7 +396,8 @@ const createAnalysisProduct = async (productBody) => {
     }
 
     // console.log(scraped?.map(p => p.title));
-    if (scraped.length) await AnalysisProduct.create(scraped);
+    // if (scraped.length) await AnalysisProduct.create(scraped);
+    if (scraped.length) await Product.create(scraped);
     return scraped?.map((p) => p.title);
   } catch (error) {
     console.error(error);

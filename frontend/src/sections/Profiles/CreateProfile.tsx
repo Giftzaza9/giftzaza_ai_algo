@@ -180,6 +180,7 @@ export const CreateProfile = () => {
                 sx={{ cursor: 'pointer', color: 'rgba(221, 110, 63, 1)', visibility: page === 0 ? 'hidden' : 'visible' }}
                 onClick={() => handleArrows(-1)}
               />
+              <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '500' }}>Step {page}/9</Typography>
               {page === 9 ? (
                 <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
                   <Typography
@@ -193,22 +194,21 @@ export const CreateProfile = () => {
                     Done
                   </Typography>
                 </Button>
-              ) 
-              // : page === 8 ? (
-              //   <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
-              //     <Typography
-              //       sx={{
-              //         fontSize: '16px',
-              //         fontFamily: 'Inter',
-              //         fontWeight: 600,
-              //         textTransform: 'none',
-              //       }}
-              //     >
-              //       Next
-              //     </Typography>
-              //   </Button>
-              // ) 
-              : (
+              ) : (
+                // : page === 8 ? (
+                //   <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
+                //     <Typography
+                //       sx={{
+                //         fontSize: '16px',
+                //         fontFamily: 'Inter',
+                //         fontWeight: 600,
+                //         textTransform: 'none',
+                //       }}
+                //     >
+                //       Next
+                //     </Typography>
+                //   </Button>
+                // )
                 <ArrowForwardIosIcon
                   sx={{
                     cursor: 'pointer',
@@ -328,9 +328,8 @@ export const CreateProfile = () => {
               Gender
             </Typography>
             <Box display={'flex'} flexDirection={'column'} rowGap={1} pb={1}>
-              {
-                filterObject?.gender.map((item) => (
-                 <Chip
+              {filterObject?.gender.map((item) => (
+                <Chip
                   variant="outlined"
                   color="primary"
                   icon={
@@ -344,8 +343,7 @@ export const CreateProfile = () => {
                   label={item}
                   onClick={() => handleCreateProfileData('gender', item, 1)}
                 />
-                ))
-              }
+              ))}
               {/* <Chip
                 variant="outlined"
                 color="primary"
