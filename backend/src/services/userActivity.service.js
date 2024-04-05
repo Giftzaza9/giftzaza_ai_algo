@@ -1,13 +1,13 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
-const { UserActivity } = require('../models');
+const userActivity = require('../models/useractivity.model');
 
 const createUserActivity = async (body) => {
   const { product_id, activity, profile_id, user_id } = body;
   try {
-    const activityExists = await UserActivity.findOne({ product_id, user_id, activity, profile_id });
+    const activityExists = await userActivity.findOne({ product_id, user_id, activity, profile_id });
     if (activityExists) return activityExists;
-    return await UserActivity.create({
+    return await userActivity.create({
       product_id,
       user_id,
       activity,
@@ -21,7 +21,7 @@ const createUserActivity = async (body) => {
 const deleteSavedProduct = async (body, user_id) => {
   try {
     const { product_id, profile_id } = body;
-    const activity = await UserActivity.findOne({ product_id, user_id, profile_id, activity: 'save' });
+    const activity = await userActivity.findOne({ product_id, user_id, profile_id, activity: 'save' });
     if (!activity) throw new ApiError(httpStatus.NOT_FOUND, 'Activity not found');
     return await activity.remove();
   } catch (error) {
@@ -31,7 +31,7 @@ const deleteSavedProduct = async (body, user_id) => {
 
 const getSavedProducts = async (userId) => {
   try {
-    return await UserActivity.aggregate([
+    return await userActivity.aggregate([
       {
         $match: { activity: 'save', user_id: userId },
       },
