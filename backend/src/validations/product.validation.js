@@ -71,6 +71,12 @@ const updateProduct = {
   }),
 };
 
+const createAnalysisProduct = {
+  body: Joi.object().keys({
+    product_links: Joi.array(),
+  }),
+};
+
 module.exports = {
   getProducts,
   scrapeProduct,
@@ -80,4 +86,5 @@ module.exports = {
   createProduct,
   deleteProduct,
   updateProduct,
+  createAnalysisProduct,
 };

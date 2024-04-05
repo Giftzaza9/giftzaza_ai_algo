@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const mongoose = require('mongoose');
-const { Product } = require('../models');
+const { Product, AnalysisProduct } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { scrapeProduct } = require('../lib/scrapeProduct');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
@@ -350,6 +350,60 @@ const deleteProductById = async (productId) => {
   return product;
 };
 
+/**
+ * Create a product
+ * @param {Object} productBody
+ * @returns {Promise<Product>}
+ */
+const createAnalysisProduct = async (productBody) => {
+
+  const scraped = [];
+
+  try {
+    const sleepy = (delay) =>
+      new Promise((resolve) => {
+        setTimeout(resolve, delay);
+      });
+    let count = 0;
+
+    for await (const link of productBody.product_links) {
+      count++;
+      const productDB = await AnalysisProduct.findOne({ link: link });
+      if (productDB) {
+        console.log(`${count}th failed: Existing product`);
+        continue;
+      }
+      const product_data = await scrapeProduct(link, productBody.userId);
+      if (!product_data || !product_data.description || !product_data.image) {
+        console.log(`${count}th failed: Scrape error`);
+        console.log({product_data});
+        continue;
+      }
+      const gptdata = await GPTbasedTagging(product_data.description);
+      if (!gptdata.preferenceData.length) {
+        console.log(`${count}th failed: preference data is not available`);
+        continue;
+      };
+      product_data.tags = gptdata.preferenceData;
+      product_data.gptTagging = gptdata.JSON_response;
+      product_data.curated = false;
+      product_data.hil = false;
+      scraped.push(product_data);
+      console.log(`${count}/${productBody.product_links?.length} scraped, link: ${link}`);
+      await sleepy(Math.floor(Math.random() * (2001 - 1000) + 1000));
+    }
+
+    // console.log(scraped?.map(p => p.title));
+    if (scraped.length) await AnalysisProduct.create(scraped);
+    return scraped?.map((p) => p.title);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    const jsonData = JSON.stringify(scraped, null, 2);
+    await fs.writeFile('output.json', jsonData, 'utf8');
+  }
+}
+
 module.exports = {
   queryProducts,
   scrapeAndAddProduct,
@@ -359,4 +413,5 @@ module.exports = {
   createProduct,
   deleteProductById,
   updateProductById,
+  createAnalysisProduct,
 };
