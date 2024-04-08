@@ -49,6 +49,10 @@ const productSchema = new mongoose.Schema(
     curated: {
       type: Boolean,
     },
+    hil: {
+      type: Boolean,
+      default: false,
+    },
     added_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
