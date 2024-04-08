@@ -376,12 +376,13 @@ const createAnalysisProduct = async (productBody) => {
         continue;
       }
       const product_data = await scrapeProduct(link, productBody.userId);
-      if (!product_data || !product_data.description || !product_data.image) {
-        console.log(`${count}th failed: Scrape error`);
+      if (!product_data || !product_data.title || !product_data.image) {
+        console.log(`${count}th failed: Scrape error || Product not found or out of stock'`);
         console.log({product_data});
         continue;
       }
-      const gptdata = await GPTbasedTagging(product_data.description);
+      const gptdata = await GPTbasedTagging(product_data.description || product_data.features.join('. '),
+      product_data.title);
       if (!gptdata.preferenceData.length) {
         console.log(`${count}th failed: preference data is not available`);
         continue;
