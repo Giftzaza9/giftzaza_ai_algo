@@ -11,17 +11,16 @@ After cloning the directory, add environment variable in .env file.
 ```bash
 frontend/.env
 ```
-```
 
 ### Step 2 :
 
 After Adding required variables, install the dependencies.
 
-```
+```bash
 npm install
 ```
-OR
-```
+### OR
+```bash
 npm install --force
 ```  
 
