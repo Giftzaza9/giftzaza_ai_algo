@@ -117,7 +117,7 @@ if __name__ == "__main__":
     df = df[df["dep_names"].isin(considered_dep)]
     df.reset_index(drop=True, inplace=True)
     all_product_links, dep_product_links = scrape_department_products(
-        page, df.head(3), affiliate_id=affiliate_id
+        page, df, affiliate_id=affiliate_id
     )
     with open("amazon_all_product_links.json", "w", encoding="utf-8") as fw:
         json.dump(all_product_links, fw)
