@@ -32,7 +32,7 @@ export const Onboarding = observer(() => {
   const navigate = useNavigate();
 
   return (
-    <Grid container component="main" width={'lg'} sx={{ height: '100vh', backgroundColor: theme.palette.secondary.main }}>
+    <Grid container component="main" width={'lg'} className='full-screen' sx={{ backgroundColor: theme.palette.secondary.main }}>
       <Container
         sx={{
           display: 'flex',
@@ -41,13 +41,14 @@ export const Onboarding = observer(() => {
           alignItems: 'center',
           rowGap: 4,
           textAlign: 'center',
-          margin: '15% auto',
+          marginTop: '35%',
+          marginBottom: '15%',
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
           <Box>
-            <Typography color={textColor} fontWeight={'700'} fontSize={'22px'} lineHeight={'26px'}>
-              Welcome to Giftzaza, {user?.name}
+            <Typography noWrap color={textColor} fontWeight={800} fontSize={'22px'} lineHeight={'26px'}>
+              Welcome to Giftalia, {user?.name?.split(' ')?.[0]}
             </Typography>
             <Typography sx={text} mt={1}>
               Please follow these House Rules.
@@ -77,7 +78,7 @@ export const Onboarding = observer(() => {
             sx={{ width: '100%' }}
             onClick={() => {
               setIsVisible(true);
-              navigate('/profiles');
+              navigate('/');
             }}
           >
             I Agree

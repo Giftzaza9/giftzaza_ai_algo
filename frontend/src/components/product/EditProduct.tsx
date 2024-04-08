@@ -7,17 +7,18 @@ import { getCurrencySymbol } from '../../utils/helperFunctions';
 
 interface Props {
   product: Product;
-  handleChange: (tags: string[], curated: boolean) => void;
+  handleChange: (tags: string[], curated: boolean, scrape?: boolean) => void;
 }
 
 export const EditProduct: FC<Props> = ({ product, handleChange }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>(product?.tags);
   const [isCurated, setIsCurated] = useState<boolean>(product?.curated);
+  const [scrape, setScrape] = useState<boolean>(false);
 
   useEffect(() => {
-    handleChange(selectedTags, isCurated);
+    handleChange(selectedTags, isCurated, scrape);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTags, isCurated]);
+  }, [selectedTags, isCurated, scrape]);
 
   return (
     <>
@@ -43,8 +44,8 @@ export const EditProduct: FC<Props> = ({ product, handleChange }) => {
           />
         </Grid>
       </Grid>
-      <Grid item>
-        <Grid container gap={2} alignItems={'center'}>
+      <Grid item display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+        <Grid item container gap={2} alignItems={'center'}>
           <Typography
             variant="subtitle1"
             sx={{
@@ -63,6 +64,27 @@ export const EditProduct: FC<Props> = ({ product, handleChange }) => {
               setIsCurated(checked);
             }}
           />
+        </Grid>
+        <Grid item container gap={2} alignItems={'center'} justifyContent={'end'}>
+          <Switch
+            checked={scrape}
+            onChange={(e, checked) => {
+              setScrape(checked);
+            }}
+          />
+
+          <Typography
+            variant="subtitle1"
+            sx={{
+              color: 'rgba(96, 113, 132, 1)',
+              fontFamily: 'Manrope',
+              fontWeight: 600,
+              fontSize: '16px',
+              lineHeight: '18px',
+            }}
+          >
+            Re-Scrape
+          </Typography>
         </Grid>
       </Grid>
       <Grid item>

@@ -22,19 +22,19 @@ const getProfileById = async (profileId) => {
   return profile;
 };
 
-const queryProfiles = async (options) => {
-  return await Product.paginate(options);
+const queryProfiles = async (user_id) => {
+  return await Profile.find({user_id}).sort({ createdAt: -1 });
 };
 
 const getRecommendedProducts = async (payload) => {
   console.log('PAYLOAD ', payload);
   try {
     const { data, status } = await axiosInstance.post(`/create_recommendation`, payload);
-    console.log('RESPONSEE ', data, status);
-    return { data, status, error: null };
+    console.log('RESPONSEE ', data);
+    return data;
   } catch (error) {
-    console.log('ERROR IN RECOMMENDATION ', error);
-    return console.log('ERROR IN RECOMMENDATION MSG ', error.message);
+    console.log('ERROR IN RECOMMENDATION MSG ', error.message);
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Faild in product recommendation');
   }
 };
 
@@ -44,7 +44,6 @@ const getRecommendedProducts = async (payload) => {
  * @returns {Promise<Profile>}
  */
 const createProfile = async (profileBody) => {
-  // const profile = await Profile.create({});
   const profile_preferences = {
     gender: [profileBody.gender],
     age: [profileBody.age],
@@ -53,28 +52,27 @@ const createProfile = async (profileBody) => {
     styles: profileBody.styles,
     interests: profileBody.interests,
   };
-  // console.log({profile_preferences})
   const preferences = Object.values(profile_preferences)
     .flat()
-    .filter((item) => item !== undefined);
+    .filter((item) => item !== undefined)
+    .map((item) => item.toLowerCase());
+
   profileBody.profile_preferences = profile_preferences;
   profileBody.preferences = preferences;
   const payload = {
     user_id: profileBody?.user_id,
     new_attributes: preferences,
     top_n: 10,
+    min_price: profileBody?.min_price,
+    max_price: profileBody?.max_price,
   };
   try {
     profileBody.recommended_products = await getRecommendedProducts(payload);
+    return await Profile.create(profileBody);
   } catch (err) {
-    return console.log('ERROR IN RECOMMENDATION RES ', err);
-    return err;
+    console.log('ERROR IN RECOMMENDATION RES ', err);
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Something went wrong!');
   }
-  console.log({ profileBody });
-  return await Profile.create(profileBody);
-
-  // await profile.save();
-  // return profile;
 };
 
 /**
@@ -98,19 +96,6 @@ const deleteProfileById = async (profileId) => {
  * @returns {Promise<Profile>}
  */
 const updateProfile = async (profileBody, profileId) => {
-  // const products = await Product.find({ price: { $gte: profileBody.min_price, $lte: profileBody.max_price } });
-
-  // for (const product of products) {
-  //   product.similarity = await calculateSimilarity(profileBody.preferences, product.tags);
-  // }
-
-  // products.sort((a, b) => b.similarity - a.similarity);
-
-  // if (products.length > 30) {
-  //   profile.recommended_products = products.slice(0, 30);
-  // } else {
-  //   profile.recommended_products = products;
-  // }
   const profile_preferences = {
     gender: [profileBody.gender],
     age: [profileBody.age],
@@ -121,11 +106,26 @@ const updateProfile = async (profileBody, profileId) => {
   };
   const preferences = Object.values(profile_preferences)
     .flat()
-    .filter((item) => item !== undefined);
+    .filter((item) => item !== undefined)
+    .map((item) => item.toLowerCase());
+
   profileBody.profile_preferences = profile_preferences;
   profileBody.preferences = preferences;
 
-  return await Profile.findOneAndUpdate({ _id: profileId }, profileBody, { new: true });
+  const payload = {
+    user_id: profileBody?.user_id,
+    new_attributes: preferences,
+    top_n: 10,
+    min_price: profileBody?.min_price,
+    max_price: profileBody?.max_price,
+  };
+  try {
+    profileBody.recommended_products = await getRecommendedProducts(payload);
+    return await Profile.findByIdAndUpdate(profileId, profileBody, { new: true, useFindAndModify: false, populate: 'recommended_products.item_id' });
+  } catch (err) {
+    console.log('ERROR IN RECOMMENDATION RES ', err);
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Something went wrong!');
+  }
 };
 
 module.exports = {
@@ -134,4 +134,5 @@ module.exports = {
   createProfile,
   deleteProfileById,
   updateProfile,
+  getRecommendedProducts,
 };

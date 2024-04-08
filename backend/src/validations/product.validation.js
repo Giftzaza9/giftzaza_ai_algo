@@ -9,6 +9,10 @@ const getProducts = {
     search: Joi.string(),
     source: Joi.string(),
     filter: Joi.string(),
+    price_min: Joi.number().integer(),
+    price_max: Joi.number().integer(),
+    hil: Joi.boolean(),
+    is_active: Joi.boolean()
   }),
 };
 
@@ -18,21 +22,35 @@ const scrapeProduct = {
   }),
 };
 
+const similarProducts = {
+  body: Joi.object().keys({
+    item_id: Joi.string(),
+    top_n: Joi.number().integer()
+  }),
+};
+
+const moreProducts = {
+  body: Joi.object().keys({
+    preferences: Joi.array().required(),
+    top_n: Joi.number().integer(),
+    min_price: Joi.number(),
+    max_price: Joi.number(),
+    semi_soft_filter: Joi.array(),
+  }),
+};
+
+const shopping = {
+  body: Joi.object().keys({
+    page: Joi.number(),
+    limit: Joi.number()
+  }),
+};
+
 const createProduct = {
   body: Joi.object().keys({
     product_id: Joi.string().custom(objectId).required(),
     tags: Joi.array().required(),
     curated: Joi.boolean().default(false),
-  }),
-};
-
-const userActivity = {
-  body: Joi.object().keys({
-    productId: Joi.string().custom(objectId),
-    userId: Joi.string().custom(objectId),
-    activity_type: Joi.string(),
-    activity_time: Joi.date(),
-    profile_id: Joi.string().custom(objectId),
   }),
 };
 
@@ -49,14 +67,24 @@ const updateProduct = {
   body: Joi.object().keys({
     tags: Joi.array(),
     curated: Joi.boolean(),
+    scrape: Joi.boolean().default(false),
+  }),
+};
+
+const createAnalysisProduct = {
+  body: Joi.object().keys({
+    product_links: Joi.array(),
   }),
 };
 
 module.exports = {
   getProducts,
   scrapeProduct,
+  similarProducts,
+  moreProducts,
+  shopping,
   createProduct,
   deleteProduct,
   updateProduct,
-  userActivity,
+  createAnalysisProduct,
 };

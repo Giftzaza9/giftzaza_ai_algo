@@ -5,7 +5,7 @@ import { Add, KeyboardArrowUp, Search } from '@mui/icons-material';
 import { FilterSelector } from '../../../components/product/FilterSelector';
 import { productPerPageAdmin, sortOptions } from '../../../constants/constants';
 import { debounce } from 'lodash';
-import { ProductCard } from '../../../components/product/ProductCard';
+import { ProductCard } from '../../../components/product/ProductCardAdmin';
 import { getProducts } from '../../../services/product';
 import { Product } from '../../../constants/types';
 import { ProductSkeletonCard } from '../../../components/skeletons/ProductSkeletonCard';
@@ -21,6 +21,9 @@ export const AdminProducts = () => {
   const [sort, setSort] = useState<string>('latest');
   const [searchDebounced, setSearchDebounced] = useState<string>('');
   const [searchRaw, setSearchRaw] = useState<string>('');
+  const [budgetTuples, setBudgetTuples] = useState<[number, number]>([0, 1000]);
+  const [hil, setHil] = useState<boolean>(false);
+  const [showDeletedProducts, setShowDeletedProducts] = useState<boolean>(false);
   const [queryString, setQueryString] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState<boolean>(false);
@@ -59,11 +62,11 @@ export const AdminProducts = () => {
   );
 
   const removeProduct = (id: string) => {
-    setProducts((prev) => prev?.filter((p) => p.id !== id));
+    setProducts((prev) => prev?.filter((p) => p?._id !== id));
   };
 
   const replaceProduct = (product: Product) => {
-    setProducts((prev) => prev?.map((p) => (p.id === product.id ? product : p)));
+    setProducts((prev) => prev?.map((p) => (p?._id === product?.id ? product : p)));
   };
 
   const handleAddNewModalClose = async () => {
@@ -84,6 +87,13 @@ export const AdminProducts = () => {
     const queryParams: string[] = [`page=${1}&limit=${productPerPageAdmin}&sort=${sort}`];
     if (filters.length > 0) queryParams.push(`filter=${filters.join(',')}`);
     if (searchDebounced.trim()) queryParams.push(`search=${searchDebounced}`);
+    if (hil) queryParams.push(`hil=${hil}`);
+    if (showDeletedProducts) queryParams.push(`is_active=${!showDeletedProducts}`);
+    if (budgetTuples[0] !== 0 || budgetTuples[1] !== 1000) {
+      queryParams.push(`price_min=${budgetTuples[0]}`);
+      if (budgetTuples[1] === 1000) queryParams.push(`price_max=${Number.MAX_SAFE_INTEGER}`);
+      else queryParams.push(`price_max=${budgetTuples[1]}`);
+    }
     const newQueryString = queryParams.join('&');
     if (newQueryString !== queryString) {
       setProducts([]);
@@ -91,7 +101,7 @@ export const AdminProducts = () => {
       setQueryString(newQueryString);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sort, searchDebounced]);
+  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil]);
 
   useEffect(() => {
     if (page > 1) {
@@ -144,7 +154,16 @@ export const AdminProducts = () => {
       <Grid container gap={2} alignItems={'flex-start'}>
         {/* SIDE FILTERS */}
         <Grid item container flex={{ xs: 2, md: 1 }}>
-          <FilterSelector filters={filters} setFilters={setFilters} />
+          <FilterSelector
+            filters={filters}
+            setFilters={setFilters}
+            budgetTuples={budgetTuples}
+            setBudgetTuples={setBudgetTuples}
+            hil={hil}
+            showDeletedProducts={showDeletedProducts}
+            setHil={setHil}
+            setShowDeletedProducts={setShowDeletedProducts}
+          />
         </Grid>
 
         {/* PRODUCTS */}
@@ -198,7 +217,7 @@ export const AdminProducts = () => {
               sm={6}
               md={4}
               lg={3}
-              key={product?.id}
+              key={product?._id}
               onClick={() => {
                 setPreviewProduct(product);
                 setPreviewModalOpen(true);

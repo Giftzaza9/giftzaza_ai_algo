@@ -2,7 +2,12 @@ body {
 	overflow-x: hidden;
 	margin: 0px;
 	min-height: 100vh;
-	background: linear-gradient(180deg, rgba(233, 219, 240, 0.4) 0%, rgba(249, 225, 228, 0.4) 100%);
+	min-height: calc(var(--vh) * 100);
+	min-height: -webkit-fill-available;
+	/* position: fixed; */
+	height: 100%;
+	width: 100%; 
+	background: linear-gradient(180deg, rgba(233, 219, 240, 0.4) 0%, rgba(249, 225, 228, 0.4) 100%)
 }
 
 * {
@@ -65,3 +70,20 @@ a:hover {
  .carousel .thumbs-wrapper {
 	margin: 0px!important;
  }
+
+ /* Hide the scrollbar */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Optional: Provide a fallback color for scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+#invisible-button {
+  display: none;
+  height: 0px!important;
+  width: 0px!important;
+}

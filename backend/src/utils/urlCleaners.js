@@ -14,10 +14,11 @@ function amazonUrlCleaner(originalURL) {
         // Extract ASIN from the pathname
         const asinMatch = url.pathname.match(/\/dp\/(\w{10})|\/gp\/product\/(\w{10})/);
         const asin = asinMatch ? asinMatch[1] || asinMatch[2] : null;
+        const affiliate = url.pathname.includes('?') ? "&tag=giftalia-20" : "?tag=giftalia-20";
 
         // Return the reconstructed Amazon URL
         if (asin) {
-          return `https://www.amazon.com/dp/${asin}`;
+          return `https://www.amazon.com/dp/${asin}${affiliate}`;
         }
       }
     }

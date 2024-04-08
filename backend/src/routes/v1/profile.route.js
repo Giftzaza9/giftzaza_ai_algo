@@ -9,13 +9,13 @@ const router = express.Router();
 
 router
   .route('/:profileId')
-  .get(auth(rightsEnum.MANAGE_PROFILE), validate(profileValidation.getProfile), profileController.getProfile)
+  .get(auth(), validate(profileValidation.getProfile), profileController.getProfile)
   .patch(auth(rightsEnum.MANAGE_PROFILE), validate(profileValidation.updateProfile), profileController.updateProfile)
-  .delete(auth(rightsEnum.MANAGE_PROFILE), validate(profileValidation.deleteProfile), profileController.deleteProfile)
+  .delete(auth(rightsEnum.MANAGE_PROFILE), validate(profileValidation.deleteProfile), profileController.deleteProfile);
 
 router
   .route('/')
-  .get(auth(rightsEnum.MANAGE_PROFILE), validate(profileValidation.getProfiles), profileController.getProfiles)
-  .post(auth(rightsEnum.MANAGE_PROFILE), validate(profileValidation.createProfile), profileController.createProfile)
+  .get(auth(), validate(profileValidation.getProfiles), profileController.getProfiles)
+  .post(auth(rightsEnum.MANAGE_PROFILE), validate(profileValidation.createProfile), profileController.createProfile);
 
 module.exports = router;

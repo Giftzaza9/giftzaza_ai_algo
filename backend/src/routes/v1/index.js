@@ -35,7 +35,7 @@ const defaultRoutes = [
     route: docsRoute,
   },
   {
-    path: '/userActivity',
+    path: '/user-activity',
     route: userActivityRoute,
   },
 ];

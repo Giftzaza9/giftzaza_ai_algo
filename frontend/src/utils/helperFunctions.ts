@@ -2,6 +2,7 @@ import { isAxiosError } from 'axios';
 import { ApiResponse } from '../constants/types';
 import { decodeToken } from './decodeToken';
 import { toast } from 'react-toastify';
+import dayjs from 'dayjs';
 
 export const generateErrorMessage = (error: Error | unknown): ApiResponse => {
   if (isAxiosError(error) && error?.response?.data?.message) {
@@ -19,17 +20,8 @@ export const generateErrorMessage = (error: Error | unknown): ApiResponse => {
   }
 };
 
-export const logOut = () => {
-  try {
-    localStorage.removeItem('__giftzaza__');
-  } catch (error) {
-    console.log(error, 'err');
-    return generateErrorMessage(error);
-  }
-};
-
 export const userInfo = () => {
-  const token = localStorage.getItem('__giftzaza__');
+  const token = localStorage.getItem('access_giftalia');
   return token ? decodeToken(token) : null;
 };
 
@@ -41,12 +33,13 @@ export const formatHTML = (htmlString: any) => {
   return { __html: formattedString };
 };
 
-function stringToColor(string: string) {
+export function stringToColor(string: string) {
+  if (!string) return '';
   let hash = 0;
   let i;
 
   /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
+  for (i = 0; i < string?.length; i += 1) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
 
@@ -71,11 +64,38 @@ export const stringAvatar = (name: string) => {
 };
 
 export const ellipsisText = (text: string, maxChars: number) => {
-  if (text.length <= maxChars) {
+  if (text?.length <= maxChars) {
     return text;
   } else {
-    return text.slice(0, maxChars) + '...';
+    return text?.slice(0, maxChars) + '...';
   }
 };
 
 export const getCurrencySymbol = (currency: string) => (currency === 'INR' ? '₹' : currency === 'USD' ? '$' : '~');
+
+export const daysRemaining = (date: string) => {
+  const days = dayjs(date).diff(dayjs(), 'days');
+  if (days < 0) return 'Expired';
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Tomorrow';
+  return `${days} days`;
+};
+
+export const comingUpOn = (date: string) => {
+  const days = dayjs(date).diff(dayjs(), 'days');
+  if (days < 0) return `expired on ${dayjs(date).format('DD/MM/YYYY')}`;
+  if (days === 0) return 'happens today';
+  if (days === 1) return 'coming up on tomorrow';
+  return `coming up on ${dayjs(date).format('DD/MM/YYYY')}`;
+};
+
+export const isMobileBrowser = () =>
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+export const isIPhoneAndPWA = () => {
+  const isiPhone = /iPhone/i.test(navigator.userAgent);
+  const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
+  return isiPhone && isInStandaloneMode;
+};
+
+export const getVH = (vH: number) => `calc(var(--vh) * ${vH})`;

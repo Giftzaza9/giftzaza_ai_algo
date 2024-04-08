@@ -1,11 +1,17 @@
+import { Dispatch, SetStateAction } from "react"
+import { SwipeAction } from "../../../constants/constants"
+import { Product, Profile } from "../../../constants/types"
+
 export interface SwiperProps extends CardEvents {
   id: CardId
   meta: CardMetaData
   element: HTMLDivElement
+  swiperElements: any
+  product: Product
 }
 
 export interface CardSwiperProps extends CardEvents {
-  data: CardData[]
+  data: any
   likeButton?: React.JSX.Element
   dislikeButton?: React.JSX.Element
   withActionButtons?: boolean
@@ -14,12 +20,22 @@ export interface CardSwiperProps extends CardEvents {
   likeRibbonText?: string
   dislikeRibbonText?: string
   ribbonColors?: CardRibbonColors
+  actionHandler?: any
+  profile?: Profile
+  setPrevProducts: any
+  prevProducts? :any
+  prevProductsCount?: number
+  refetch?: boolean;
+  setRefetch?: Dispatch<SetStateAction<boolean>>
+  modelRetrain?: () => void
+  type: string
 }
 
 export interface CardEvents {
   onFinish?: (status: SwipeAction.FINISHED) => void
   onDismiss?: CardEvent
   onEnter?: CardEnterEvent
+  swiperElements?: any
 }
 
 export interface CardData {
@@ -48,13 +64,8 @@ export interface CardRibbonColors {
 export enum SwipeDirection {
   LEFT = -1,
   RIGHT = 1,
-}
-
-export enum SwipeAction {
-  LIKE = 'like',
-  DISLIKE = 'dislike',
-  FINISHED = 'finished',
-  BUY = 'buy,'
+  SIMILAR = 1,
+  BLANK = 0,
 }
 
 export enum SwipeOperation {

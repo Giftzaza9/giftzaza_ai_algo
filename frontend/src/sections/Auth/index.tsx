@@ -1,22 +1,26 @@
+import React from 'react';
 import { useEffect } from 'react';
-import { Button, Container, Grid, Typography } from '@mui/material';
+import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { useGoogleLogin } from '@react-oauth/google';
 import { loginWithFacebook, loginWithGoogle } from '../../services/auth';
 import { toast } from 'react-toastify';
 // import FacebookLogin from 'react-facebook-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
-import GoogleIcon from '@mui/icons-material/Google';
-import FacebookIcon from '@mui/icons-material/Facebook';
+// import GoogleIcon from '@mui/icons-material/Google';
+// import FacebookIcon from '@mui/icons-material/Facebook';
 import { userStore } from '../../store/UserStore';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../utils/theme';
+import { observer } from 'mobx-react-lite';
+import { bottomNavState } from '../../store/BottomNavState';
 
-export const Auth = () => {
+export const Auth = observer(() => {
   const { setUser, user } = userStore;
+  const { setIsVisible } = bottomNavState;
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.name && localStorage.getItem('__giftzaza__')) {
+    if (user?.name && localStorage.getItem('access_giftalia')) {
       // navigate('/');
     }
   }, [navigate, user]);
@@ -35,7 +39,7 @@ export const Auth = () => {
     const { data, error } = await loginWithGoogle(payload);
     if (data) {
       setUser(data?.user);
-      console.log('Logged in ', data);
+      setIsVisible(false);
       navigate('/welcome');
     } else {
       console.log('ERROR ', error);
@@ -53,7 +57,7 @@ export const Auth = () => {
     const { data, error } = await loginWithFacebook(payload);
     if (data) {
       setUser(data?.user);
-      console.log('Logged in ', data);
+      setIsVisible(false);
       navigate('/welcome');
     } else {
       console.log('ERROR ', error);
@@ -62,7 +66,13 @@ export const Auth = () => {
   };
 
   return (
-    <Grid container component="main" width={'lg'} sx={{ height: '100vh', backgroundColor: theme.palette.secondary.main }}>
+    <Grid
+      container
+      className="full-screen"
+      component="main"
+      width={'lg'}
+      sx={{ backgroundColor: theme.palette.secondary.main }}
+    >
       <Container
         sx={{
           display: 'flex',
@@ -72,17 +82,40 @@ export const Auth = () => {
           rowGap: 4,
           textAlign: 'center',
           justifyContent: 'flex-end',
-          marginBottom: '20%',
+          marginBottom: 'calc(var(--vh) * 7)',
         }}
       >
-        <img
-          src={require('../../assets/giftzaza-logo.png')}
-          alt="logo"
-          style={{
-            width: '200px',
-            // height: '55px',
-          }}
-        />
+        <Stack position={'relative'} alignItems={'center'}>
+          <img
+            src={require('../../assets/logo_gift.png')}
+            alt="logo"
+            style={{
+              width: '100px',
+              height: '100px',
+            }}
+          />
+          <img
+            src={require('../../assets/giftzaza-logo.png')}
+            alt="logo"
+            style={{
+              width: '260px',
+              // height: '55px',
+            }}
+          />
+          <Typography
+            sx={{
+              fontFamily: 'Inter',
+              fontWeight: '500',
+              fontSize: '10px',
+              lineHeight: '12.1px',
+              position: 'absolute',
+              bottom: '4px',
+              right: '4px',
+            }}
+          >
+            YOUR PERSONAL AI GIFTING ASSISTANT
+          </Typography>
+        </Stack>
         <Typography fontWeight={'500'} fontSize={'12px'} color={'black'}>
           By tapping Create Account or Sign In, you agree to our Terms. Learn how we process your data in our Privacy Policy
           and Cookies Policy.
@@ -91,12 +124,12 @@ export const Auth = () => {
           onClick={() => loginGoogle()}
           variant="contained"
           color="secondary"
-          startIcon={<GoogleIcon />}
+          // startIcon={<GoogleIcon />}
           sx={{ width: '100%' }}
         >
           Sign in with Google
         </Button>
-        <FacebookLogin
+        {/* <FacebookLogin
           appId={process.env.REACT_APP_FB_APP_ID as string}
           fields="name,email,picture"
           render={(renderProps) => (
@@ -104,15 +137,20 @@ export const Auth = () => {
               onClick={renderProps.onClick}
               variant="outlined"
               color="secondary"
-              startIcon={<FacebookIcon />}
+              // startIcon={<FacebookIcon />}
               sx={{ width: '100%', marginTop: '-20px' }}
             >
               Sign in with Facebook
             </Button>
           )}
           callback={responseFacebook}
-        />
+        /> */}
+        <Button variant="text">
+          <Typography fontWeight={'500'} fontSize={'14.11px'} color={'black'} component={'a'} href="mailto:giftzaza108@gmail.com?subject=Trouble Signing In&body=Hi, I'm unable to signing in Giftalia !!">
+            Trouble Signing In ?
+          </Typography>
+        </Button>
       </Container>
     </Grid>
   );
-};
+});

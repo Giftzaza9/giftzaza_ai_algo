@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -15,7 +14,7 @@ import {
 } from '@mui/material';
 import { Product } from '../../constants/types';
 import { Dispatch, FC, SetStateAction, useState } from 'react';
-import { ellipsisText, getCurrencySymbol } from '../../utils/helperFunctions';
+import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { deleteProduct } from '../../services/product';
 import { getSwalConfirmation } from '../../utils/swalConfirm';
 import { filterObject } from '../../constants/constants';
@@ -24,6 +23,7 @@ import { DeleteIcon } from '../shared/Icons/DeleteIcon';
 import _ from 'lodash';
 import { Amazon } from '../shared/Icons/Amazon';
 import { Bloomingdales } from '../shared/Icons/Bloomingdales';
+import { Verified } from '@mui/icons-material';
 
 interface Props {
   product: Product;
@@ -48,8 +48,8 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
     try {
       const isConfirm = await getSwalConfirmation();
       if (!isConfirm) return;
-      await deleteProduct(product?.id);
-      removeProduct(product?.id);
+      await deleteProduct(product?._id as string);
+      removeProduct(product?._id as string);
     } catch (error) {
       console.error(error);
     }
@@ -71,7 +71,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
         padding: 2,
       }}
     >
-      {isAdminView && isFocused && (
+      {isAdminView && isFocused && product?.is_active && (
         <CardHeader
           sx={{ position: 'absolute', top: '12px', right: '12px' }}
           action={
@@ -99,19 +99,19 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                   borderRadius={'50%'}
                   height={32}
                   width={32}
-                  bgcolor={'rgba(168, 108, 198, 0.4)'}
+                  bgcolor={'rgba(168, 108, 198, 0.7)'}
                   display={'flex'}
                   justifyContent={'center'}
                   alignItems={'center'}
                 >
                   <Typography variant="body2" fontSize={'12px'} sx={{ color: '#fff' }} textAlign={'center'}>
-                    0
+                    {product?.likes || 0}
                   </Typography>
                 </Box>
               </Grid>
               <Grid item>
                 <Typography variant="body2" fontSize={'8px'} sx={{ color: 'rgba(125, 141, 160, 1)' }} textAlign={'center'}>
-                  Clicks
+                  Likes
                 </Typography>
               </Grid>
             </Grid>
@@ -139,6 +139,10 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
         )}
         <Tooltip title={_.capitalize(product?.source)} followCursor color="primary">
           <Box
+            component={'a'}
+            href={product?.link}
+            target="_blank"
+            onClick={(e) => e.stopPropagation()}
             sx={{
               position: 'absolute',
               top: '4px',
@@ -148,23 +152,6 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
             {product?.source === 'amazon' ? <Amazon /> : <Bloomingdales />}
           </Box>
         </Tooltip>
-        {/* <Typography
-          fontWeight={500}
-          sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bgcolor: product?.source === 'amazon' ? 'rgba(255,153,0, 0.5)' : 'rgba(0, 0, 0, 0.5)',
-            color:  product?.source === 'amazon' ? 'black' : 'white',
-            display: 'inline-flex',
-            padding: '2px 14px',
-            fontSize: '14px',
-            borderRadius: '0px 4px 0px 4px',
-            fontFamily: 'Inter'
-          }}
-        >
-          {_.capitalize(product?.source)}
-        </Typography> */}
         <img
           src={product?.image ?? ''}
           alt={product?.title}
@@ -191,9 +178,14 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                     fontWeight: 500,
                     lineHeight: '20px',
                     fontFamily: 'Manrope',
+                    overflow: 'hidden',
+                    maxWidth: '100%',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 2,
                   }}
                 >
-                  {ellipsisText(product?.title, 50)}
+                  {product?.title}
                 </Typography>
               }
             />
@@ -206,6 +198,11 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                 fontWeight: 500,
                 lineHeight: '20px',
                 fontFamily: 'Manrope',
+                overflow: 'hidden',
+                maxWidth: '100%',
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 2,
               }}
             >
               {product?.title}
@@ -213,10 +210,18 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
           )}
 
           {/* PRICE + RATING */}
-          <Stack direction={'row'} justifyContent={'space-between'}>
-            <Typography variant="h6" sx={{ fontFamily: 'Inter', fontSize: '15px', fontWeight: 600, lineHeight: '18.15px' }}>
+          <Grid container direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+            <Typography
+              variant="h6"
+              sx={{ fontFamily: 'Inter', fontSize: '15px', fontWeight: 600, lineHeight: '18.15px', textWrap: 'nowrap' }}
+            >
               {getCurrencySymbol(product?.price_currency)} {product?.price?.toFixed(2)}
             </Typography>
+            {product?.hil && (
+              <Tooltip title={'HIL Verified'}>
+                <Verified sx={{ fontSize: '15px', color: 'rgba(168, 108, 198, 1)' }} />
+              </Tooltip>
+            )}
             <Tooltip title={product?.rating} TransitionComponent={Fade} TransitionProps={{ timeout: 600 }} followCursor>
               <Box>
                 <Rating
@@ -228,24 +233,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                 />
               </Box>
             </Tooltip>
-          </Stack>
-
-          {!isAdminView && (
-            <Button variant="contained" color="primary" sx={{ textTransform: 'none' }}>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontFamily: 'Manrope',
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  lineHeight: '21px',
-                  color: 'rgba(253, 251, 254, 1)',
-                }}
-              >
-                Buy Now
-              </Typography>
-            </Button>
-          )}
+          </Grid>
 
           <Grid container gap={1} height={'56px'}>
             {showTags.map((tag) => (

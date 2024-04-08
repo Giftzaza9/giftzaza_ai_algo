@@ -24,6 +24,37 @@ export const scrapeProduct = async (body: ScrapeProductBody): Promise<ApiRespons
   }
 };
 
+export interface moreProductBody {
+  preferences: string[];
+  top_n: number;
+  semi_soft_filter?: string[];
+  min_price?: number;
+  max_price?: number
+}
+
+export const moreProducts = async (payload: moreProductBody): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.post(`/products/more-products`, payload);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};
+
+export interface SimilarProductBody {
+  item_id: string;
+  top_n: number;
+}
+
+export const getSimilarProducts = async (payload: SimilarProductBody): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.post(`/products/similar-products`, payload);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};
+
 export interface CreateProductBody {
   product_id: string;
   tags: string[];
@@ -42,6 +73,7 @@ export const createProduct = async (body: CreateProductBody): Promise<ApiRespons
 export interface UpdateProductBody {
   tags: string[];
   curated: boolean;
+  scrape?: boolean;
 }
 
 export const updateProduct = async (product_id: string, body: UpdateProductBody): Promise<ApiResponse> => {
@@ -56,6 +88,20 @@ export const updateProduct = async (product_id: string, body: UpdateProductBody)
 export const deleteProduct = async (product_id: string): Promise<ApiResponse> => {
   try {
     const { data, status } = await axiosInstance.delete(`/products/${product_id}`);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};
+
+export interface shoppingBody {
+  page?: number;
+  limit?: number;
+}
+
+export const shopping = async (payload: shoppingBody): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.post(`/products/shopping`, payload);
     return { data, status, error: null };
   } catch (error) {
     return generateErrorMessage(error);

@@ -1,6 +1,9 @@
-// import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import React from 'react';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import { Product, roleEnum } from './types';
+import { Budget, BudgetMap, Product, roleEnum } from './types';
+import { GoHomeFill } from 'react-icons/go';
+import { Bookmark, GridViewRounded, PersonRounded } from '@mui/icons-material';
+import categoryData from "./category.json";
 
 const iconStyle = {
   fontSize: 'large',
@@ -28,57 +31,102 @@ export const sortOptions = [
   { label: 'Price: high to low', value: 'price-hi-to-lo' },
   { label: 'Alphabetic: ascending', value: 'alpha-asc' },
   { label: 'Alphabetic: descending', value: 'alpha-desc' },
+  { label: 'Likes: ascending', value: 'likes-asc' },
+  { label: 'Likes: descending', value: 'likes-desc' },
 ];
 
 export const filterObject = {
-  gender: ['Male', 'Female'],
-  age_category: ['Under 12', '12 - 18', '18 - 25', '25 - 45', '45 - 65', '65 +'],
-  interest: [
-    'Fitness and Wellness',
-    'Tech and Gadgets',
-    'Fashion and Accessories',
-    'Books and Learning',
-    'Travel and Adventure',
-    'Food and Cooking',
-    'Arts and Crafts',
-    'Music and Entertainment',
-    'Outdoor and Nature',
-    'Beauty and Self-Care',
-    'Home and Decor',
-    'Sports and Hobbies',
-    'Pets and Animal Lovers',
-    'Art and Culture',
-    'Social Impact and Charity',
-    'Spirituality',
-  ],
-  occasion: [
-    'Birthdays',
-    'Anniversaries',
-    'Holidays',
-    'Promotions and Achievements',
-    'Weddings',
-    'Newborns',
-    'Retirements',
-    'Housewarmings',
-    'Graduations',
-    "Valentine's Day",
-    'Appreciation',
-    'Get Well Soon',
-    'Thank You Gifts',
-    'Apologies',
-  ],
-  relationship: ['Spouse or Significant Other', 'Girlfriend', 'Child', 'Parent', 'Grand Parent', 'Friend', 'Colleague'],
-  style: [
-    'Classic and Timeless',
-    'Comfortable Yet Stylish',
-    'Premium Brands',
-    'Minimalistic',
-    'Practical',
-    'Chill',
-    'Bougie',
-  ],
-  budget: ['$50-$200', '$200-$400', '$400-$600', '$600-$800', '$800-$1000', '+$1000'],
+  // gender: ['Male', 'Female'],
+  // age_category: ['Under 12', '12 - 18', '18 - 25', '25 - 45', '45 - 65', '65 +'],
+  // interest: [
+  //   'Fitness and Wellness',
+  //   'Tech and Gadgets',
+  //   'Fashion and Accessories',
+  //   'Books and Learning',
+  //   'Travel and Adventure',
+  //   'Food and Cooking',
+  //   'Arts and Crafts',
+  //   'Music and Entertainment',
+  //   'Outdoor and Nature',
+  //   'Beauty and Self-Care',
+  //   'Home and Decor',
+  //   'Sports and Hobbies',
+  //   'Pets and Animal Lovers',
+  //   'Art and Culture',
+  //   'Social Impact and Charity',
+  //   'Spirituality',
+  // ],
+  // occasion: [
+  //   'Birthdays',
+  //   'Anniversaries',
+  //   'Holidays',
+  //   'Promotions and Achievements',
+  //   'Weddings',
+  //   'Newborns',
+  //   'Retirements',
+  //   'Appreciation',
+  //   'Get Well Soon',
+  //   'Graduations',
+  //   'Apologies',
+  //   'Housewarmings',
+  //   "Valentine's Day",
+  //   'Thank You Gifts',
+  // ],
+  // relationship: ['Spouse or Significant Other', 'Girlfriend', 'Child', 'Parent', 'Grand Parent', 'Friend', 'Colleague'],
+  // style: [
+  //   'Classic and Timeless',
+  //   'Minimalistic',
+  //   'Comfortable Yet Stylish',
+  //   'Bougie',
+  //   'Premium Brands',
+  //   'Chill',
+  //   'Practical',
+  // ],
+  gender: categoryData.gender.category,
+  age_category: categoryData.age_category.category,
+  interest: Object.keys(categoryData.interest.category),
+  occasion: categoryData.occasion.category,
+  relationship: categoryData.relationship.category,
+  style: categoryData.style.category,
+  budget: categoryData.budget.category,
 };
+
+function generateBudgetMap(budget: any): BudgetMap {
+  const budgetMap: BudgetMap = {};
+  
+  for (let i = 0; i < budget?.length; i++) {
+    const category = budget[i];
+    const range = category.split('-');
+
+    if (range?.length === 1) {
+      // Handle "< $200" and "$200+" cases
+      const max = range[0].includes('<') ? parseInt(range[0].slice(3)) : parseInt(range[0].slice(1));
+      budgetMap[category] = { min: 0, max: max };
+    } else {
+      // Handle "$200-$400" to "$1000-$2000" cases
+      const min = parseInt(range[0].slice(1));
+      const max = parseInt(range[1].slice(1));
+      budgetMap[category] = { min: min, max: max };
+    }
+  }
+  
+  // Add infinite max value for the last category
+  const lastCategory = budget[budget?.length - 1];
+  const lastMax = lastCategory.includes('+') ? Number.MAX_SAFE_INTEGER : parseInt(lastCategory.split('-')[1]);
+  budgetMap[lastCategory] = { min: parseInt(lastCategory.split('-')[0].slice(1)), max: lastMax };
+  
+  return budgetMap;
+}
+export const budgetMap: BudgetMap = generateBudgetMap(categoryData.budget.category);
+
+// export const budgetMap = {
+//   '< $200': { min: 0, max: 200 },
+//   '$200-$400': { min: 200, max: 400 },
+//   '$400-$600': { min: 400, max: 600 },
+//   '$600-$800': { min: 600, max: 800 },
+//   '$800-$1000': { min: 800, max: 1000 },
+//   '$1000+': { min: 1000, max: Number.MAX_SAFE_INTEGER },
+// };
 
 export const productPerPageAdmin = 12;
 
@@ -113,6 +161,7 @@ export const dummyProduct: Product = {
     },
   ],
   hil: false,
+  is_active: false,
   created_at: null,
   updated_at: null,
   title:
@@ -130,4 +179,53 @@ export const dummyProduct: Product = {
 
 export const addNewProductSteps = ['Link', 'Product Info', 'Preview'];
 
-export const bottomNavHidePaths = ['welcome', 'login']
+export const bottomNavHidePaths = ['welcome', 'login', 'admin'];
+
+export const getStartedChips = [
+  'Discover gifts for your spouse',
+  'Discover gifts for your mom',
+  'Create a new giftee profile',
+  'View existing giftee profiles',
+  'Start shopping',
+];
+
+export enum SwipeAction {
+  LIKE = 'like',
+  BUY = 'buy',
+  DISLIKE = 'dislike',
+  SAVE = 'save',
+  SIMILAR = 'similar',
+  NO_INTERACTION = 'no interaction',
+  FINISHED = 'FINISHED',
+  REWIND = 'rewind',
+}
+
+export const iphoneSeCondition = '(max-width: 389px) or (max-height: 700px)';
+export const lowWidthCondition = '(max-width: 420px)';
+export const lowHeightCondition = '(max-height: 550px)';
+
+export const bottomNavIcons = [
+  {
+    value: 'home',
+    Icon: GoHomeFill,
+    href: '/',
+  },
+  {
+    value: 'profiles',
+    Icon: GridViewRounded,
+    href: '/profiles',
+  },
+  {
+    value: 'saved',
+    Icon: Bookmark,
+    href: '/saved',
+  },
+  {
+    value: 'user',
+    Icon: PersonRounded,
+    href: '/user',
+  },
+];
+
+// eslint-disable-next-line no-useless-escape
+export const kickOutMessages = ['Error: No auth token', `\"refreshToken\" must be a string`, `Please authenticate`];

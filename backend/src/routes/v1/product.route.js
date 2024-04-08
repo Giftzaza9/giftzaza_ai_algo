@@ -17,9 +17,26 @@ router
   .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.scrapeProduct), productController.scrapeProduct);
 
 router
+  .route('/similar-products')
+  .post(auth(), validate(productValidation.similarProducts), productController.similarProducts)
+
+router
+  .route('/more-products')
+  .post(auth(), validate(productValidation.moreProducts), productController.moreProducts)
+
+router
+  .route('/shopping')
+  .post(auth(), validate(productValidation.shopping), productController.shopping)
+
+router
   .route('/')
-  .get(validate(productValidation.getProducts), productController.getProducts)
+  .get(auth(), validate(productValidation.getProducts), productController.getProducts)
   .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.createProduct), productController.createProduct);
+
+router
+  .route('/analysis')
+  .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.createAnalysisProduct), productController.createAnalysisProduct);
+  // .get(validate(productValidation.getProducts), productController.getAnalysisProducts)
 
 module.exports = router;
 
