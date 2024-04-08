@@ -31,8 +31,8 @@ export const Shopping = observer(() => {
         limit,
       };
       const { data, error } = await shopping(payload);
-      if (error) toast.error(error || 'Failed to shopping products !');
-      else {
+      // if (error) toast.error(error || 'Failed to shopping products !');
+      if(!error) {
         console.log({ data });
         setPrevProductsCount(products?.length + 1);
         setProducts((prev) => [...prev, ...data?.data?.map((item: any) => ({ ...item })).reverse()]);

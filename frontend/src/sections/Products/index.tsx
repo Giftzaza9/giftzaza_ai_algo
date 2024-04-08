@@ -33,8 +33,8 @@ export const Products = observer(() => {
     try {
       setLoading(true);
       const { data, error } = await getProfile(profileId as string);
-      if (error) toast.error(error || 'Failed to fetch profile data !');
-      else {
+      // if (error) toast.error(error || 'Failed to fetch profile data !');
+      if(!error) {
         setProfile(data);
         setProducts((prev) => [...prev, ...data?.recommended_products?.map((item: any) => ({ ...item })).reverse()]);
       }
@@ -86,8 +86,8 @@ export const Products = observer(() => {
     // setLoading(true);
     const { data, error } = await moreProducts(payload);
     console.log({ data });
-    if (error) toast.error(error || 'Faild to fetch more products !');
-    else {
+    // if (error) toast.error(error || 'Faild to fetch more products !');
+    if(!error) {
       
       setPrevProductsCount(products?.length + 1);
       const prevIds = new Set(products.map((item: any) => item.item_id?.id));

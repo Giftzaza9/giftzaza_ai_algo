@@ -43,7 +43,7 @@ export const Auth = observer(() => {
       navigate('/welcome');
     } else {
       console.log('ERROR ', error);
-      toast.error(error?.message as string);
+      // toast.error(error?.message as string);
     }
   };
 
@@ -61,7 +61,7 @@ export const Auth = observer(() => {
       navigate('/welcome');
     } else {
       console.log('ERROR ', error);
-      toast.error(error?.message as string);
+      // toast.error(error?.message as string);
     }
   };
 

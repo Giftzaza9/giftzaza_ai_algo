@@ -79,9 +79,10 @@ export const CreateProfile = () => {
       max_price: budgetMap[budget as keyof typeof budgetMap]?.max,
     };
     const { data, error } = await createProfile(payload!);
-    if (error) {
-      toast.error(error || 'Failed to create profile !');
-    } else {
+    // if (error) {
+    //   toast.error(error || 'Failed to create profile !');
+    // } 
+    if(!error) {
       console.log(data);
       // toast.success('Profile Created');
       navigate(`/profiles/${data?.id}`);
