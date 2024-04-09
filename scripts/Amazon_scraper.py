@@ -43,6 +43,17 @@ def scrape_bestseller_departement(page, url):
     return df
 
 
+def get_token():
+    url = "https://app.giftalia.ai/api/v1/auth/login"
+    payload = json.dumps({"email": "giftzaza1081@gmail.com", "password": ""})
+    headers = {"Content-Type": "application/json"}
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload).json()
+        return response["tokens"]["access"]["token"]
+    except:
+        return None
+
+
 def scrape_department_products(page, df, affiliate_id=""):
     each_dep = []
     dep_prod_links = {}
@@ -79,7 +90,27 @@ def scrape_department_products(page, df, affiliate_id=""):
     return amazon_links, dep_prod_links
 
 
-if __name__ == "__main__":
+def insert_bulk_products(all_gift_links, token, batch=10):
+    for idx in range(math.ceil(len(all_gift_links) / batch)):
+        loc = idx * batch
+        all_product_links = list(set(all_gift_links[loc : loc + batch]))
+
+        print("input urls:", len(all_product_links))
+        post_product_url = "https://app.giftalia.ai/api/v1/products/analysis"
+        payload = json.dumps({"product_links": all_product_links})
+        Bearer_token = "Bearer " + token
+        headers = {
+            "Authorization": Bearer_token,
+            "Content-Type": "application/json",
+        }
+        response = requests.request(
+            "POST", post_product_url, headers=headers, data=payload
+        )
+        if response:
+            print("insert_bulk_products response: ", response.text)
+
+
+def scrape_with_amazon():
     playwright = sync_playwright().start()
     browser_instance = playwright.chromium
     browser = browser_instance.launch(headless=False)
@@ -117,6 +148,8 @@ if __name__ == "__main__":
     df = scrape_bestseller_departement(page=page, url=bestseller_url)
     df = df[df["dep_names"].isin(considered_dep)]
     df.reset_index(drop=True, inplace=True)
+    print(df)
+
     all_product_links, dep_product_links = scrape_department_products(
         page, df, affiliate_id=affiliate_id
     )
@@ -125,20 +158,18 @@ if __name__ == "__main__":
     with open("amazon_dep_product_links.json", "w", encoding="utf-8") as fw:
         json.dump(dep_product_links, fw)
 
+    print("All amazon products are scraped!!")
+    return dep_product_links
+
+
+if __name__ == "__main__":
+    dep_product_links = scrape_with_amazon()
+    token = get_token()
+
+    with open("amazon_dep_product_links.json") as json_data:
+        dep_product_links = json.load(json_data)
+
     ### Posting request to server to add products to collection
-    n = 15
     for key in dep_product_links:
         all_product_links = dep_product_links[key]
-        for idx in range(math.ceil(len(all_product_links) / n)):
-            loc = idx * n
-            list_prod_links = all_product_links[loc : loc + 15]
-            print(list_prod_links)
-            post_product_url = "https://app.giftalia.ai/api/v1/products/analysis"
-            payload = json.dumps({"product_links": all_product_links})
-            Bearer_token = "Bearer " + ""
-            headers = {
-                "Authorization": Bearer_token,
-                "Content-Type": "application/json",
-            }
-            response = requests.request("POST", post_product_url, headers=headers, data=payload)
-            print(response.text)
+        insert_bulk_products(all_product_links, token, batch=15)
