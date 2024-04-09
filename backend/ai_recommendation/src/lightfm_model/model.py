@@ -319,7 +319,7 @@ class LightFM_cls:
         else:
             new_item_attr_vec = self.encode_textual_data(" ".join([*soft_filter_attrs,*hard_filter_attrs]))
         text_similarity_scores = [
-            np.dot(new_item_attr_vec, self.encode_textual_data(desc).T).squeeze()
+            np.dot(new_item_attr_vec, self.encode_textual_data(desc).T).squeeze() if desc!=None else np.dot(new_item_attr_vec, self.encode_textual_data("").T).squeeze()
             for desc in filter_item_df.description
         ]
         text_similarity_scores = np.array(text_similarity_scores)
