@@ -100,7 +100,7 @@ specify "**url**" in both **Amazon_scraper.py** and **Bloomingdales_scarper.py**
 
 
 
-## Setps to start application on instance.
+## Steps to start application on instance.
 
 ### Structure :-
 
