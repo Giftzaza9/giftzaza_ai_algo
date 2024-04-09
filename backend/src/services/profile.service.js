@@ -34,7 +34,7 @@ const getRecommendedProducts = async (payload) => {
     return data;
   } catch (error) {
     console.log('ERROR IN RECOMMENDATION MSG ', error.message);
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Faild in product recommendation');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed in product recommendation');
   }
 };
 

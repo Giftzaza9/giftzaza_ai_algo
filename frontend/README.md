@@ -2,7 +2,7 @@
 
 Giftalia is a free, AI-powered copilot tailored to help busy professionals discover thoughtful gifts for their loved ones.
 
-## Steps to set-up AI.
+## Steps to set-up Frontend.
 
 ### Step 1 :
 

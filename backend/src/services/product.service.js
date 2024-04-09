@@ -173,7 +173,7 @@ const getMoreProducts = async (productBody) => {
     })
     .catch((error) => {
       console.log('ERROR IN GET MORE PRODUCTS ', error.message);
-      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in fetch more products !');
+      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Failed in fetch more products !');
     });
 };
 
@@ -259,7 +259,7 @@ const similarProducts = async (productBody) => {
     })
     .catch((error) => {
       console.log('ERROR IN RECOMMENDATION MSG ', error.message);
-      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in product recommendation');
+      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Failed in product recommendation');
     });
 };
 
@@ -357,6 +357,7 @@ const deleteProductById = async (productId) => {
  * @param {Object} productBody
  * @returns {Promise<Product>}
  */
+// For bulk scrape products and upload to mongoDB products collection at once to avoid multiple db writes
 const createAnalysisProduct = async (productBody) => {
 
   const scraped = [];
@@ -368,20 +369,24 @@ const createAnalysisProduct = async (productBody) => {
       });
     let count = 0;
 
-    for await (const link of productBody.product_links) {
+    for await (let link of productBody.product_links) {
       count++;
+      if (link.includes('amazon')) link = amazonUrlCleaner(link) || link;
+      if (link.includes('bloomingdale')) link = bloomingdaleUrlCleaner(link) || link;
+      
       const productDB = await Product.findOne({ link: link });
       if (productDB) {
         console.log(`${count}th failed: Existing product`);
         continue;
       }
       const product_data = await scrapeProduct(link, productBody.userId);
-      if (!product_data || !product_data.description || !product_data.image) {
-        console.log(`${count}th failed: Scrape error`);
+      if (!product_data || !product_data.title || !product_data.image) {
+        console.log(`${count}th failed: Scrape error || Product not found or out of stock'`);
         console.log({product_data});
         continue;
       }
-      const gptdata = await GPTbasedTagging(product_data.description);
+      const gptdata = await GPTbasedTagging(product_data.description || product_data.features.join('. '),
+      product_data.title);
       if (!gptdata.preferenceData.length) {
         console.log(`${count}th failed: preference data is not available`);
         continue;
@@ -398,7 +403,7 @@ const createAnalysisProduct = async (productBody) => {
     // console.log(scraped?.map(p => p.title));
     // if (scraped.length) await AnalysisProduct.create(scraped);
     if (scraped.length) await Product.create(scraped);
-    return scraped?.map((p) => p.title);
+    return scraped?.map((p) => p.link);
   } catch (error) {
     console.error(error);
   } finally {
