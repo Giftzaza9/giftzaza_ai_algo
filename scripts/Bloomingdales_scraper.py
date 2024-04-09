@@ -4,6 +4,7 @@ import itertools
 import re
 import requests
 import json
+import math
 from playwright.sync_api import sync_playwright, Playwright
 
 
@@ -44,14 +45,17 @@ if __name__ == "__main__":
         json.dump(links, fw)
     print(links)
     browser.close()
-
-
-    post_product_url = "https://app.giftalia.ai/api/v1/products/analysis"
-    payload = json.dumps({"product_links": links})
-    Bearer_token = None
-    headers = {
-        "Authorization": Bearer_token,
-        "Content-Type": "application/json",
-    }
-    response = requests.request("POST", post_product_url, headers=headers, data=payload)
-    print(response.text)
+    n = 15
+    for idx in range(math.ceil(len(links) / n)):
+        loc = idx * n
+        all_product_links = links[loc : loc + 15]
+        print(all_product_links)
+        post_product_url = "https://app.giftalia.ai/api/v1/products/analysis"
+        payload = json.dumps({"product_links": all_product_links})
+        Bearer_token = "Bearer " + ""
+        headers = {
+            "Authorization": Bearer_token,
+            "Content-Type": "application/json",
+        }
+        response = requests.request("POST", post_product_url, headers=headers, data=payload)
+        print(response.text)

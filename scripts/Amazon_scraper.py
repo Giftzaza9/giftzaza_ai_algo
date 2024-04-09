@@ -4,6 +4,7 @@ import itertools
 import re
 import requests
 import json
+import math
 from playwright.sync_api import sync_playwright, Playwright
 
 
@@ -125,13 +126,19 @@ if __name__ == "__main__":
         json.dump(dep_product_links, fw)
 
     ### Posting request to server to add products to collection
-
-    post_product_url = "https://app.giftalia.ai/api/v1/products/analysis"
-    payload = json.dumps({"product_links": all_product_links})
-    Bearer_token = None
-    headers = {
-        "Authorization": Bearer_token,
-        "Content-Type": "application/json",
-    }
-    response = requests.request("POST", post_product_url, headers=headers, data=payload)
-    print(response.text)
+    n = 15
+    for key in dep_product_links:
+        all_product_links = dep_product_links[key]
+        for idx in range(math.ceil(len(all_product_links) / n)):
+            loc = idx * n
+            list_prod_links = all_product_links[loc : loc + 15]
+            print(list_prod_links)
+            post_product_url = "https://app.giftalia.ai/api/v1/products/analysis"
+            payload = json.dumps({"product_links": all_product_links})
+            Bearer_token = "Bearer " + ""
+            headers = {
+                "Authorization": Bearer_token,
+                "Content-Type": "application/json",
+            }
+            response = requests.request("POST", post_product_url, headers=headers, data=payload)
+            print(response.text)
