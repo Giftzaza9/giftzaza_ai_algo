@@ -357,6 +357,7 @@ const deleteProductById = async (productId) => {
  * @param {Object} productBody
  * @returns {Promise<Product>}
  */
+// For bulk scrape products and upload to mongoDB products collection at once to avoid multiple db writes
 const createAnalysisProduct = async (productBody) => {
 
   const scraped = [];
@@ -368,7 +369,7 @@ const createAnalysisProduct = async (productBody) => {
       });
     let count = 0;
 
-    for await (const link of productBody.product_links) {
+    for await (let link of productBody.product_links) {
       count++;
       if (link.includes('amazon')) link = amazonUrlCleaner(link) || link;
       if (link.includes('bloomingdale')) link = bloomingdaleUrlCleaner(link) || link;
@@ -402,7 +403,7 @@ const createAnalysisProduct = async (productBody) => {
     // console.log(scraped?.map(p => p.title));
     // if (scraped.length) await AnalysisProduct.create(scraped);
     if (scraped.length) await Product.create(scraped);
-    return scraped?.map((p) => p.title);
+    return scraped?.map((p) => p.link);
   } catch (error) {
     console.error(error);
   } finally {
