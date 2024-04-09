@@ -36,6 +36,10 @@ export const Products = observer(() => {
       // if (error) toast.error(error || 'Failed to fetch profile data !');
       if(!error) {
         setProfile(data);
+        if(data?.recommended_products?.length === 0) {
+          setMoreProductsCase(2);
+          setPage(page => page+1);
+        }
         setProducts((prev) => [...prev, ...data?.recommended_products?.map((item: any) => ({ ...item })).reverse()]);
       }
       setLoading(false);
