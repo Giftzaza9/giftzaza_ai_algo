@@ -202,7 +202,7 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
     await browser.close();
 
     return {
-      source: 'bloomingdale',
+      source: 'bloomingdales',
       title: product_title
         ?.replace(/\s+/g, ' ')
         ?.replace(/[^\w\s]/g, '')

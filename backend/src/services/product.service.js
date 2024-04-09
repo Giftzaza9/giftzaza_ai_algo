@@ -173,7 +173,7 @@ const getMoreProducts = async (productBody) => {
     })
     .catch((error) => {
       console.log('ERROR IN GET MORE PRODUCTS ', error.message);
-      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in fetch more products !');
+      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Failed in fetch more products !');
     });
 };
 
@@ -259,7 +259,7 @@ const similarProducts = async (productBody) => {
     })
     .catch((error) => {
       console.log('ERROR IN RECOMMENDATION MSG ', error.message);
-      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Faild in product recommendation');
+      throw new ApiError(httpStatus.BAD_REQUEST, error.message || 'Failed in product recommendation');
     });
 };
 
