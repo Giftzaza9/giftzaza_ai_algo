@@ -98,3 +98,42 @@ Scripts at root folder contains the scripts to ingest the products from Amazon a
 
 specify "**url**" in both **Amazon_scraper.py** and **Bloomingdales_scarper.py** from which you want to scrape the products, And also Specify the "**Bearer Token**" for Authorization of API.
 
+
+
+## Setps to start application on instance.
+
+### Structure :-
+
+ubuntu : ls
+ai_giftalia  --  AI folder
+ubuntu : cd /var/www/giftzaza_ai_algo  -- Frontend,Backend folder
+
+### Step 1 : Start Frontend
+
+Go to frontend folder
+```
+cd/frontend 
+tmux ls - check tmux if running then attach that else create new session
+rm -rf build - delete current build
+npm run build - make new build
+serve -s build - run the build
+Detech tmux after frontend is runnig
+```
+
+### Step 12 : Start Backend
+
+Go to backend folder
+```
+cd/backend
+pm2 status - check if service is running 
+pm2 src/index.js - Run backend if service is not running
+pm2 restart 1 - Restarting the backend
+```
+
+### Step 3 : Start AI
+
+Go to AI folder after seeing the above structure 
+```
+ai_giftalia> cd giftzaza_ai_algo - Go to code folder 
+docker-compose -f docker-compose.ai.yml up -d - For running AI
+```
