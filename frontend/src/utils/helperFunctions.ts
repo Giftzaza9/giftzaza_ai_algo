@@ -71,7 +71,7 @@ export const ellipsisText = (text: string, maxChars: number) => {
   }
 };
 
-export const getCurrencySymbol = (currency: string) => (currency === 'INR' ? '₹' : currency === 'USD' ? '$' : '~');
+export const getCurrencySymbol = (currency: string) => (currency === 'INR' ? '₹' : currency === 'USD' ? '$' : '$');
 
 export const daysRemaining = (date: string) => {
   const days = dayjs(date).diff(dayjs(), 'days');

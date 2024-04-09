@@ -23,8 +23,8 @@ export const Profiles = observer(() => {
     try {
       setLoading(true);
       const { data, error } = await getProfiles();
-      if (error) toast.error(error || 'Faild to fetch profiles');
-      else {
+      // if (error) toast.error(error || 'Faild to fetch profiles');
+      if(!error) {
         setProfiles(data);
       }
       setLoading(false);
