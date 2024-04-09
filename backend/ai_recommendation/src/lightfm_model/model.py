@@ -214,7 +214,7 @@ class LightFM_cls:
         summation = 0
         for idx in range(len(feat_idxs)):
             summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
-        
+        filter_item_df['embedding_tags'] = filter_item_df['embedding_tags'].apply(lambda eachlist : eachlist if isinstance(eachlist,np.ndarray) else np.zeros(self.model.no_components))
         filter_item_embeddings = np.array(filter_item_df['embedding_tags'].to_list())
         scores = filter_item_embeddings.dot(summation)
         item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
@@ -307,6 +307,7 @@ class LightFM_cls:
         for idx in range(len(feat_idxs)):
             summation += (self.model.item_embeddings[feat_idxs[idx]] ) ### Without Factrorizing with the weights
             # summation += (self.model.item_embeddings[feat_idxs[idx]] ) * weight_assigner[self.ritem_fmapper[feat_idxs[idx]]]
+        filter_item_df['embedding_tags'] = filter_item_df['embedding_tags'].apply(lambda eachlist : eachlist if isinstance(eachlist,np.ndarray) else np.zeros(self.model.no_components))
         filter_item_embeddings = np.array(filter_item_df['embedding_tags'].to_list())
         scores = filter_item_embeddings.dot(summation)
         item_norms = np.linalg.norm(filter_item_embeddings, axis=1)
