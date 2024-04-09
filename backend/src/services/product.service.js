@@ -370,6 +370,9 @@ const createAnalysisProduct = async (productBody) => {
 
     for await (const link of productBody.product_links) {
       count++;
+      if (link.includes('amazon')) link = amazonUrlCleaner(link) || link;
+      if (link.includes('bloomingdale')) link = bloomingdaleUrlCleaner(link) || link;
+      
       const productDB = await Product.findOne({ link: link });
       if (productDB) {
         console.log(`${count}th failed: Existing product`);
