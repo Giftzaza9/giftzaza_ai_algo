@@ -127,7 +127,7 @@ Go to backend folder
 ```
 cd/backend
 pm2 status - check if service is running 
-pm2 src/index.js - Run backend if service is not running
+pm2 start src/index.js - Run backend if service is not running
 pm2 restart 1 - Restarting the backend
 ```
 
