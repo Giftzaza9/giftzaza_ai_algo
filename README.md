@@ -103,10 +103,11 @@ specify "**url**" in both **Amazon_scraper.py** and **Bloomingdales_scarper.py**
 ## Steps to start application on instance.
 
 ### Structure :-
-
+```
 ubuntu : ls
 ai_giftalia  --  AI folder
 ubuntu : cd /var/www/giftzaza_ai_algo  -- Frontend,Backend folder
+```
 
 ### Step 1 : Start Frontend
 
