@@ -208,6 +208,11 @@ async def train_with_mongodb(hil_flag = False,is_active_flag=True,weight_flag=Tr
                                     "user_id":"userId",
                                     "profile_id":"profileId",
                                     "activity":"activity_type"},inplace=True, axis=1)
+            if df_interactions.empty:    ### if empty interaction create a dummy interaction.
+                single_user = df_users.sample()
+                single_item = df_items.sample()
+                df_interactions = pd.DataFrame(data=[[str(single_item["_id"].values[0]),str(single_user['userId'].values[0]),str(single_user["_id"].values[0]),"like"]]
+                                ,columns=['productId', 'userId', 'profileId', 'activity_type'])
             # df_interactions = df_interactions[df_interactions['activity_type']!="dislike"]
         except Exception as e:
             raise Exception(f"Error in Connection to Mongodb : {e}")
