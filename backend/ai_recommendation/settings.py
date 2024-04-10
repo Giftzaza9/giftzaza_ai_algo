@@ -11,5 +11,6 @@ class ENV:
         self.DATABASE_NAME = os.getenv("DATABASE_NAME")
         self.DATABASE_USER = os.getenv("DATABASE_USER")
         self.DATABASE_PWD = os.getenv("DATABASE_PWD")
+        self.REDIS_PORT = os.getenv("REDIS_PORT")
 
 env = ENV()

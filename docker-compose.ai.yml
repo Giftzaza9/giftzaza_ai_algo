@@ -12,6 +12,8 @@ services:
     build:
       context: .
       dockerfile: ai.Dockerfile
+    environment:
+      REDIS_PORT: 6379
     ports:
       - 8001:8001
     depends_on:

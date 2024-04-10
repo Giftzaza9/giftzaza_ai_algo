@@ -22,8 +22,9 @@ from recommenders.models.lightfm.lightfm_utils import (
     similar_items,
 )
 from sentence_transformers import SentenceTransformer
+from settings import env
 
-cache = Cache(Cache.REDIS, endpoint="redis", port=6379, namespace="main",serializer=PickleSerializer())
+cache = Cache(Cache.REDIS, endpoint="redis", port=env.REDIS_PORT, namespace="main",serializer=PickleSerializer())
 
 BASE_PATH = os.path.dirname(__file__)
 Read_DIR = "lib"
