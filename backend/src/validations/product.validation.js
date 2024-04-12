@@ -8,6 +8,7 @@ const getProducts = {
     sort: Joi.string(),
     search: Joi.string(),
     source: Joi.string(),
+    curated: Joi.boolean(),
     filter: Joi.string(),
     price_min: Joi.number().integer(),
     price_max: Joi.number().integer(),

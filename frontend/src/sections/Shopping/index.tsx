@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { shopping, shoppingBody } from '../../services/product';
 import { loaderState } from '../../store/ShowLoader';
 import { observer } from 'mobx-react-lite';
-import { toast } from 'react-toastify';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
 import { SwipeAction } from '../../constants/constants';
 import { SwipeDirection } from '../../lib/CardSwpierLib';

@@ -1,6 +1,5 @@
 import {
   Card,
-  CardActionArea,
   CardMedia,
   CardContent,
   Grid,
@@ -32,7 +31,7 @@ interface Props {
 export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts }) => {
   const imageBreak = useMediaQuery('(max-height: 790px)');
   const imageBreak2 = useMediaQuery('(max-height: 674px)');
-  const { title, description, source, thumbnails, image, price_currency, price, rating, id, link, features } =
+  const { title, description, source, thumbnails, image, price_currency, price, rating, id, link, features, curated } =
     productData as Product;
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -80,13 +79,13 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
           </Box>
         </Box>
 
-        {matchingScore && (
+        {(matchingScore || curated) && (
           <div className="badge-product-match">
-            <span className="match">{Math.round(Number(matchingScore) * 100)}% Match</span>
+            <span className="match">{curated ? "Curated" : (Math.round(Number(matchingScore) * 100)+"% Match")}</span>
           </div>
         )}
 
-        <CardActionArea
+        <Box
           sx={{
             height: '100%',
             overflow: 'hidden',
@@ -97,10 +96,10 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
         >
           {thumbnails && thumbnails?.length > 1 ? (
             // <Box>
-            <Carousel infiniteLoop swipeable dynamicHeight>
-              {thumbnails?.map((thumb) => (
+            <Carousel infiniteLoop swipeable dynamicHeight showThumbs={false}>
+              {thumbnails?.map((thumb, number) => (
                 // <Box sx={{ width: '100%', height: isSmallHeightScreen ? '35vh' : '40vh', marginTop: '20px' }}>
-                <Box sx={{ width: '100%', height: 'calc(var(--vh, 1vh) * 50)', marginTop: '20px' }}>
+                <Box sx={{ width: '100%', height: 'calc(var(--vh, 1vh) * 50)', marginTop: '20px' }} key={thumb+"~"+number}>
                   <CardMedia
                     component="img"
                     width={'100%'}
@@ -214,7 +213,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               </Box>
             </Grid>
           </CardContent>
-        </CardActionArea>
+        </Box>
       </Card>
       <ProductPreviewModalUser
         onClose={() => {

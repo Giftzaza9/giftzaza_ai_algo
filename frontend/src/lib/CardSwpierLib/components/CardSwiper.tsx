@@ -13,7 +13,7 @@ import { GradientClose } from '../../../components/shared/Icons/GradientClose';
 import { Love } from '../../../components/shared/Icons/Love';
 import { SwipeAction, iphoneSeCondition } from '../../../constants/constants';
 import _ from 'lodash';
-import { Box, useMediaQuery } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 import { Bookmark } from '@mui/icons-material';
 import ReplayIcon from '@mui/icons-material/Replay';
 
@@ -40,12 +40,10 @@ export const CardSwiper = (props: CardSwiperProps) => {
 
   const {
     handleEnter,
-    handleClickEvents,
     handleNewCardSwiper,
     dynamicData,
     isFinish,
     swiperIndex,
-    swiperElements,
     elements,
     setElements,
     handleUserActivity,

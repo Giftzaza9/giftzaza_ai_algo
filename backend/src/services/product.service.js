@@ -17,7 +17,7 @@ const fs = require('fs').promises;
  * @returns {Promise<QueryResult>}
  */
 const queryProducts = async (queryObject) => {
-  const { sort, search = '', filter = '', page = 1, limit = 12, price_min, price_max, hil, is_active } = queryObject;
+  const { sort, search = '', filter = '', page = 1, limit = 12, price_min, price_max, hil, curated, is_active, source = '' } = queryObject;
   let filterObject = {
     is_active: true,
     // hil: true,
@@ -58,9 +58,11 @@ const queryProducts = async (queryObject) => {
   else if (typeof price_min === 'number') filterObject.price = { $gte: price_min };
   else if (typeof price_max === 'number') filterObject.price = { $lte: price_max };
   if (typeof hil === 'boolean') filterObject.hil = hil;
+  if (typeof curated === 'boolean' && curated) filterObject.curated = curated;
   if (typeof is_active === 'boolean') filterObject.is_active = is_active;
   if (search) filterObject.title = { $regex: new RegExp(search, 'i') };
   if (filter) filterObject.tags = { $all: filter?.split(',')?.map((el) => (el?.trim() === '65' ? '65 +' : el)) };
+  if (source && source?.split(',')?.length == 1) filterObject.source = (source?.split(',')?.[0]?.toLowerCase()) === "bloomingdales" ? {$in: ['bloomingdales', 'bloomingdale']} : source?.split(',')?.[0]?.toLowerCase();
 
   const [total, products] = await Promise.all([
     Product.count(filterObject),

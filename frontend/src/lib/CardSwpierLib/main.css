@@ -252,8 +252,16 @@
   background: none!important;
 }
 
-.carousel.carousel-slider .control-arrow {
-  padding: 40px!important;
+.carousel .control-prev.control-arrow {
+  display: none!important;
+}
+
+.carousel .control-next.control-arrow {
+  width: 100%!important;
+}
+
+.carousel .control-next.control-arrow:before {
+  display: none!important;
 }
 
 .full-screen {
