@@ -8,26 +8,26 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { userStore } from '../../../store/UserStore';
 import { stringAvatar } from '../../../utils/helperFunctions';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { navbarLinks, navbarSettings } from '../../../constants/constants';
-import { roleEnum } from '../../../constants/types';
+import { useNavigate } from 'react-router-dom';
+import { navbarSettings } from '../../../constants/constants';
+// import { roleEnum } from '../../../constants/types';
 import { bottomNavState } from '../../../store/BottomNavState';
 import { logout } from '../../../services/auth';
 
 export function Layout({ children }: React.PropsWithChildren) {
   const { user, setUser } = userStore;
   const { setIsVisible } = bottomNavState;
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const activeLink = location?.pathname?.substring(location?.pathname?.lastIndexOf('/') + 1);
+  // const activeLink = location?.pathname?.substring(location?.pathname?.lastIndexOf('/') + 1);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -105,7 +105,7 @@ export function Layout({ children }: React.PropsWithChildren) {
                   display: { xs: 'block', md: 'none' },
                 }}
               >
-                {navbarLinks.map((item, index) =>
+                {/* {navbarLinks?.length > 0 && navbarLinks.map((item, index) =>
                   item?.access?.includes(user?.role as roleEnum) ? (
                     <MenuItem key={item?.name + '-' + index} onClick={() => navigate(item?.link)}>
                       {item?.icon}
@@ -116,7 +116,7 @@ export function Layout({ children }: React.PropsWithChildren) {
                   ) : (
                     <></>
                   )
-                )}
+                )} */}
               </Menu>
             </Box>
 
@@ -137,7 +137,7 @@ export function Layout({ children }: React.PropsWithChildren) {
 
             {/* WEB-TABS-MENU */}
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {navbarLinks.map((item, index) =>
+              {/* {navbarLinks?.length > 0 && navbarLinks.map((item, index) =>
                 item?.access?.includes(user?.role as roleEnum) ? (
                   <Button
                     key={index + '--' + item?.name}
@@ -158,7 +158,7 @@ export function Layout({ children }: React.PropsWithChildren) {
                 ) : (
                   <></>
                 )
-              )}
+              )} */}
             </Box>
 
             {/* RIGHT-SETTINGS */}

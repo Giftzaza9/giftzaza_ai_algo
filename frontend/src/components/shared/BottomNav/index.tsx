@@ -48,11 +48,12 @@ export const BottomNav = observer(() => {
       onChange={handleChange}
       sx={{ ...bottomNavStyles, display: isVisible && user && token ? { xs: 'flex' } : { xs: 'none' } }}
     >
-      {bottomNavIcons?.map(({ Icon, href, value }) => (
+      {bottomNavIcons?.map(({ Icon, href, value }, index) => (
         <BottomNavigationAction
           value={value}
           icon={<Icon style={{ fontSize: isSmallScreen ? '22px' : '26px' }} />}
           onClick={() => navigate(href)}
+          key={href+"~bottomNav"+index}
         />
       ))}
     </BottomNavigation>

@@ -1,15 +1,15 @@
-import React from 'react';
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import { Budget, BudgetMap, Product, roleEnum } from './types';
+// import React from 'react';
+// import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import { BudgetMap, Product } from './types';
 import { GoHomeFill } from 'react-icons/go';
 import { Bookmark, GridViewRounded, PersonRounded } from '@mui/icons-material';
 import categoryData from "./category.json";
 
-const iconStyle = {
-  fontSize: 'large',
-  marginBottom: '-3px',
-  marginRight: '4px',
-};
+// const iconStyle = {
+//   fontSize: 'large',
+//   marginBottom: '-3px',
+//   marginRight: '4px',
+// };
 
 export const navbarLinks = [
   // {
@@ -18,7 +18,7 @@ export const navbarLinks = [
   //   icon: <PersonOutlineIcon sx={iconStyle} />,
   //   access: [roleEnum.ADMIN, roleEnum.USER],
   // },
-  { name: 'Administration', link: '/admin', icon: <DescriptionOutlinedIcon sx={iconStyle} />, access: [roleEnum.ADMIN] },
+  // { name: 'Administration', link: '/admin', icon: <DescriptionOutlinedIcon sx={iconStyle} />, access: [roleEnum.ADMIN] },
   // { name: 'Loved', link: '/loved', icon: <FavoriteBorderIcon sx={iconStyle} />, access: [roleEnum.ADMIN, roleEnum.USER] },
 ];
 
