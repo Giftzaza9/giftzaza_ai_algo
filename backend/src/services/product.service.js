@@ -165,12 +165,12 @@ const getMoreProducts = async (productBody) => {
   };
   return await getRecommendedProducts(payload)
     .then(async (res) => {
-      const objectIds = convertToObjectId(res);
-      const products = await Product.find({ _id: { $in: objectIds } });
-      const products_detail = objectIds?.map((obj) => {
+            const objectIds = convertToObjectId(res);
+            const products = await Product.find({ _id: { $in: objectIds } });
+            const products_detail = objectIds?.map((obj) => {
         const productDetails = products.find((product) => product._id == obj?.item_id);
         return { ...obj, item_id: productDetails };
-      });
+      }).filter((item) => item.item_id !== undefined);
       return products_detail;
     })
     .catch((error) => {

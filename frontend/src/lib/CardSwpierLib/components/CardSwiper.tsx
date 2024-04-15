@@ -38,24 +38,16 @@ export const CardSwiper = (props: CardSwiperProps) => {
     type,
   } = props;
 
-  const {
-    handleEnter,
-    handleNewCardSwiper,
-    dynamicData,
-    isFinish,
-    swiperIndex,
-    elements,
-    setElements,
-    handleUserActivity,
-  } = useCardSwiper({
-    onDismiss,
-    onFinish,
-    onEnter,
-    data,
-    actionHandler,
-    prevProducts,
-    prevProductsCount,
-  });
+  const { handleEnter, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, elements, setElements, handleUserActivity } =
+    useCardSwiper({
+      onDismiss,
+      onFinish,
+      onEnter,
+      data,
+      actionHandler,
+      prevProducts,
+      prevProductsCount,
+    });
   // const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(swiperElements.current[swiperIndex]);
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
 
@@ -141,43 +133,44 @@ export const CardSwiper = (props: CardSwiperProps) => {
     () =>
       dynamicData &&
       dynamicData?.length > 0 &&
-      dynamicData?.map(
-        (product: any, index: number) =>
-          product && (
-            <div
-              key={product?._id + '~' + index}
-              ref={(ref: HTMLDivElement | null) =>
-                handleNewCardSwiper(
-                  ref,
-                  type === 'shopping' ? product?.id : product?.item_id?.id,
-                  product?.matching_score,
-                  type === 'shopping' ? product : product?.item_id
-                )
-              }
-              className="swipe-card__container"
-              id="swipe-card__container"
-            >
-              {props.withRibbons && (
-                <CardSwiperRibbons
-                  likeRibbonText={props.likeRibbonText}
-                  dislikeRibbonText={props.dislikeRibbonText}
-                  ribbonColors={props.ribbonColors}
-                />
-              )}
-              <ProductCard
-                matches={_.intersection(
-                  type === 'shopping'
-                    ? product?.tags?.map((el: string) => el?.toLowerCase())
-                    : product?.item_id?.tags?.map((el: string) => el?.toLowerCase()),
-                  profile?.preferences
+      dynamicData?.map((product: any, index: number) =>
+        type === 'shopping'
+          ? product
+          : product?.item_id && (
+              <div
+                key={product?._id + '~' + index}
+                ref={(ref: HTMLDivElement | null) =>
+                  handleNewCardSwiper(
+                    ref,
+                    type === 'shopping' ? product?.id : product?.item_id?.id,
+                    product?.matching_score,
+                    type === 'shopping' ? product : product?.item_id
+                  )
+                }
+                className="swipe-card__container"
+                id="swipe-card__container"
+              >
+                {props.withRibbons && (
+                  <CardSwiperRibbons
+                    likeRibbonText={props.likeRibbonText}
+                    dislikeRibbonText={props.dislikeRibbonText}
+                    ribbonColors={props.ribbonColors}
+                  />
                 )}
-                productData={type === 'shopping' ? product : product?.item_id}
-                handleSave={handleSave}
-                matchingScore={product?.matching_score}
-                setPrevProducts={setPrevProducts}
-              />
-            </div>
-          )
+                <ProductCard
+                  matches={_.intersection(
+                    type === 'shopping'
+                      ? product?.tags?.map((el: string) => el?.toLowerCase())
+                      : product?.item_id?.tags?.map((el: string) => el?.toLowerCase()),
+                    profile?.preferences
+                  )}
+                  productData={type === 'shopping' ? product : product?.item_id}
+                  handleSave={handleSave}
+                  matchingScore={product?.matching_score}
+                  setPrevProducts={setPrevProducts}
+                />
+              </div>
+            )
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dynamicData]
