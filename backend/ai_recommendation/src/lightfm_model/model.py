@@ -228,6 +228,9 @@ class LightFM_cls:
         item_df['all_unique_id'] = item_df['itemID'].map(filter_item_df['all_unique_id'].to_dict())
         item_df.columns = 'left_' + item_df.columns.values
         matched_item_meta = item_df.merge(filter_item_df,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
+        if "curated" in matched_item_meta.columns:
+            matched_item_meta.sort_values(by=["curated","left_score"],ascending=False,inplace=True)
+            matched_item_meta.reset_index(drop=True,inplace=True)
         return matched_item_meta
     
     def profile_item_recommendation(self,original_profile_id):
@@ -242,6 +245,9 @@ class LightFM_cls:
         top_items = score_mapper.merge(self.item_meta,left_on=['matched_item_id'],right_on=['all_unique_id'],copy=True)
         top_items.sort_values(by=["matching_score"],ascending=False,inplace=True)
         top_items.reset_index(drop=True,inplace=True)
+        if "curated" in top_items.columns:
+            top_items.sort_values(by=["curated","matching_score"],ascending=False,inplace=True)
+            top_items.reset_index(drop=True,inplace=True)
         return top_items
     
     def cold_start_profile_item_recommendation(self,filter_dict,hard_filter_attrs,new_profile_attributes,similar_profile_id,Global_Obj,min_budget=0,max_budget=None,test_sample_flag=False,explicit_filters=None):
@@ -264,6 +270,9 @@ class LightFM_cls:
             def_budget_filter = lambda price : (price>=min_budget) & (price<=max_budget) if max_budget else price>=min_budget
             top_items_new = top_items_new[top_items_new['price'].apply(def_budget_filter)]
             top_items_new.reset_index(drop=True,inplace=True)
+            if "curated" in top_items_new.columns:
+                top_items_new.sort_values(by=["curated","matching_score"],ascending=False,inplace=True)
+                top_items_new.reset_index(drop=True,inplace=True)
         else:
             return pd.DataFrame(columns = ['all_unique_id','title','tags','matching_score'])
         return top_items_new
@@ -339,6 +348,9 @@ class LightFM_cls:
         item_df['all_unique_id'] = item_df['itemID'].map(filter_item_df['all_unique_id'].to_dict())
         item_df.columns = 'left_' + item_df.columns.values
         matched_item_meta = item_df.merge(filter_item_df,left_on=['left_all_unique_id'],right_on=['all_unique_id'],copy=True)
+        if "curated" in matched_item_meta.columns:
+            matched_item_meta.sort_values(by=["curated","left_score"],ascending=False,inplace=True)
+            matched_item_meta.reset_index(drop=True,inplace=True)
         return matched_item_meta
 
     def Re_Train(self,new_profile_meta,new_item_meta,new_profile_item_interactions,attr_list,df_users,df_items,df_interactions,Global_Obj):
