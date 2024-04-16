@@ -1,6 +1,10 @@
 # Dependencies
 node_modules
 chrome
+
+#Folder
+lib_backup
+
 # yarn error logs
 yarn-error.log
 
