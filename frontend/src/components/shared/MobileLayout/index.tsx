@@ -91,7 +91,8 @@ interface Props extends PropsWithChildren {
 function Fallback({ error, resetErrorBoundary }: any) {
   useEffect(() => {
     if (error) {
-      alert(error.message || 'Something went wrong!');
+      // alert(error.message || 'Something went wrong!');
+      console.log(error.message)
       window.location.href = '/';
     }
   }, [error]);

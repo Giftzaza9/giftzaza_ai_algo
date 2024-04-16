@@ -27,7 +27,7 @@ export const scrapeProduct = async (body: ScrapeProductBody): Promise<ApiRespons
 export interface moreProductBody {
   preferences: string[];
   top_n: number;
-  semi_soft_filter?: string[];
+  semi_hard_filters?: string[];
   min_price?: number;
   max_price?: number
 }

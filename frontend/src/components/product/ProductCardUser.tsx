@@ -26,9 +26,10 @@ interface Props {
   matches?: string[];
   matchingScore?: string;
   setPrevProducts?: any;
+  setProductsShowingCount?: any;
 }
 
-export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts }) => {
+export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts, setProductsShowingCount }) => {
   const imageBreak = useMediaQuery('(max-height: 790px)');
   const imageBreak2 = useMediaQuery('(max-height: 674px)');
   const { title, description, source, thumbnails, image, price_currency, price, rating, id, link, features, curated } =
@@ -37,6 +38,7 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
 
   useEffect(() => {
     setPrevProducts((prev: Iterable<unknown> | null | undefined) => new Set(prev).add(id));
+    setProductsShowingCount((count: number) => count+1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
