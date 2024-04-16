@@ -28,6 +28,7 @@ export const Products = observer(() => {
   const [refetch, setRefetch] = useState<boolean>(false);
   const [haveMoreProducts, setHaveMoreProducts] = useState<boolean>(true);
   const [moreProductsCase, setMoreProductsCase] = useState<number>(1);
+  const [productsShowingCount, setProductsShowingCount] = useState<number>(0);
 
   const fetchProfile = async () => {
     try {
@@ -54,7 +55,10 @@ export const Products = observer(() => {
   }, [profileId]);
 
   useEffect(() => {
-    if (refetch) fetchProfile();
+    if (refetch) { 
+      setHaveMoreProducts(true);
+      fetchProfile();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
@@ -121,7 +125,7 @@ export const Products = observer(() => {
     const payload: moreProductBody = {
       preferences: profile?.preferences!,
       top_n: page * 10,
-      semi_soft_filter: ["interest"],
+      semi_hard_filters: ["interest"],
     };
 
     if (page > 1 && moreProductsCase < 4) {
@@ -137,7 +141,7 @@ export const Products = observer(() => {
       else if(moreProductsCase === 3) {
         newPayload = {
           ...payload,
-          semi_soft_filter: [],
+          semi_hard_filters: [],
         }
       }
 
@@ -189,6 +193,8 @@ export const Products = observer(() => {
             setPrevProducts={setPrevProducts}
             onFinish={handleFinish}
             actionHandler={handleProductAction}
+            productsShowingCount={productsShowingCount}
+            setProductsShowingCount={setProductsShowingCount}
             // onDismiss={handleSwipe}
             withActionButtons={true}
             dislikeButton={<button className="">Dislike</button>}

@@ -36,7 +36,7 @@ const moreProducts = {
     top_n: Joi.number().integer(),
     min_price: Joi.number(),
     max_price: Joi.number(),
-    semi_soft_filter: Joi.array(),
+    semi_hard_filters: Joi.array(),
   }),
 };
 
