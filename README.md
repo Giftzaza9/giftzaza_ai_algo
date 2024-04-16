@@ -100,13 +100,14 @@ specify "**url**" in both **Amazon_scraper.py** and **Bloomingdales_scarper.py**
 
 
 
-## Setps to start application on instance.
+## Steps to start application on instance.
 
 ### Structure :-
-
+```
 ubuntu : ls
 ai_giftalia  --  AI folder
 ubuntu : cd /var/www/giftzaza_ai_algo  -- Frontend,Backend folder
+```
 
 ### Step 1 : Start Frontend
 
@@ -126,7 +127,7 @@ Go to backend folder
 ```
 cd/backend
 pm2 status - check if service is running 
-pm2 src/index.js - Run backend if service is not running
+pm2 start src/index.js - Run backend if service is not running
 pm2 restart 1 - Restarting the backend
 ```
 

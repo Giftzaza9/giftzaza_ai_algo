@@ -2,10 +2,10 @@ import React from 'react';
 import { useEffect } from 'react';
 import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { useGoogleLogin } from '@react-oauth/google';
-import { loginWithFacebook, loginWithGoogle } from '../../services/auth';
-import { toast } from 'react-toastify';
+import { loginWithGoogle } from '../../services/auth';
+// import { toast } from 'react-toastify';
 // import FacebookLogin from 'react-facebook-login';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+//use this// import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 // import GoogleIcon from '@mui/icons-material/Google';
 // import FacebookIcon from '@mui/icons-material/Facebook';
 import { userStore } from '../../store/UserStore';
@@ -47,23 +47,23 @@ export const Auth = observer(() => {
     }
   };
 
-  const responseFacebook = async (response: any) => {
-    console.log(response);
-    if (response?.status === 'unknown') return;
-    const payload = {
-      name: response?.name,
-      email: response?.email,
-    };
-    const { data, error } = await loginWithFacebook(payload);
-    if (data) {
-      setUser(data?.user);
-      setIsVisible(false);
-      navigate('/welcome');
-    } else {
-      console.log('ERROR ', error);
-      // toast.error(error?.message as string);
-    }
-  };
+  // const responseFacebook = async (response: any) => {
+  //   console.log(response);
+  //   if (response?.status === 'unknown') return;
+  //   const payload = {
+  //     name: response?.name,
+  //     email: response?.email,
+  //   };
+  //   const { data, error } = await loginWithFacebook(payload);
+  //   if (data) {
+  //     setUser(data?.user);
+  //     setIsVisible(false);
+  //     navigate('/welcome');
+  //   } else {
+  //     console.log('ERROR ', error);
+  //     // toast.error(error?.message as string);
+  //   }
+  // };
 
   return (
     <Grid

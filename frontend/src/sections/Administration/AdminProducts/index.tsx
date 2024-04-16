@@ -23,7 +23,9 @@ export const AdminProducts = () => {
   const [searchRaw, setSearchRaw] = useState<string>('');
   const [budgetTuples, setBudgetTuples] = useState<[number, number]>([0, 1000]);
   const [hil, setHil] = useState<boolean>(false);
+  const [curated, setCurated] = useState<boolean>(false);
   const [showDeletedProducts, setShowDeletedProducts] = useState<boolean>(false);
+  const [source, setSource] = useState<string[]>([]);
   const [queryString, setQueryString] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState<boolean>(false);
@@ -86,8 +88,10 @@ export const AdminProducts = () => {
   useEffect(() => {
     const queryParams: string[] = [`page=${1}&limit=${productPerPageAdmin}&sort=${sort}`];
     if (filters.length > 0) queryParams.push(`filter=${filters.join(',')}`);
+    if (source.length > 0) queryParams.push(`source=${source.join(',')}`);
     if (searchDebounced.trim()) queryParams.push(`search=${searchDebounced}`);
     if (hil) queryParams.push(`hil=${hil}`);
+    if (curated) queryParams.push(`curated=${curated}`);
     if (showDeletedProducts) queryParams.push(`is_active=${!showDeletedProducts}`);
     if (budgetTuples[0] !== 0 || budgetTuples[1] !== 1000) {
       queryParams.push(`price_min=${budgetTuples[0]}`);
@@ -101,7 +105,7 @@ export const AdminProducts = () => {
       setQueryString(newQueryString);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil]);
+  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil, source, curated]);
 
   useEffect(() => {
     if (page > 1) {
@@ -162,7 +166,11 @@ export const AdminProducts = () => {
             hil={hil}
             showDeletedProducts={showDeletedProducts}
             setHil={setHil}
+            source={source}
+            setSource={setSource}
             setShowDeletedProducts={setShowDeletedProducts}
+            curated={curated}
+            setCurated={setCurated}
           />
         </Grid>
 

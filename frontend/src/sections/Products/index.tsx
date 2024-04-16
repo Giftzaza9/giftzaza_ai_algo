@@ -96,7 +96,8 @@ export const Products = observer(() => {
       setPrevProductsCount(products?.length + 1);
       const prevIds = new Set(products.map((item: any) => item.item_id?.id));
         // Filter out items from data that are not already present in prev
-      const uniqueNewProducts = data?.filter((item: any) => !prevIds.has(item.item_id?.id));
+      const uniqueNewProducts = data?.filter((item: any) => item.item_id?.id && !prevIds.has(item.item_id?.id));
+      // const uniqueNewProducts = data?.filter((item: any) => !prevIds.has(item.item_id?.id));
 
       if (uniqueNewProducts?.length === 0 && moreProductsCase < 3) {
         setMoreProductsCase((prev) => prev + 1);

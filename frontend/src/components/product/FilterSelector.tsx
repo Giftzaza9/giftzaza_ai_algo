@@ -28,6 +28,10 @@ interface Props {
   setHil: Dispatch<SetStateAction<boolean>>;
   showDeletedProducts: boolean;
   setShowDeletedProducts: Dispatch<SetStateAction<boolean>>;
+  source: string[];
+  setSource: Dispatch<SetStateAction<string[]>>;
+  curated: boolean;
+  setCurated: Dispatch<SetStateAction<boolean>>;
 }
 
 export const FilterSelector: FC<Props> = ({
@@ -39,6 +43,10 @@ export const FilterSelector: FC<Props> = ({
   showDeletedProducts,
   setHil,
   setShowDeletedProducts,
+  source,
+  setSource,
+  curated,
+  setCurated,
 }) => {
   const handleFilterChecked = (checked: boolean, value: string) => {
     if (checked) setFilters((prev) => [...prev, value]);
@@ -66,8 +74,10 @@ export const FilterSelector: FC<Props> = ({
               <IconButton
                 onClick={() => {
                   setFilters([]);
+                  setSource([]);
                   setBudgetTuples([0, 1000]);
                   setHil(false);
+                  setCurated(false);
                   setShowDeletedProducts(false);
                 }}
               >
@@ -135,6 +145,56 @@ export const FilterSelector: FC<Props> = ({
         </Accordion>
         <Divider variant="fullWidth" sx={{ backgroundColor: 'rgba(233, 218, 241, 1)' }} />
 
+        <Accordion key={'source'} sx={{ boxShadow: 'none' }}>
+          <AccordionSummary
+            sx={{ '&.Mui-expanded': { minHeight: '56px' } }}
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1-content"
+            id={`panel-source`}
+          >
+            <Typography variant="subtitle1" fontFamily={'Inter'} fontWeight={600} fontSize={'14px'} lineHeight={'16px'}>
+              {`Source`}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <FormControl component="fieldset">
+              <FormGroup aria-label="position">
+                <FormControlLabel
+                  value={source.includes('Amazon')}
+                  control={<Checkbox checked={source.includes('Amazon')} />}
+                  label={`Amazon`}
+                  labelPlacement="end"
+                  onChange={(e, checked) => {
+                    setSource((prev) => {
+                      if (checked) {
+                        return [...prev, 'Amazon'];
+                      } else {
+                        return prev.filter((item) => item !== 'Amazon');
+                      }
+                    });
+                  }}
+                />
+                <FormControlLabel
+                  value={source.includes('Bloomingdales')}
+                  control={<Checkbox checked={source.includes('Bloomingdales')} />}
+                  label={`Bloomingdales`}
+                  labelPlacement="end"
+                  onChange={(e, checked) => {
+                    setSource((prev) => {
+                      if (checked) {
+                        return [...prev, 'Bloomingdales'];
+                      } else {
+                        return prev.filter((item) => item !== 'Bloomingdales');
+                      }
+                    });
+                  }}
+                />
+              </FormGroup>
+            </FormControl>
+          </AccordionDetails>
+        </Accordion>
+        <Divider variant="fullWidth" sx={{ backgroundColor: 'rgba(233, 218, 241, 1)' }} />
+
         <Accordion key={'other'} sx={{ boxShadow: 'none' }}>
           <AccordionSummary
             sx={{ '&.Mui-expanded': { minHeight: '56px' } }}
@@ -156,6 +216,15 @@ export const FilterSelector: FC<Props> = ({
                   labelPlacement="end"
                   onChange={(e, checked) => {
                     setHil(checked);
+                  }}
+                />
+                <FormControlLabel
+                  value={curated}
+                  control={<Checkbox checked={curated} />}
+                  label={`Curated Products`}
+                  labelPlacement="end"
+                  onChange={(e, checked) => {
+                    setCurated(checked);
                   }}
                 />
                 <FormControlLabel

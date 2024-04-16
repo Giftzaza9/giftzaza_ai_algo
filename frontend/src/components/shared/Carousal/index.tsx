@@ -20,7 +20,7 @@ export const Carousal: React.FC<Props> = ({ images }) => {
       height={'260px'}
     >
       {images?.map((el, index) => (
-        <img src={el} alt={`img-${index}`} style={{ objectFit: 'contain', width: '100%', height: '100%' }} />
+        <img src={el} alt={`img-${index}`} key={`${el}-${index}`} style={{ objectFit: 'contain', width: '100%', height: '100%' }} />
       ))}
     </Carousel>
   );

@@ -3,7 +3,6 @@ import { MobileLayout } from '../../components/shared/MobileLayout';
 import { useEffect, useState } from 'react';
 import { Profile } from '../../constants/types';
 import { deleteProfile, getProfiles } from '../../services/profile';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../store/ShowLoader';

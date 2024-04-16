@@ -2,13 +2,15 @@ import { Backdrop, CircularProgress, Grid, IconButton, useMediaQuery } from '@mu
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
-import { FC, PropsWithChildren, useState } from 'react';
+import { FC, PropsWithChildren, useEffect, useState } from 'react';
 import { Tune } from '@mui/icons-material';
 import { EditProfileModal } from '../../profile/EditProfileModal';
 import { Profile } from '../../../constants/types';
 import { iphoneSeCondition } from '../../../constants/constants';
 import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../../store/ShowLoader';
+import { ErrorBoundary } from 'react-error-boundary';
+import { CreateProfile } from '../../../sections/Profiles/CreateProfile';
 
 interface _Props {
   fetchProfile?: () => void;
@@ -86,51 +88,64 @@ interface Props extends PropsWithChildren {
   profile?: Profile;
 }
 
+function Fallback({ error, resetErrorBoundary }: any) {
+  useEffect(() => {
+    if (error) {
+      alert(error.message || 'Something went wrong!');
+      window.location.href = '/';
+    }
+  }, [error]);
+
+  return <CreateProfile />;
+}
+
 export const MobileLayout = observer(({ children, profile, fetchProfile }: Props) => {
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const { loading, setLoading } = loaderState;
   return (
-    <Grid
-      container
-      component="main"
-      className={'full-screen'}
-      sx={{
-        backgroundColor: theme.palette.secondary.main,
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-      }}
-    >
-      <MobileHeader profile={profile} fetchProfile={fetchProfile} />
-      <Box
+    <ErrorBoundary FallbackComponent={Fallback}>
+      <Grid
+        container
+        component="main"
+        className={'full-screen'}
         sx={{
+          backgroundColor: theme.palette.secondary.main,
           display: 'flex',
-          flexGrow: 1,
-          overflowY: 'auto',
-          pb: isSmallScreen ? '50px' : '60px',
-          marginTop: isSmallScreen ? '50px' : '76px',
           flexDirection: 'column',
+          position: 'relative',
         }}
       >
-        {children}
-      </Box>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: 9999 }}
-        open={loading}
-        onClick={() => {
-          setLoading(false);
-        }}
-      >
-        <CircularProgress
+        <MobileHeader profile={profile} fetchProfile={fetchProfile} />
+        <Box
           sx={{
-            width: '150px!important',
-            height: '150px!important',
-            color: 'rgba(221, 110, 63, 1)',
-            alignSelf: 'center',
-            margin: '20px auto',
+            display: 'flex',
+            flexGrow: 1,
+            overflowY: 'auto',
+            pb: isSmallScreen ? '50px' : '60px',
+            marginTop: isSmallScreen ? '50px' : '76px',
+            flexDirection: 'column',
           }}
-        />
-      </Backdrop>
-    </Grid>
+        >
+          {children}
+        </Box>
+        <Backdrop
+          sx={{ color: '#fff', zIndex: 9999 }}
+          open={loading}
+          onClick={() => {
+            setLoading(false);
+          }}
+        >
+          <CircularProgress
+            sx={{
+              width: '150px!important',
+              height: '150px!important',
+              color: 'rgba(221, 110, 63, 1)',
+              alignSelf: 'center',
+              margin: '20px auto',
+            }}
+          />
+        </Backdrop>
+      </Grid>
+    </ErrorBoundary>
   );
 });
