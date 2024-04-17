@@ -26,7 +26,8 @@ const scrapeProduct = async (productLink, userId) => {
 };
 
 async function AmazonScraper(product_link, userId) {
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  // const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
 
@@ -73,12 +74,12 @@ async function AmazonScraper(product_link, userId) {
     });
 
     const product_price = await page.evaluate(() => {
-      let spanElement = document.querySelector('div#corePrice_feature_div span.a-offscreen');
+            let spanElement = document.querySelector('div#corePrice_feature_div span.a-offscreen');
       if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.a-offscreen');
       return spanElement?.textContent || null;
     });
-
-    const product_features = await page.evaluate(() => {
+    
+        const product_features = await page.evaluate(() => {
       let bpEls = Array.from(document.querySelectorAll("div#feature-bullets li span"));
       if (!bpEls?.length) bpEls = Array.from(document.querySelectorAll("div#productFactsDesktopExpander li span"));
       return bpEls?.map(el => el?.textContent);
@@ -118,12 +119,12 @@ async function AmazonScraper(product_link, userId) {
       link: product_link,
       rating: Number(product_rating?.split(' ')?.[0]?.trim()),
       price:
-        Number(product_price?.replace('$', '')?.replace(',', '')?.trim()) ||
+      Number(product_price?.replace('$', '')?.replace(',', '')?.trim()) ||
         Number(product_price?.replace('US$', '')?.replace(',', '')?.trim()) ||
         -1,
       description: product_description,
       features: product_features,
-      price_currency: product_price_currency,
+      price_currency: product_price_currency ? product_price_currency : "",
       added_by: userId,
       thumbnails: [], // UNABLE TO ADD quality thumbnails
     };
