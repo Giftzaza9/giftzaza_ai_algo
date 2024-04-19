@@ -9,7 +9,6 @@ interface UseCardSwiper extends CardEvents {
   actionHandler: any;
   prevProducts: any;
   prevProductsCount?: number;
-  setProductsShowingCount?: any;
 }
 
 export const useCardSwiper = ({
@@ -23,7 +22,7 @@ export const useCardSwiper = ({
   }: UseCardSwiper) => {
   const swiperElements = useRef<Swiper[]>([]);
   const [swiperIndex, setSwiperIndex] = useState(data?.length);
-  const [dynamicData, setDynamicData] = useState(data);
+  const [dynamicData, setDynamicData] = useState(data); 
   const [isFinish, setIsFinish] = useState(false);
   const [elements, setElements] = useState<Swiper[]>([]);
   const currentProductRef = useRef<Product | null>(null);
