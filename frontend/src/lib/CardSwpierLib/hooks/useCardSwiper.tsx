@@ -9,7 +9,6 @@ interface UseCardSwiper extends CardEvents {
   actionHandler: any;
   prevProducts: any;
   prevProductsCount?: number;
-  setProductsShowingCount?: any;
 }
 
 export const useCardSwiper = ({

@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { animationStyle } from '../Profiles/styles';
 
 export const Products = observer(() => {
-  const { setLoading } = loaderState;
+  const { setLoading, loading } = loaderState;
   const { profileId } = useParams();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
@@ -30,7 +30,6 @@ export const Products = observer(() => {
   const [refetch, setRefetch] = useState<boolean>(false);
   const [haveMoreProducts, setHaveMoreProducts] = useState<boolean>(true);
   const [moreProductsCase, setMoreProductsCase] = useState<number>(1);
-  const [productsShowingCount, setProductsShowingCount] = useState<number>(0);
 
   const fetchProfile = async () => {
     try {
@@ -207,8 +206,6 @@ export const Products = observer(() => {
             setPrevProducts={setPrevProducts}
             onFinish={handleFinish}
             actionHandler={handleProductAction}
-            productsShowingCount={productsShowingCount}
-            setProductsShowingCount={setProductsShowingCount}
             // onDismiss={handleSwipe}
             withActionButtons={true}
             dislikeButton={<button className="">Dislike</button>}
@@ -239,7 +236,7 @@ export const Products = observer(() => {
             {/* <Typography sx={heading}>No more products to show.</Typography> */}
             <Typography
               variant="h5"
-              sx={{ fontSize: '24px', fontFamily: 'Inter', lineHeight: '36px', textAlign: 'center', fontWeight: 600 }}
+              sx={{ fontSize: '22px', fontFamily: 'Inter', lineHeight: '36px', textAlign: 'center', fontWeight: 600 }}
             >
               Meanwhile, we are curating new products for you...
             </Typography>
@@ -262,7 +259,7 @@ export const Products = observer(() => {
           </Box>
         )}
         {
-          products.length === 0 && haveMoreProducts && (
+          products.length === 0 && haveMoreProducts && !loading && (
             <Grid
             display={'flex'}
             flexGrow={1}
