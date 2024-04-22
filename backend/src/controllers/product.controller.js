@@ -52,6 +52,11 @@ const createAnalysisProduct = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(product);
 });
 
+const bulkRescrape = catchAsync(async (req, res) => {
+  const result = await productService.bulkRescrape(req.body);
+  res.status(httpStatus.OK).send(result);
+});
+
 module.exports = {
   getProducts,
   scrapeProduct,
@@ -62,4 +67,5 @@ module.exports = {
   deleteProduct,
   updateProduct,
   createAnalysisProduct,
+  bulkRescrape,
 };
