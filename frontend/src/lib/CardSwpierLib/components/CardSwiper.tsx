@@ -36,8 +36,6 @@ export const CardSwiper = (props: CardSwiperProps) => {
     setRefetch,
     modelRetrain,
     type,
-    productsShowingCount,
-    setProductsShowingCount,
   } = props;
 
   const { handleEnter, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, elements, setElements, handleUserActivity, setIsFinish } =
@@ -49,7 +47,6 @@ export const CardSwiper = (props: CardSwiperProps) => {
       actionHandler,
       prevProducts,
       prevProductsCount,
-      setProductsShowingCount
     });
   // const [currentSwiper, setCurrentSwiper] = useState<Swiper | undefined>(swiperElements.current[swiperIndex]);
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
@@ -59,7 +56,6 @@ export const CardSwiper = (props: CardSwiperProps) => {
   // const [currentProduct, setCurrentProduct] = useState<Product | null>();
   const [cardHeight, setCardHeight] = useState('100%'); // Default height
   const [chromeHeight, setChromeHeight] = useState(0); // Height of browser chrome
-  // const [productsShowingCount, setProductsShowingCount] = useState<number>(0);
   
   useEffect(() => {
     // Function to calculate height of browser chrome
@@ -124,12 +120,10 @@ export const CardSwiper = (props: CardSwiperProps) => {
     handleUserActivity(SwipeDirection.BLANK, SwipeAction.SAVE, false);
   };
   // console.log({ dynamicData });
-  console.log({ productsShowingCount });
 
   useEffect(() => {
     console.log({swiperIndex, prevProductsCount});
     if (swiperIndex === prevProductsCount && onFinish) {
-    // if (dynamicData?.length > 0 && productsShowingCount && productsShowingCount === 1 && onFinish) {
       console.log('SETTING ELEMENTS EMPTY ');
       setIsFinish(true);
       setElements([]);
@@ -185,7 +179,6 @@ export const CardSwiper = (props: CardSwiperProps) => {
                   handleSave={handleSave}
                   matchingScore={product?.matching_score}
                   setPrevProducts={setPrevProducts}
-                  setProductsShowingCount={setProductsShowingCount}
                 />
               </div>
             )
