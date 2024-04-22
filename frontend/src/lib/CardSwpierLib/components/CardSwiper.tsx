@@ -38,7 +38,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
     type,
   } = props;
 
-  const { handleEnter, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, elements, setElements, handleUserActivity } =
+  const { handleEnter, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, elements, setElements, handleUserActivity, setIsFinish } =
     useCardSwiper({
       onDismiss,
       onFinish,
@@ -56,7 +56,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
   // const [currentProduct, setCurrentProduct] = useState<Product | null>();
   const [cardHeight, setCardHeight] = useState('100%'); // Default height
   const [chromeHeight, setChromeHeight] = useState(0); // Height of browser chrome
-
+  
   useEffect(() => {
     // Function to calculate height of browser chrome
     const calculateChromeHeight = () => {
@@ -102,8 +102,11 @@ export const CardSwiper = (props: CardSwiperProps) => {
 
   useEffect(() => {
     if (refetch) {
-      setElements([]);
+      console.log("SETTING REFETCH FALSE");
+
       if (setRefetch && typeof setRefetch === 'function') setRefetch(false);
+      else 
+      setElements([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
@@ -117,7 +120,17 @@ export const CardSwiper = (props: CardSwiperProps) => {
     handleUserActivity(SwipeDirection.BLANK, SwipeAction.SAVE, false);
   };
   // console.log({ dynamicData });
-  // console.log({ swiperIndex });
+
+  useEffect(() => {
+    console.log({swiperIndex, prevProductsCount});
+    if (swiperIndex === prevProductsCount && onFinish) {
+      console.log('SETTING ELEMENTS EMPTY ');
+      setIsFinish(true);
+      setElements([]);
+      onFinish(SwipeAction.FINISHED);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swiperIndex]);
 
   useEffect(() => {
     if (swiperIndex - prevProductsCount! === 3) {
@@ -134,9 +147,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
       dynamicData &&
       dynamicData?.length > 0 &&
       dynamicData?.map((product: any, index: number) =>
-        type === 'shopping'
-          ? product
-          : product?.item_id && (
+        product && (
               <div
                 key={product?._id + '~' + index}
                 ref={(ref: HTMLDivElement | null) =>

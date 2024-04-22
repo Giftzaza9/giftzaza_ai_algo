@@ -1,4 +1,4 @@
-import { Container } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { Product } from '../../constants/types';
 import { useEffect, useState } from 'react';
@@ -8,9 +8,11 @@ import { observer } from 'mobx-react-lite';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
 import { SwipeAction } from '../../constants/constants';
 import { SwipeDirection } from '../../lib/CardSwpierLib';
+import { useNavigate } from 'react-router-dom';
 
 export const Shopping = observer(() => {
-  const { setLoading } = loaderState;
+  const { setLoading, loading } = loaderState;
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(30);
@@ -33,8 +35,12 @@ export const Shopping = observer(() => {
       // if (error) toast.error(error || 'Failed to shopping products !');
       if(!error) {
         console.log({ data });
-        setPrevProductsCount(products?.length + 1);
-        setProducts((prev) => [...prev, ...data?.data?.map((item: any) => ({ ...item })).reverse()]);
+        if(data?.data?.length === 0)
+          setProducts([]);
+        else {
+          setPrevProductsCount(products?.length + 1);
+          setProducts((prev) => [...prev, ...data?.data?.map((item: any) => ({ ...item })).reverse()]);
+        }
       }
       setLoading(false);
     } catch (error) {
@@ -86,6 +92,42 @@ export const Shopping = observer(() => {
               </div>
             }
           />
+        )}
+        {products?.length === 0 && !loading && prevProductsCount > 1 && (
+          <Box
+            sx={{
+              p: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              rowGap: 2,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {/* <Typography sx={heading}>No more products to show.</Typography> */}
+            <Typography
+              variant="h5"
+              sx={{ fontSize: '22px', fontFamily: 'Inter', lineHeight: '36px', textAlign: 'center', fontWeight: 600 }}
+            >
+              Meanwhile, we are curating new products for you...
+            </Typography>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ width: '100%', padding: '6px 18px' }}
+              onClick={() => {
+                navigate('/');
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{ fontFamily: 'Inter', color: 'white', fontSize: '18px', fontWeight: 600, textTransform: 'none' }}
+              >
+                Try creating new Profile
+              </Typography>
+            </Button>
+          </Box>
         )}
       </Container>
     </MobileLayout>

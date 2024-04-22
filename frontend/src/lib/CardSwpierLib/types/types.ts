@@ -29,6 +29,8 @@ export interface CardSwiperProps extends CardEvents {
   setRefetch?: Dispatch<SetStateAction<boolean>>
   modelRetrain?: () => void
   type: string
+  productsShowingCount?: number;
+  setProductsShowingCount?: Dispatch<SetStateAction<number>>
 }
 
 export interface CardEvents {

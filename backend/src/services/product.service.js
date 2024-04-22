@@ -158,19 +158,22 @@ function convertToObjectId(itemIds) {
  * @returns {Promise<Product>}
  */
 const getMoreProducts = async (productBody) => {
-  const { preferences } = productBody;
+  const { preferences, ...rest } = productBody;
   const payload = {
-    ...productBody,
+    ...rest,
     new_attributes: preferences,
   };
+  console.log({payload});
   return await getRecommendedProducts(payload)
     .then(async (res) => {
             const objectIds = convertToObjectId(res);
+            // console.log("OBJECT ID AFTER REC ", objectIds);
             const products = await Product.find({ _id: { $in: objectIds } });
+            // console.log("PRODUCTS AFTER RECOMMENDATION ", products);
             const products_detail = objectIds?.map((obj) => {
         const productDetails = products.find((product) => product._id == obj?.item_id);
         return { ...obj, item_id: productDetails };
-      }).filter((item) => item.item_id !== undefined);
+      }).filter((item) => item.item_id);
       return products_detail;
     })
     .catch((error) => {
@@ -227,7 +230,8 @@ const startShopping = async (payload) => {
       },
     },
   ]);
-  const productsData = products.map((item) => item.product[0]);
+
+  const productsData = products.map((item) => item.product[0]).filter((item) => item);
   const totalRows = await userActivity.aggregate([{ $group: { _id: '$product_id', totalRows: { $sum: 1 } } }]);
 
   const result = {
