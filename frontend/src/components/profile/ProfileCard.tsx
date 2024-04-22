@@ -54,8 +54,8 @@ export const ProfileCard: FC<Props> = ({ profile, onEditProfile, onDeleteProfile
         }}
       >
         {/* Header */}
-        <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Box
+        <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          {/* <Box
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -74,7 +74,7 @@ export const ProfileCard: FC<Props> = ({ profile, onEditProfile, onDeleteProfile
             >
               {daysRemaining(profile?.occasion_date)}
             </Typography>
-          </Box>
+          </Box> */}
 
           <Stack flexDirection={'row'} gap={'4px'}>
             <IconButton

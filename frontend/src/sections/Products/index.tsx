@@ -1,4 +1,4 @@
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Container, Grid, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
 import { SwipeDirection } from '../../lib/CardSwpierLib/types/types';
@@ -15,12 +15,14 @@ import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../store/ShowLoader';
 import { retrain } from '../../services/AI';
 import { useNavigate } from 'react-router-dom';
+import { animationStyle } from '../Profiles/styles';
 
 export const Products = observer(() => {
   const { setLoading } = loaderState;
   const { profileId } = useParams();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
+  const [productsDuplicate, setProductsDuplicate] = useState<Product[]>([]);
   const [prevProducts, setPrevProducts] = useState(new Set());
   const [prevProductsCount, setPrevProductsCount] = useState<number>(1);
   const [profile, setProfile] = useState<Profile | undefined>();
@@ -28,6 +30,7 @@ export const Products = observer(() => {
   const [refetch, setRefetch] = useState<boolean>(false);
   const [haveMoreProducts, setHaveMoreProducts] = useState<boolean>(true);
   const [moreProductsCase, setMoreProductsCase] = useState<number>(1);
+  const [productsShowingCount, setProductsShowingCount] = useState<number>(0);
 
   const fetchProfile = async () => {
     try {
@@ -41,6 +44,7 @@ export const Products = observer(() => {
           setPage(page => page+1);
         }
         setProducts((prev) => [...prev, ...data?.recommended_products?.map((item: any) => ({ ...item })).reverse()]);
+        setProductsDuplicate((prev) => [...prev, ...data?.recommended_products?.map((item: any) => ({ ...item })).reverse()]);
       }
       setLoading(false);
     } catch (error) {
@@ -54,7 +58,11 @@ export const Products = observer(() => {
   }, [profileId]);
 
   useEffect(() => {
-    if (refetch) fetchProfile();
+    if (refetch) { 
+      setHaveMoreProducts(true);
+      // setProducts([]);
+      fetchProfile();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
@@ -83,6 +91,11 @@ export const Products = observer(() => {
         ...data,
         // ...data?.map((item: any) => ({ ...item })).reverse()
       ]);
+      setProductsDuplicate((prev: any) => [
+        ...prev,
+        ...data,
+        // ...data?.map((item: any) => ({ ...item })).reverse()
+      ]);
     }
   };
 
@@ -93,9 +106,10 @@ export const Products = observer(() => {
     // if (error) toast.error(error || 'Faild to fetch more products !');
     if(!error) {
       
-      setPrevProductsCount(products?.length + 1);
+      setPrevProductsCount(productsDuplicate?.length + 1);
       const prevIds = new Set(products.map((item: any) => item.item_id?.id));
         // Filter out items from data that are not already present in prev
+      setProducts([]);
       const uniqueNewProducts = data?.filter((item: any) => item.item_id?.id && !prevIds.has(item.item_id?.id));
       // const uniqueNewProducts = data?.filter((item: any) => !prevIds.has(item.item_id?.id));
 
@@ -107,10 +121,14 @@ export const Products = observer(() => {
       if (moreProductsCase === 3 && uniqueNewProducts?.length === 0) {
         setHaveMoreProducts(uniqueNewProducts?.length > 0 ? true : false);
         setProducts([]);
+        setProductsDuplicate([]);
         return ;
       }
 
       setProducts((prev: any) => {
+        return [...prev, ...(uniqueNewProducts || []).reverse()];
+      });
+      setProductsDuplicate((prev: any) => {
         return [...prev, ...(uniqueNewProducts || []).reverse()];
       });
     }
@@ -121,7 +139,7 @@ export const Products = observer(() => {
     const payload: moreProductBody = {
       preferences: profile?.preferences!,
       top_n: page * 10,
-      semi_soft_filter: ["interest"],
+      semi_hard_filters: ["interest"],
     };
 
     if (page > 1 && moreProductsCase < 4) {
@@ -137,7 +155,7 @@ export const Products = observer(() => {
       else if(moreProductsCase === 3) {
         newPayload = {
           ...payload,
-          semi_soft_filter: [],
+          semi_hard_filters: [],
         }
       }
 
@@ -189,6 +207,8 @@ export const Products = observer(() => {
             setPrevProducts={setPrevProducts}
             onFinish={handleFinish}
             actionHandler={handleProductAction}
+            productsShowingCount={productsShowingCount}
+            setProductsShowingCount={setProductsShowingCount}
             // onDismiss={handleSwipe}
             withActionButtons={true}
             dislikeButton={<button className="">Dislike</button>}
@@ -241,6 +261,29 @@ export const Products = observer(() => {
             </Button>
           </Box>
         )}
+        {
+          products.length === 0 && haveMoreProducts && (
+            <Grid
+            display={'flex'}
+            flexGrow={1}
+            flexDirection={'column'}
+            justifyContent={'center'}
+            textAlign={'center'}
+            sx={animationStyle}
+          >
+            <CircularProgress
+              sx={{
+                width: '150px!important',
+                height: '150px!important',
+                color: '#DD6E3F',
+                alignSelf: 'center',
+                margin: '20px auto',
+              }}
+            />
+            <Typography sx={{ fontSize: '26px', fontFamily: 'Inter', fontWeight: '400', mb: 1 }}>Please wait...</Typography>
+          </Grid>
+          )
+        }
       </Container>
     </MobileLayout>
   );
