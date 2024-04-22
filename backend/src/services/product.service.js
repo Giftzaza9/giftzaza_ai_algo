@@ -138,6 +138,7 @@ const scrapeAndAddProduct = async (productBody) => {
   scrapedProduct.gptTagging = gptData.JSON_response;
   scrapedProduct.curated = false;
   scrapedProduct.hil = false;
+  scrapedProduct.is_active = scrapedProduct.price > 0 ? true : false;
   const product = productDB
     ? await Product.findByIdAndUpdate(productDB?._id, scrapedProduct, { new: true, useFindAndModify: false })
     : await Product.create(scrapedProduct);
@@ -367,6 +368,7 @@ const deleteProductById = async (productId) => {
 const createAnalysisProduct = async (productBody) => {
 
   const scraped = [];
+  let failures = {};
 
   try {
     const sleepy = (delay) =>
@@ -383,24 +385,35 @@ const createAnalysisProduct = async (productBody) => {
       const productDB = await Product.findOne({ link: link });
       if (productDB) {
         console.log(`${count}th failed: Existing product`);
+        failures.alreadyExist = failures.alreadyExist || [];
+        failures.alreadyExist.push(link);
         continue;
       }
       const product_data = await scrapeProduct(link, productBody.userId);
       if (!product_data || !product_data.title || !product_data.image) {
         console.log(`${count}th failed: Scrape error || Product not found or out of stock'`);
         console.log({product_data});
+        failures.notFound = failures.notFound || [];
+        failures.notFound.push(link);
         continue;
       }
       const gptdata = await GPTbasedTagging(product_data.description || product_data.features.join('. '),
       product_data.title);
       if (!gptdata.preferenceData.length) {
         console.log(`${count}th failed: preference data is not available`);
+        failures.gptFault = failures.gptFault || [];
+        failures.gptFault.push(link);
         continue;
       };
       product_data.tags = gptdata.preferenceData;
       product_data.gptTagging = gptdata.JSON_response;
       product_data.curated = false;
       product_data.hil = false;
+      product_data.is_active = product_data.price > 0 ? true : false;
+      if(!(product_data.price > 0)) {
+        failures.noPrice = failures.noPrice || [];
+        failures.noPrice.push(link);
+      }
       scraped.push(product_data);
       console.log(`${count}/${productBody.product_links?.length} scraped, link: ${link}`);
       await sleepy(Math.floor(Math.random() * (2001 - 1000) + 1000));
@@ -409,13 +422,19 @@ const createAnalysisProduct = async (productBody) => {
     // console.log(scraped?.map(p => p.title));
     // if (scraped.length) await AnalysisProduct.create(scraped);
     if (scraped.length) await Product.create(scraped);
-    return scraped?.map((p) => p.link);
+    // return scraped?.map((p) => p.link);
+    const scrapedLinks = scraped?.map((p) => p.link);
+    return {
+      scrapedLinks,
+      failures
+    }
   } catch (error) {
     console.error(error);
-  } finally {
-    const jsonData = JSON.stringify(scraped, null, 2);
-    await fs.writeFile('output.json', jsonData, 'utf8');
-  }
+  } 
+  // finally {
+  //   const jsonData = JSON.stringify(scraped, null, 2);
+  //   await fs.writeFile('output.json', jsonData, 'utf8');
+  // }
 }
 
 module.exports = {

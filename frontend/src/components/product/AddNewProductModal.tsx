@@ -36,6 +36,8 @@ export const AddNewProductModal: FC<Props> = ({ onClose, open }) => {
         case 0:
           setLoading(true);
           const { data: scrapedData } = await scrapeProduct({ product_link: link });
+          if(scrapedData?.price === -1) 
+            toast.info("Product price not found !!");
           setProduct(scrapedData);
           setActiveStep((activeStep) => ++activeStep);
           setLoading(false);
