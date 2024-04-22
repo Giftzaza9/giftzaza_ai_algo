@@ -23,6 +23,10 @@ const scrapeProduct = {
   }),
 };
 
+const bulkRescrape = {
+  body: Joi.object().required(),
+};
+
 const similarProducts = {
   body: Joi.object().keys({
     item_id: Joi.string(),
@@ -88,4 +92,5 @@ module.exports = {
   deleteProduct,
   updateProduct,
   createAnalysisProduct,
+  bulkRescrape,
 };
