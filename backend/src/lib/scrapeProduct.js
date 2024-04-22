@@ -15,7 +15,7 @@ const scrapeProduct = async (productLink, userId) => {
   // if (productLink.includes('nordstrom')) {
   //   const res = await NodestormScraper(productLink);
   //   return res;
-  // } else 
+  // } else
   if (productLink.includes('bloomingdales')) {
     const res = await bloomingdaleScrapeProduct(productLink, userId);
     return res;
@@ -26,22 +26,39 @@ const scrapeProduct = async (productLink, userId) => {
 };
 
 async function AmazonScraper(product_link, userId) {
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
 
     await page.goto(product_link, { waitUntil: 'domcontentloaded' });
 
-    const product_title = await page.evaluate(() => {
+    let isAmazonLuxury = false;
+
+    let product_title = await page.evaluate(() => {
       const spanElement = document.querySelector('span#productTitle');
       return spanElement?.innerText;
     });
 
+    // product_title will be undefined, if amazon luxury
+    if (!product_title) {
+      isAmazonLuxury = true;
+      product_title = await page.evaluate(() => {
+        brand = document.querySelector('a#bond-byLine-desktop');
+        const spanElement = document.querySelector('span#bond-title-desktop');
+        return brand && spanElement
+          ? `${brand?.textContent} - ${spanElement?.textContent}`
+          : spanElement
+          ? spanElement?.innerText
+          : null;
+      });
+    }
+
     const thumbnails = await page.evaluate(() => {
-      const imgs = Array.from(document.querySelectorAll('li > span > span > span > span > img'))
-      return imgs.map(img => img.getAttribute('src'))
-  })
-    
+      // good quality thumbnails are unavailable
+      const imgs = Array.from(document.querySelectorAll('li > span > span > span > span > img'));
+      return imgs.map((img) => img.getAttribute('src'));
+    });
+
     // await page.evaluate(() => {
     //   const imgContainer = document.querySelector('#main-image-container');
     //   const imgElements = imgContainer.querySelectorAll('img');
@@ -56,7 +73,7 @@ async function AmazonScraper(product_link, userId) {
 
     const product_rating = await page.evaluate(() => {
       const spanElement = document.querySelector('span.reviewCountTextLinkedHistogram');
-      return spanElement?.getAttribute('title');
+      return spanElement?.getAttribute('title') || null;
     });
 
     // const reviewCount = await page.evaluate(() => {
@@ -78,36 +95,46 @@ async function AmazonScraper(product_link, userId) {
       return spanElement?.textContent || null;
     });
 
-    const product_features = await page.evaluate(() => {
-      let bpEls = Array.from(document.querySelectorAll("div#feature-bullets li span"));
-      if (!bpEls?.length) bpEls = Array.from(document.querySelectorAll("div#productFactsDesktopExpander li span"));
-      return bpEls?.map(el => el?.textContent);
-    })
+    const product_features = isAmazonLuxury
+      ? await page.evaluate(() => {
+          const bpEls = Array.from(document.querySelectorAll('div#bond-feature-bullets-desktop>ul>li>span>span'));
+          return bpEls?.map((el) => el?.textContent);
+        })
+      : await page.evaluate(() => {
+          let bpEls = Array.from(document.querySelectorAll('div#feature-bullets li span'));
+          if (!bpEls?.length) bpEls = Array.from(document.querySelectorAll('div#productFactsDesktopExpander li span'));
+          return bpEls?.map((el) => el?.textContent);
+        });
 
-    const product_description = await page.evaluate(() => {
-      const descriptionDivElement = document.querySelector('div#productDescription');
-      let featuresDivElement = document.querySelector('div#feature-bullets');
+    const product_description = isAmazonLuxury
+      ? await page.evaluate(() => {
+          const spanElement = document.querySelector('span.a-size-base.bondExpanderText');
+          return spanElement?.textContent || null;
+        })
+      : await page.evaluate(() => {
+          const descriptionDivElement = document.querySelector('div#productDescription');
+          let featuresDivElement = document.querySelector('div#feature-bullets');
 
-      if (featuresDivElement === null) {
-        featuresDivElement = document.querySelector('div.a-expander-content');
-      }
+          if (featuresDivElement === null) {
+            featuresDivElement = document.querySelector('div.a-expander-content');
+          }
 
-      if (descriptionDivElement !== null && featuresDivElement !== null) {
-        return descriptionDivElement?.innerText + ' ' + featuresDivElement?.innerText;
-      }
+          if (descriptionDivElement !== null && featuresDivElement !== null) {
+            return descriptionDivElement?.innerText + ' ' + featuresDivElement?.innerText;
+          }
 
-      if (featuresDivElement !== null && descriptionDivElement === null) {
-        return featuresDivElement?.innerText;
-      }
+          if (featuresDivElement !== null && descriptionDivElement === null) {
+            return featuresDivElement?.innerText;
+          }
 
-      if (featuresDivElement === null && descriptionDivElement !== null) {
-        return descriptionDivElement?.innerText;
-      }
+          if (featuresDivElement === null && descriptionDivElement !== null) {
+            return descriptionDivElement?.innerText;
+          }
 
-      if (featuresDivElement === null && descriptionDivElement === null) {
-        return null;
-      }
-    });
+          if (featuresDivElement === null && descriptionDivElement === null) {
+            return null;
+          }
+        });
 
     await browser.close();
 
@@ -116,7 +143,7 @@ async function AmazonScraper(product_link, userId) {
       title: product_title,
       image: product_image,
       link: product_link,
-      rating: Number(product_rating?.split(' ')?.[0]?.trim()),
+      rating: product_rating ? Number(product_rating?.split(' ')?.[0]?.trim()) : 0,
       price:
         Number(product_price?.replace('$', '')?.replace(',', '')?.trim()) ||
         Number(product_price?.replace('US$', '')?.replace(',', '')?.trim()) ||
@@ -152,11 +179,13 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
     };
 
     const product_title = await textgetter('.brand-name-container');
-    const product_description = await textgetter(`div.details-container div.details-content p[data-auto="product-description"]`);
+    const product_description = await textgetter(
+      `div.details-container div.details-content p[data-auto="product-description"]`
+    );
     const product_features = await page.evaluate(() => {
-      const bpEls = Array.from(document.querySelectorAll("div.details-container div.details-content li"));
-      return bpEls?.map(el => el?.textContent);
-    })
+      const bpEls = Array.from(document.querySelectorAll('div.details-container div.details-content li'));
+      return bpEls?.map((el) => el?.textContent);
+    });
 
     let product_price = await textgetter('.price-lg');
     let product_price_currency = await textgetter('.links-rail-currency');
