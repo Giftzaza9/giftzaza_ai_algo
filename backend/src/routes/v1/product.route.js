@@ -17,6 +17,10 @@ router
   .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.scrapeProduct), productController.scrapeProduct);
 
 router
+  .route('/bulk-rescrape')
+  .post(auth(rightsEnum.MANAGE_PRODUCTS), validate(productValidation.bulkRescrape), productController.bulkRescrape);
+
+router
   .route('/similar-products')
   .post(auth(), validate(productValidation.similarProducts), productController.similarProducts)
 
