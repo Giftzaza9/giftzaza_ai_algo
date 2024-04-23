@@ -23,6 +23,12 @@ const scrapeProduct = {
   }),
 };
 
+const scrapeProductLink = {
+  body: Joi.object().keys({
+    link: Joi.string().required(),
+  }),
+};
+
 const bulkRescrape = {
   body: Joi.object().required(),
 };
@@ -93,4 +99,5 @@ module.exports = {
   updateProduct,
   createAnalysisProduct,
   bulkRescrape,
+  scrapeProductLink,
 };

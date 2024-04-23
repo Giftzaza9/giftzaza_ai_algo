@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const mongoose = require('mongoose');
 const { Product, AnalysisProduct } = require('../models');
 const ApiError = require('../utils/ApiError');
-const { scrapeProduct } = require('../lib/scrapeProduct');
+const { scrapeProduct, AmazonLinkScraper } = require('../lib/scrapeProduct');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
 const { amazonUrlCleaner, bloomingdaleUrlCleaner } = require('../utils/urlCleaners');
 const axiosInstance = require('../utils/axiosInstance');
@@ -143,6 +143,16 @@ const scrapeAndAddProduct = async (productBody) => {
     ? await Product.findByIdAndUpdate(productDB?._id, scrapedProduct, { new: true, useFindAndModify: false })
     : await Product.create(scrapedProduct);
   return product;
+};
+
+/**
+ * Scrape the product link
+ * @param {Object} productBody
+ * @returns {Promise<Product>}
+ */
+const scrapeProductLinks = async (productBody) => {
+  let { link } = productBody;
+  return await AmazonLinkScraper(link);
 };
 
 function convertToObjectId(itemIds) {
@@ -499,4 +509,5 @@ module.exports = {
   updateProductById,
   createAnalysisProduct,
   bulkRescrape,
+  scrapeProductLinks,
 };

@@ -13,6 +13,12 @@ const scrapeProduct = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(product);
 });
 
+const scrapeProductLinks = catchAsync(async (req, res) => {
+  req.body.user_id = req.user._id;
+  const links = await productService.scrapeProductLinks(req.body);
+  res.status(httpStatus.OK).send(links);
+});
+
 const similarProducts = catchAsync(async (req, res) => {
   const products = await productService.similarProducts(req.body);
   res.status(httpStatus.OK).send(products);
@@ -68,4 +74,5 @@ module.exports = {
   updateProduct,
   createAnalysisProduct,
   bulkRescrape,
+  scrapeProductLinks,
 };
