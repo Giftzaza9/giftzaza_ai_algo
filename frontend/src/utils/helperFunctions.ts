@@ -3,20 +3,34 @@ import { ApiResponse } from '../constants/types';
 import { decodeToken } from './decodeToken';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+import { createErrorLog } from '../services/error';
 
-export const generateErrorMessage = (error: Error | unknown): ApiResponse => {
+export const generateErrorMessage = async (error: Error | unknown): Promise<ApiResponse> => {
+  let message: string = '';
   if (isAxiosError(error) && error?.response?.data?.message) {
-    console.error(error?.response?.data?.message);
-    toast.error(error?.response?.data?.message);
-    return { data: null, error: error?.response?.data?.message, status: error?.response?.status };
+    message = error?.response?.data?.message;
+    console.error(message);
+    toast.error(message);
+    try {
+      await createErrorLog(message, error?.response?.data?.stack || error?.response?.data?.toString());
+    } catch (error) {}
+    return { data: null, error: message, status: error?.response?.status };
   } else if ((error as Error)?.message) {
-    console.error((error as Error)?.message);
-    toast.error((error as Error)?.message);
-    return { data: null, error: (error as Error)?.message, status: 500 };
+    message = (error as Error)?.message;
+    console.error(message);
+    toast.error(message);
+    try {
+      await createErrorLog(message, error?.toString());
+    } catch (error) {}
+    return { data: null, error: message, status: 500 };
   } else {
     console.error(error);
-    toast.error('Something went wrong!');
-    return { data: null, error: 'Something went wrong!', status: 500 };
+    message = 'Something went wrong!';
+    toast.error(message);
+    try {
+      await createErrorLog(message, error?.toString());
+    } catch (error) {}
+    return { data: null, error: message, status: 500 };
   }
 };
 

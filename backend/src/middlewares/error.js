@@ -3,6 +3,7 @@ const httpStatus = require('http-status');
 const config = require('../config/config');
 const logger = require('../config/logger');
 const ApiError = require('../utils/ApiError');
+const logError = require('../utils/logError');
 
 const errorConverter = (err, req, res, next) => {
   let error = err;
@@ -16,7 +17,7 @@ const errorConverter = (err, req, res, next) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const errorHandler = (err, req, res, next) => {
+const errorHandler = async (err, req, res, next) => {
   console.error(err?.message || err);
   let { statusCode, message } = err;
   if (config.env === 'production' && !err.isOperational) {
@@ -35,6 +36,10 @@ const errorHandler = (err, req, res, next) => {
   if (config.env === 'development') {
     logger.error(err);
   }
+
+  try {
+    await logError(message || err?.message?.split('\n')?.[0], req.user?._id, err?.stack);
+  } catch (error) {}
 
   res.status(statusCode).send(response);
 };
