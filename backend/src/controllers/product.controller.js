@@ -14,7 +14,6 @@ const scrapeProduct = catchAsync(async (req, res) => {
 });
 
 const scrapeProductLinks = catchAsync(async (req, res) => {
-  req.body.user_id = req.user._id;
   const links = await productService.scrapeProductLinks(req.body);
   res.status(httpStatus.OK).send(links);
 });

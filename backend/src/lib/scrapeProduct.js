@@ -26,12 +26,12 @@ const scrapeProduct = async (productLink, userId) => {
 };
 
 async function AmazonScraper(product_link, userId) {
-  // const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  // const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
 
-    await page.goto(product_link, { waitUntil: 'domcontentloaded' });
+    await page.goto(product_link, { waitUntil:  ['domcontentloaded', 'networkidle2'] });
 
     let isAmazonLuxury = false;
 
@@ -39,6 +39,15 @@ async function AmazonScraper(product_link, userId) {
       const spanElement = document.querySelector('span#productTitle');
       return spanElement?.innerText;
     });
+
+    await page.reload();
+
+    if (!product_title) {
+      product_title = await page.evaluate(() => {
+        const spanElement = document.querySelector('span#productTitle');
+        return spanElement?.innerText;
+      });
+    }
 
     // product_title will be undefined, if amazon luxury
     if (!product_title) {
