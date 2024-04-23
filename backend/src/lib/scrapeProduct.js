@@ -40,9 +40,9 @@ async function AmazonScraper(product_link, userId) {
       return spanElement?.innerText;
     });
 
-    await page.reload();
-
+    
     if (!product_title) {
+      await page.reload();
       product_title = await page.evaluate(() => {
         const spanElement = document.querySelector('span#productTitle');
         return spanElement?.innerText;
