@@ -330,7 +330,7 @@ const updateProductById = async (productId, updateBody) => {
     product.link = link;
     product.price_currency = price_currency;
   }
-
+  console.log("UPDATE ", product)
   await product.save();
 
   try {
