@@ -4,6 +4,7 @@ const rightsEnum = {
   API_KEY: 'api-key',
   MANAGE_PRODUCTS: 'manage-products',
   MANAGE_PROFILE: 'manage-profile',
+  MANAGE_ERROR: 'manage-error',
 };
 
 const allRoles = {
@@ -14,6 +15,7 @@ const allRoles = {
     rightsEnum.API_KEY,
     rightsEnum.MANAGE_PRODUCTS,
     rightsEnum.MANAGE_PROFILE,
+    rightsEnum.MANAGE_ERROR,
   ],
 };
 

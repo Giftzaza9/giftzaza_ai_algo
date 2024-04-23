@@ -4,3 +4,4 @@ module.exports.Profile = require('./profile.model');
 module.exports.Product = require('./product.model');
 module.exports.userActivity = require('./useractivity.model');
 module.exports.AnalysisProduct = require('./analysis.product.model');
+module.exports.ErrorLog = require('./errorLog.model');

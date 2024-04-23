@@ -6,6 +6,7 @@ const productRoute = require('./product.route');
 const apiRoute = require('./api.route');
 const userActivityRoute = require('./userActivity.route');
 const docsRoute = require('./docs.route');
+const errorLogRoute = require('./errorLog.route');
 
 const router = express.Router();
 
@@ -37,6 +38,10 @@ const defaultRoutes = [
   {
     path: '/user-activity',
     route: userActivityRoute,
+  },
+  {
+    path: '/error-log',
+    route: errorLogRoute,
   },
 ];
 

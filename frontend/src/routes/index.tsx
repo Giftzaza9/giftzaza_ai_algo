@@ -20,6 +20,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Saved } from '../sections/Saved';
 import { PrivacyPolicy } from '../sections/PrivacyPolicy';
 import { DataDeletion } from '../sections/DataDeletion';
+import { createErrorLog } from '../services/error';
 
 const roleBasedRouteAccess = (app_role: roleEnum) => {
   // Routes for both admin and user
@@ -75,9 +76,12 @@ const Router = observer(() => {
   return (
     <ErrorBoundary
       onReset={() => {
-        window.location.href = window.location.href;
+        window.location.reload();
       }}
       FallbackComponent={CreateProfile}
+      onError={async (err, info) => {
+        await createErrorLog(err?.message, err?.stack);
+      }}
     >
       <Suspense fallback={<Loader />}>
         <Routes>
