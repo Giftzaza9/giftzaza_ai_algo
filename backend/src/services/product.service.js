@@ -138,6 +138,7 @@ const scrapeAndAddProduct = async (productBody) => {
   scrapedProduct.gptTagging = gptData.JSON_response;
   scrapedProduct.curated = false;
   scrapedProduct.hil = false;
+  scrapedProduct.is_active = scrapedProduct.price > 0 ? true : false;
   const product = productDB
     ? await Product.findByIdAndUpdate(productDB?._id, scrapedProduct, { new: true, useFindAndModify: false })
     : await Product.create(scrapedProduct);
@@ -318,6 +319,7 @@ const updateProductById = async (productId, updateBody) => {
   // From scraping
   if (scrape) {
     const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(product.link);
+    console.log({ title, price, image, link, rating, description, thumbnails, price_currency, features })
     product.title = title;
     product.price = price;
     product.image = image;
@@ -328,7 +330,7 @@ const updateProductById = async (productId, updateBody) => {
     product.link = link;
     product.price_currency = price_currency;
   }
-
+  console.log("UPDATE ", product)
   await product.save();
 
   try {
@@ -367,6 +369,7 @@ const deleteProductById = async (productId) => {
 const createAnalysisProduct = async (productBody) => {
 
   const scraped = [];
+  let failures = {};
 
   try {
     const sleepy = (delay) =>
@@ -383,24 +386,35 @@ const createAnalysisProduct = async (productBody) => {
       const productDB = await Product.findOne({ link: link });
       if (productDB) {
         console.log(`${count}th failed: Existing product`);
+        failures.alreadyExist = failures.alreadyExist || [];
+        failures.alreadyExist.push(link);
         continue;
       }
       const product_data = await scrapeProduct(link, productBody.userId);
       if (!product_data || !product_data.title || !product_data.image) {
         console.log(`${count}th failed: Scrape error || Product not found or out of stock'`);
         console.log({product_data});
+        failures.notFound = failures.notFound || [];
+        failures.notFound.push(link);
         continue;
       }
       const gptdata = await GPTbasedTagging(product_data.description || product_data.features.join('. '),
       product_data.title);
       if (!gptdata.preferenceData.length) {
         console.log(`${count}th failed: preference data is not available`);
+        failures.gptFault = failures.gptFault || [];
+        failures.gptFault.push(link);
         continue;
       };
       product_data.tags = gptdata.preferenceData;
       product_data.gptTagging = gptdata.JSON_response;
       product_data.curated = false;
       product_data.hil = false;
+      product_data.is_active = product_data.price > 0 ? true : false;
+      if(!(product_data.price > 0)) {
+        failures.noPrice = failures.noPrice || [];
+        failures.noPrice.push(link);
+      }
       scraped.push(product_data);
       console.log(`${count}/${productBody.product_links?.length} scraped, link: ${link}`);
       await sleepy(Math.floor(Math.random() * (2001 - 1000) + 1000));
@@ -409,14 +423,70 @@ const createAnalysisProduct = async (productBody) => {
     // console.log(scraped?.map(p => p.title));
     // if (scraped.length) await AnalysisProduct.create(scraped);
     if (scraped.length) await Product.create(scraped);
-    return scraped?.map((p) => p.link);
+    // return scraped?.map((p) => p.link);
+    const scrapedLinks = scraped?.map((p) => p.link);
+    return {
+      scrapedLinks,
+      failures
+    }
   } catch (error) {
     console.error(error);
-  } finally {
-    const jsonData = JSON.stringify(scraped, null, 2);
-    await fs.writeFile('output.json', jsonData, 'utf8');
-  }
+  } 
+  // finally {
+  //   const jsonData = JSON.stringify(scraped, null, 2);
+  //   await fs.writeFile('output.json', jsonData, 'utf8');
+  // }
 }
+
+const bulkRescrape = async (condition) => {
+  console.log('🚀 ~ bulkRescrape ~ condition:', condition)
+  const added = [];
+  const failed = [];
+  const products = await Product.find(condition);
+  if (!products.length) throw new Error('No products found !');
+
+  const sleepy = (delay) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, delay);
+  });
+
+  for (const product of products) {
+
+    try {
+      const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(
+        product.link
+      );
+
+      if (price === -1) {
+        console.log({ price, link, title });
+        failed.push(product?.link);
+        // await Product.findByIdAndUpdate(product._id, { is_active: false });
+        continue;
+      }
+
+      await Product.findByIdAndUpdate(product._id, {
+        title,
+        price,
+        image,
+        thumbnails,
+        description,
+        features,
+        rating,
+        link,
+        price_currency,
+        is_active: true,
+      });
+      await sleepy(Math.floor(Math.random() * (2001 - 1000) + 1000));
+
+      added.push(product?.link);
+    } catch (error) {
+      failed.push(product?.link);
+      console.log(error);
+    }
+  }
+console.log({added, failed});
+  return { added, failed };
+};
 
 module.exports = {
   queryProducts,
@@ -428,4 +498,5 @@ module.exports = {
   deleteProductById,
   updateProductById,
   createAnalysisProduct,
+  bulkRescrape,
 };
