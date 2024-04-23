@@ -484,7 +484,7 @@ const bulkRescrape = async (condition) => {
       console.log(error);
     }
   }
-
+console.log({added, failed});
   return { added, failed };
 };
 
