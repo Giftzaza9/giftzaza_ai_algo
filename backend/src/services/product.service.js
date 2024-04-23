@@ -444,16 +444,21 @@ const bulkRescrape = async (condition) => {
   const failed = [];
   const products = await Product.find(condition);
   if (!products.length) throw new Error('No products found !');
-  let count = 0;
+
+  const sleepy = (delay) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, delay);
+  });
+
   for (const product of products) {
-    console.log(count++, product?.title);
+
     try {
       const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(
         product.link
       );
 
-      console.log({ title, price });
       if (price === -1) {
+        console.log({ price, link, title });
         failed.push(product?.link);
         // await Product.findByIdAndUpdate(product._id, { is_active: false });
         continue;
@@ -471,6 +476,7 @@ const bulkRescrape = async (condition) => {
         price_currency,
         is_active: true,
       });
+      await sleepy(Math.floor(Math.random() * (2001 - 1000) + 1000));
 
       added.push(product?.link);
     } catch (error) {
