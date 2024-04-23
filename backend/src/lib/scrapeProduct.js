@@ -87,6 +87,8 @@ async function AmazonScraper(product_link, userId) {
       if (inputElement) return inputElement?.getAttribute('value');
       const spanElement = document.querySelector('a#icp-touch-link-cop > span.icp-color-base');
       if (spanElement) return spanElement?.textContent?.split(' ')?.[0];
+      const divElement = document.querySelector('div#bundles_feature_div #bundles-card-state');
+      if (divElement) return divElement?.getAttribute('data-currencyofpreference');
       return null;
     });
 
