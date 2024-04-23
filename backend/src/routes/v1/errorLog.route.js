@@ -15,6 +15,6 @@ router
 router
   .route('/')
   .get(auth(rightsEnum.MANAGE_ERROR), validate(errorLogValidation.getErrorLogs), errorLogController.getErrorLogs)
-  .post(validate(errorLogValidation.createErrorLog), errorLogController.createErrorLog);
+  .post(auth(), validate(errorLogValidation.createErrorLog), errorLogController.createErrorLog);
 
 module.exports = router;
