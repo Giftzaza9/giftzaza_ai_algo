@@ -318,6 +318,7 @@ const updateProductById = async (productId, updateBody) => {
   // From scraping
   if (scrape) {
     const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(product.link);
+    console.log({ title, price, image, link, rating, description, thumbnails, price_currency, features })
     product.title = title;
     product.price = price;
     product.image = image;
@@ -419,33 +420,39 @@ const createAnalysisProduct = async (productBody) => {
 }
 
 const bulkRescrape = async (condition) => {
+  console.log('🚀 ~ bulkRescrape ~ condition:', condition)
   const added = [];
   const failed = [];
   const products = await Product.find(condition);
   if (!products.length) throw new Error('No products found !');
+  let count = 0;
   for (const product of products) {
+    console.log(count++, product?.title);
     try {
       const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(
         product.link
       );
 
+      console.log({ title, price });
       if (price === -1) {
         failed.push(product?.link);
-        product.is_active = false;
-        await Product.save();
+        // await Product.findByIdAndUpdate(product._id, { is_active: false });
         continue;
       }
-      product.title = title;
-      product.price = price;
-      product.image = image;
-      product.thumbnails = thumbnails;
-      product.description = description;
-      product.features = features;
-      product.rating = rating;
-      product.link = link;
-      product.price_currency = price_currency;
 
-      await product.save();
+      await Product.findByIdAndUpdate(product._id, {
+        title,
+        price,
+        image,
+        thumbnails,
+        description,
+        features,
+        rating,
+        link,
+        price_currency,
+        is_active: true,
+      });
+
       added.push(product?.link);
     } catch (error) {
       failed.push(product?.link);

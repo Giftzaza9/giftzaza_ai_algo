@@ -91,7 +91,8 @@ async function AmazonScraper(product_link, userId) {
     });
 
     const product_price = await page.evaluate(() => {
-            let spanElement = document.querySelector('div#corePrice_feature_div span.a-offscreen');
+      let spanElement = document.querySelector('div#corePrice_feature_div span.a-offscreen');
+      // if (!spanElement) spanElement = document.querySelector('div#corePriceDisplay_desktop_feature_div span.aok-offscreen');
       if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.a-offscreen');
       return spanElement?.textContent || null;
     });
