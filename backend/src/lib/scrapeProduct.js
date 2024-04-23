@@ -26,12 +26,12 @@ const scrapeProduct = async (productLink, userId) => {
 };
 
 async function AmazonScraper(product_link, userId) {
-  // const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+  // const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
 
-    await page.goto(product_link, { waitUntil: 'domcontentloaded' });
+    await page.goto(product_link, { waitUntil:  ['domcontentloaded', 'networkidle2'] });
 
     let isAmazonLuxury = false;
 
@@ -39,6 +39,15 @@ async function AmazonScraper(product_link, userId) {
       const spanElement = document.querySelector('span#productTitle');
       return spanElement?.innerText;
     });
+
+    
+    if (!product_title) {
+      await page.reload();
+      product_title = await page.evaluate(() => {
+        const spanElement = document.querySelector('span#productTitle');
+        return spanElement?.innerText;
+      });
+    }
 
     // product_title will be undefined, if amazon luxury
     if (!product_title) {
@@ -362,4 +371,42 @@ const bloomingdaleScrapeProduct = async (product_link, userId) => {
 //   }
 // };
 
-module.exports = { AmazonScraper, bloomingdaleScrapeProduct, scrapeProduct };
+async function AmazonLinkScraper(link) {
+  const launchOptions = {
+    args: [
+      '--no-sandbox',
+      '--disable-infobars',
+      '--disable-setuid-sandbox',
+      '--disable-web-security',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--disable-gpu',
+      '--disable-features=site-per-process',
+      '--disable-features=IsolateOrigins,site-per-process',
+    ],
+    // headless: false,
+  };
+  const browser = await puppeteer.launch(launchOptions);
+  try {
+    const page = await browser.newPage();
+    await page.goto(link, { waitUntil: 'domcontentloaded' });
+    await page.reload();
+    
+    const product_links = await page.evaluate(() => {
+      const els = Array.from(document.querySelectorAll('a.a-link-normal.s-no-outline'));
+      return els?.map((el) => el?.href)?.filter(href => href)
+    });
+
+    await browser.close();
+
+    return {
+      product_links
+    };
+  } catch (error) {
+    console.error(error);
+    await browser.close();
+    return null;
+  }
+}
+
+module.exports = { AmazonScraper, bloomingdaleScrapeProduct, scrapeProduct, AmazonLinkScraper };
