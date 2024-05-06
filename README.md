@@ -150,3 +150,10 @@ Make a POST req to https://app.giftalia.ai/api/v1/products/analysis with body as
 
 ## how to bulk rescrape:
 Make a POST request to https://app.giftalia.ai/api/v1/products/bulk-rescrape with header as Authorization: Bearer <access_token>
+
+
+# How to update category.json 
+```
+Update category.json file at root level and make a PR to dev (to update on dev) OR prod (to update on prod)
+Redeploy the changes on the instance
+```
