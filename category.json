@@ -1,7 +1,7 @@
 {
     "gender": {
         "gpt_template": "1. Identify gender(s) for whom the product can be gifted from ${list}.return atleast one from the list. Limit responses to values exclusively within the specified list of gender and sort your response from most likely to least likely.",
-        "manual_weights": 1,
+        "manual_weights": 2,
         "category": [
             "Male",
             "Female"
