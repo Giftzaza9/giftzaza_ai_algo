@@ -1,9 +1,21 @@
-import { Backdrop, CircularProgress, Grid, IconButton, useMediaQuery } from '@mui/material';
+import {
+  Backdrop,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { Box } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../utils/theme';
 import { FC, PropsWithChildren, useEffect, useState } from 'react';
-import { Tune } from '@mui/icons-material';
+import { Close, IosShare, Tune } from '@mui/icons-material';
 import { EditProfileModal } from '../../profile/EditProfileModal';
 import { Profile } from '../../../constants/types';
 import { iphoneSeCondition } from '../../../constants/constants';
@@ -11,16 +23,24 @@ import { observer } from 'mobx-react-lite';
 import { loaderState } from '../../../store/ShowLoader';
 import { ErrorBoundary } from 'react-error-boundary';
 import { CreateProfile } from '../../../sections/Profiles/CreateProfile';
+import { showInstallBannerState } from '../../../store/ShowInstallBanner';
+import { pwaPromptOpenState } from '../../../store/PwaPropmtOpen';
 
 interface _Props {
   fetchProfile?: () => void;
   profile?: Profile;
+  bannerVisible?: boolean;
+  setBannerVisible?: (v: boolean) => void;
+  setPwaPromptOpen?: (v: boolean) => void;
 }
 
-const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any)?.MSStream;
+
+const MobileHeader: FC<_Props> = ({ profile, fetchProfile, bannerVisible, setBannerVisible, setPwaPromptOpen }) => {
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const navigate = useNavigate();
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
+  const [IosInstallBannerOpen, setIosInstallBannerOpen] = useState<boolean>(false);
   const [profileToUpdate, setProfileToUpdate] = useState<Profile | undefined>();
 
   const handleEditProfileModalClose = async (refetch?: boolean) => {
@@ -31,7 +51,12 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
     }
   };
 
-  return (
+  const handleBannerClick = () => {
+    if (isIOS) setIosInstallBannerOpen(true);
+    else setPwaPromptOpen && setPwaPromptOpen(true);
+  };
+
+  return !bannerVisible ? (
     <Grid
       container
       sx={{
@@ -45,6 +70,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
         top: 0,
         zIndex: 100,
         justifyContent: 'space-between',
+        alignItems: 'center',
       }}
     >
       <Box display={'flex'} alignItems={'center'} gap={'3px'} onClick={() => navigate('/')}>
@@ -66,6 +92,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
           }}
         />
       </Box>
+
       {profile && (
         <IconButton
           onClick={() => {
@@ -80,6 +107,116 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile }) => {
       )}
       <EditProfileModal profile={profileToUpdate!} open={editProfileModalOpen} onClose={handleEditProfileModalClose} />
     </Grid>
+  ) : (
+    <Grid
+      container
+      sx={{
+        display: 'flex',
+        width: '100%',
+        alignSelf: 'flex-start',
+        px: '20px',
+        py: isSmallScreen ? '10px' : '20px',
+        backgroundColor: theme.palette.secondary.main,
+        position: 'fixed',
+        top: 0,
+        zIndex: 100,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <Box display={'flex'} alignItems={'center'} justifyContent={'center'} gap={'3px'} onClick={() => navigate('/')}>
+        <img
+          src={require('../../../assets/logo_gift.png')}
+          alt="logo"
+          style={{
+            height: isSmallScreen ? '20px' : '22px',
+            cursor: 'pointer',
+            alignSelf: 'baseline',
+          }}
+        />
+      </Box>
+
+      <Box display={'flex'} alignItems={'center'} gap={'12px'}>
+        {/* {isIOS ? ( */}
+        <Box display={'flex'} alignItems={'center'} gap={'12px'}>
+          <Typography
+            sx={{
+              fontSize: '18px',
+              fontFamily: 'Inter',
+              fontWeight: 500,
+              textTransform: 'none',
+            }}
+          >
+            Open Giftalia App
+          </Typography>
+
+          <Button
+            size="small"
+            sx={{
+              cursor: 'pointer',
+              bgcolor: 'rgba(221, 110, 63, 1)',
+              color: 'white',
+              fontSize: '18px',
+              fontFamily: 'Inter',
+              fontWeight: '600',
+              padding: '4px 14px!important',
+            }}
+            onClick={() => {
+              handleBannerClick();
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: '14px',
+                fontFamily: 'Inter',
+                fontWeight: 500,
+                textTransform: 'none',
+              }}
+            >
+              Install
+            </Typography>
+          </Button>
+
+          <Dialog
+            open={IosInstallBannerOpen}
+            onClose={() => {
+              setIosInstallBannerOpen(false);
+            }}
+          >
+            <DialogTitle>Install Giftalia App</DialogTitle>
+
+            <DialogContent>
+              <Typography
+                sx={{
+                  fontSize: '14px',
+                  fontFamily: 'Inter',
+                  fontWeight: 400,
+                  textTransform: 'none',
+                  mb: '16px',
+                }}
+              >
+                Tap on <IosShare /> and select <strong>Add to Home Screen</strong>.{' '}
+              </Typography>
+              <DialogContentText>
+                Install the app on your device to easily access it any time. No app store. No download. No hassle.
+              </DialogContentText>
+            </DialogContent>
+          </Dialog>
+        </Box>
+
+        <IconButton
+          onClick={() => {
+            setBannerVisible && setBannerVisible(false);
+          }}
+          size="small"
+          sx={{ p: 0 }}
+        >
+          <Close fontSize={'small'} />
+        </IconButton>
+      </Box>
+
+      <EditProfileModal profile={profileToUpdate!} open={editProfileModalOpen} onClose={handleEditProfileModalClose} />
+    </Grid>
   );
 };
 
@@ -92,7 +229,7 @@ function Fallback({ error, resetErrorBoundary }: any) {
   useEffect(() => {
     if (error) {
       // alert(error.message || 'Something went wrong!');
-      console.log(error.message)
+      console.log(error.message);
       window.location.href = '/';
     }
   }, [error]);
@@ -103,6 +240,8 @@ function Fallback({ error, resetErrorBoundary }: any) {
 export const MobileLayout = observer(({ children, profile, fetchProfile }: Props) => {
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const { loading, setLoading } = loaderState;
+  const { setVisible, visible } = showInstallBannerState;
+  const { setPwaPromptOpen } = pwaPromptOpenState;
   return (
     <ErrorBoundary FallbackComponent={Fallback}>
       <Grid
@@ -116,7 +255,13 @@ export const MobileLayout = observer(({ children, profile, fetchProfile }: Props
           position: 'relative',
         }}
       >
-        <MobileHeader profile={profile} fetchProfile={fetchProfile} />
+        <MobileHeader
+          profile={profile}
+          fetchProfile={fetchProfile}
+          bannerVisible={visible}
+          setBannerVisible={setVisible}
+          setPwaPromptOpen={setPwaPromptOpen}
+        />
         <Box
           sx={{
             display: 'flex',

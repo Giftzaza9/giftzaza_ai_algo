@@ -28,10 +28,28 @@ const scrapeProduct = async (productLink, userId) => {
 async function AmazonScraper(product_link, userId) {
   // const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+  let blocked = false;
   try {
     const page = await browser.newPage();
 
     await page.goto(product_link, { waitUntil:  ['domcontentloaded', 'networkidle2'] });
+
+    // To see if it is showing the captcha
+    blocked = await page.evaluate(() => {
+      return document.body.innerText.includes('Type the characters you see in this image:');
+    });
+    // Try to reload the page
+    if (blocked) {
+      await page.keyboard.down('Control');
+      await page.keyboard.press('KeyR');
+      await page.keyboard.up('Control');
+      await page.reload({ waitUntil: ['domcontentloaded', 'networkidle2'] });
+    }
+    blocked = await page.evaluate(() => {
+      return document.body.innerText.includes('Type the characters you see in this image:');
+    });
+    // If blocked again throw error
+    if (blocked) throw new Error('Amazon has found this activity as suspicious activity, please try again later.');
 
     let isAmazonLuxury = false;
 
@@ -42,7 +60,6 @@ async function AmazonScraper(product_link, userId) {
 
     
     if (!product_title) {
-      await page.reload();
       product_title = await page.evaluate(() => {
         const spanElement = document.querySelector('span#productTitle');
         return spanElement?.innerText;
@@ -56,10 +73,10 @@ async function AmazonScraper(product_link, userId) {
         brand = document.querySelector('a#bond-byLine-desktop');
         const spanElement = document.querySelector('span#bond-title-desktop');
         return brand && spanElement
-          ? `${brand?.textContent} - ${spanElement?.textContent}`
-          : spanElement
-          ? spanElement?.innerText
-          : null;
+        ? `${brand?.textContent} - ${spanElement?.textContent}`
+        : spanElement
+        ? spanElement?.innerText
+        : null;
       });
     }
 
@@ -161,7 +178,7 @@ async function AmazonScraper(product_link, userId) {
       link: product_link,
       rating: product_rating ? Number(product_rating?.split(' ')?.[0]?.trim()) : 0,
       price:
-      Number(product_price?.replace('$', '')?.replace(',', '')?.trim()) ||
+        Number(product_price?.replace('$', '')?.replace(',', '')?.trim()) ||
         Number(product_price?.replace('US$', '')?.replace(',', '')?.trim()) ||
         -1,
       description: product_description,
@@ -169,10 +186,12 @@ async function AmazonScraper(product_link, userId) {
       price_currency: product_price_currency ? product_price_currency : "",
       added_by: userId,
       thumbnails: [], // UNABLE TO ADD quality thumbnails
+      blocked: blocked
     };
   } catch (error) {
     console.error(error);
     await browser.close();
+    if (blocked) return { blocked }
     return null;
   }
 }
@@ -391,7 +410,7 @@ async function AmazonLinkScraper(link) {
     const page = await browser.newPage();
     await page.goto(link, { waitUntil: 'domcontentloaded' });
     await page.reload();
-    
+
     const product_links = await page.evaluate(() => {
       const els = Array.from(document.querySelectorAll('a.a-link-normal.s-no-outline'));
       return els?.map((el) => el?.href)?.filter(href => href)
