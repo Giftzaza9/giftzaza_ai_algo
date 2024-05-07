@@ -160,6 +160,7 @@ const MobileHeader: FC<_Props> = ({ profile, fetchProfile, bannerVisible, setBan
               fontFamily: 'Inter',
               fontWeight: '600',
               padding: '4px 14px!important',
+              m:0
             }}
             onClick={() => {
               handleBannerClick();
