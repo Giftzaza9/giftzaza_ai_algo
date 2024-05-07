@@ -5,6 +5,7 @@ import { userStore } from '../../store/UserStore';
 import { useNavigate } from 'react-router-dom';
 import { bottomNavState } from '../../store/BottomNavState';
 import { observer } from 'mobx-react-lite';
+import { getVH } from '../../utils/helperFunctions';
 
 const textColor = 'rgba(68, 65, 66, 1)';
 
@@ -41,11 +42,11 @@ export const Onboarding = observer(() => {
           alignItems: 'center',
           rowGap: 4,
           textAlign: 'center',
-          marginTop: '35%',
-          marginBottom: '15%',
+          py: getVH(5),
+          height: getVH(100), overflow: 'auto'
         }}
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: getVH(90), overflow: 'auto' }}>
           <Box>
             <Typography noWrap color={textColor} fontWeight={800} fontSize={'22px'} lineHeight={'26px'}>
               Welcome to Giftalia, {user?.name?.split(' ')?.[0]}
