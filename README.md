@@ -138,3 +138,22 @@ Go to AI folder after seeing the above structure
 ai_giftalia> cd giftzaza_ai_algo - Go to code folder 
 docker-compose -f docker-compose.ai.yml up -d - For running AI
 ```
+
+# Important links to scrape the products
+
+## How to scrape product_links from search results:
+Make a POST req to https://app.giftalia.ai/api/v1/products/scrape-for-links with body as { "link" : <link-of-amazon-search-result>} 
+Will work once in 10-15 tries, you have to hit again and again till you get the links (sorry)
+
+## How to bulk add products
+Make a POST req to https://app.giftalia.ai/api/v1/products/analysis with body as { "product_links" : <array-of-product_links>} 
+
+## how to bulk rescrape:
+Make a POST request to https://app.giftalia.ai/api/v1/products/bulk-rescrape with header as Authorization: Bearer <access_token>
+
+
+# How to update category.json 
+```
+Update category.json file at root level and make a PR to dev (to update on dev) OR prod (to update on prod)
+Redeploy the changes on the instance
+```

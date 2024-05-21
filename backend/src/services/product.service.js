@@ -126,6 +126,12 @@ const scrapeAndAddProduct = async (productBody) => {
   const productDB = await Product.findOne({ link: product_link });
   const scrapedProduct = await scrapeProduct(product_link, user_id);
 
+  if (scrapedProduct && scrapedProduct?.blocked) {
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Amazon has found this activity as suspicious activity, please try again later.'
+    );
+  }
   if (!scrapedProduct || !scrapedProduct.title) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }

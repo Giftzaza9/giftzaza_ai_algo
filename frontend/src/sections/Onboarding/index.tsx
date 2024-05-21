@@ -5,6 +5,7 @@ import { userStore } from '../../store/UserStore';
 import { useNavigate } from 'react-router-dom';
 import { bottomNavState } from '../../store/BottomNavState';
 import { observer } from 'mobx-react-lite';
+import { getVH } from '../../utils/helperFunctions';
 
 const textColor = 'rgba(68, 65, 66, 1)';
 
@@ -41,33 +42,40 @@ export const Onboarding = observer(() => {
           alignItems: 'center',
           rowGap: 4,
           textAlign: 'center',
-          marginTop: '35%',
-          marginBottom: '15%',
+          py: getVH(5),
+          height: getVH(100), overflow: 'auto'
         }}
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: getVH(90), overflow: 'auto' }}>
           <Box>
             <Typography noWrap color={textColor} fontWeight={800} fontSize={'22px'} lineHeight={'26px'}>
               Welcome to Giftalia, {user?.name?.split(' ')?.[0]}
             </Typography>
             <Typography sx={text} mt={1}>
-              Please follow these House Rules.
+              Here is how it works.
             </Typography>
           </Box>
           <Box textAlign={'left'} width={'90%'} margin={'auto'} display={'flex'} flexDirection={'column'} rowGap={2} mt={4}>
             <Box>
               <Box display={'flex'}>
                 <DoneIcon sx={{ color: 'rgba(221, 110, 63, 1)', fontSize: '16px' }} />
-                <Typography sx={heading}>Play it cool.</Typography>
+                <Typography sx={heading}>Create a giftee profile</Typography>
               </Box>
-              <Typography sx={text}>Respect others and treat them as you would like to be treated.</Typography>
+              <Typography sx={text}>The more details you provide us about the giftee the better the AI recommendation will be, we sift through thousands of products and curate the best gifts for you.</Typography>
             </Box>
             <Box>
               <Box display={'flex'}>
                 <DoneIcon sx={{ color: 'rgba(221, 110, 63, 1)', fontSize: '16px' }} />
-                <Typography sx={heading}>Be proactive.</Typography>
+                <Typography sx={heading}>Swipe gift suggestions left or right</Typography>
               </Box>
-              <Typography sx={text}>Always report bad behavior.</Typography>
+              <Typography sx={text}>SWIPE RIGHT IF YOU LIKE the gift suggestion or SWIPE LEFT IF YOU DON'T, this helps the AI gey better in providing you with gift suggestions</Typography>
+            </Box>
+            <Box>
+              <Box display={'flex'}>
+                <DoneIcon sx={{ color: 'rgba(221, 110, 63, 1)', fontSize: '16px' }} />
+                <Typography sx={heading}>Click the BUY button to purchase</Typography>
+              </Box>
+              <Typography sx={text}>If you like a gift recommendation, click on the orange BUY button on the gift recommendation card to purchase it via our partners e.g. Amazon</Typography>
             </Box>
           </Box>
         </Box>
