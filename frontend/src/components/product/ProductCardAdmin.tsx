@@ -18,22 +18,21 @@ import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { deleteProduct } from '../../services/product';
 import { getSwalConfirmation } from '../../utils/swalConfirm';
 import { filterObject } from '../../constants/constants';
-import { EditDocumentIcon } from '../shared/Icons/EditDocumentIcon';
 import { DeleteIcon } from '../shared/Icons/DeleteIcon';
 import _ from 'lodash';
 import { Amazon } from '../shared/Icons/Amazon';
 import { Bloomingdales } from '../shared/Icons/Bloomingdales';
-import { Verified } from '@mui/icons-material';
+import { RemoveRedEyeOutlined, Verified } from '@mui/icons-material';
 
 interface Props {
   product: Product;
   isAdminView?: boolean;
   removeProduct: (id: string) => void;
-  setEditProduct: Dispatch<SetStateAction<Product | undefined>>;
-  setEditModalOpen: Dispatch<SetStateAction<boolean>>;
+  setPreviewProduct: Dispatch<SetStateAction<Product | undefined>>;
+  setPreviewModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, setEditProduct, setEditModalOpen }) => {
+export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, setPreviewProduct, setPreviewModalOpen }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const showTags: string[] = [];
@@ -79,11 +78,11 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
               <IconButton
                 onClick={(e) => {
                   e.stopPropagation();
-                  setEditModalOpen(true);
-                  setEditProduct(product);
+                  setPreviewModalOpen(true);
+                  setPreviewProduct(product);
                 }}
               >
-                <EditDocumentIcon />
+                <RemoveRedEyeOutlined color='primary' />
               </IconButton>
               <IconButton
                 onClick={(e) => {
@@ -237,7 +236,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
 
           <Grid container gap={1} height={'56px'}>
             {showTags.map((tag) => (
-              <Grid item>
+              <Grid item key={tag}>
                 <Chip
                   size="small"
                   label={

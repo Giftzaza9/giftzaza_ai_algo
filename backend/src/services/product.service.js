@@ -206,7 +206,8 @@ const getMoreProducts = async (productBody) => {
  */
 const startShopping = async (payload) => {
   const { page, limit } = payload;
-  const products = await userActivity.aggregate([
+
+  const productsPromise = userActivity.aggregate([
     {
       $group: {
         _id: '$product_id',
@@ -248,8 +249,11 @@ const startShopping = async (payload) => {
     },
   ]);
 
-  const productsData = products.map((item) => item.product[0]).filter((item) => item);
-  const totalRows = await userActivity.aggregate([{ $group: { _id: '$product_id', totalRows: { $sum: 1 } } }]);
+  const countPromise = userActivity.aggregate([{ $group: { _id: '$product_id', totalRows: { $sum: 1 } } }]);
+
+  const [products, totalRows] = await Promise.all([productsPromise, countPromise]); 
+
+  const productsData = products?.map((item) => item.product[0])?.filter((item) => item);
 
   const result = {
     row: productsData.length,

@@ -63,27 +63,27 @@ export const AdminProducts = () => {
     [page]
   );
 
-  const removeProduct = (id: string) => {
+  const removeProduct = useCallback((id: string) => {
     setProducts((prev) => prev?.filter((p) => p?._id !== id));
-  };
+  }, []);
 
   const replaceProduct = (product: Product) => {
     setProducts((prev) => prev?.map((p) => (p?._id === product?.id ? product : p)));
   };
 
-  const handleAddNewModalClose = async () => {
+  const handleAddNewModalClose = useCallback(async () => {
     setAddNewModalOpen(false);
     await fetchProducts(`page=1&limit=${productPerPageAdmin}&sort=latest`);
-  };
+  }, [fetchProducts]);
 
-  const handleEditModalClose = async (product?: Product) => {
+  const handleEditModalClose = useCallback(async (product?: Product) => {
     setEditModalOpen(false);
     if (product) replaceProduct(product);
-  };
+  }, []);
 
-  const handlePreviewModalClose = async (product?: Product) => {
+  const handlePreviewModalClose = useCallback(async (product?: Product) => {
     setPreviewModalOpen(false);
-  };
+  }, []);
 
   useEffect(() => {
     const queryParams: string[] = [`page=${1}&limit=${productPerPageAdmin}&sort=${sort}`];
@@ -227,14 +227,14 @@ export const AdminProducts = () => {
               lg={3}
               key={product?._id}
               onClick={() => {
-                setPreviewProduct(product);
-                setPreviewModalOpen(true);
+                setEditModalOpen(true);
+                setEditProduct(product);
               }}
               sx={{ cursor: 'pointer' }}
             >
               <ProductCard
-                setEditProduct={setEditProduct}
-                setEditModalOpen={setEditModalOpen}
+                setPreviewModalOpen={setPreviewModalOpen}
+                setPreviewProduct={setPreviewProduct}
                 removeProduct={removeProduct}
                 product={product}
                 isAdminView
