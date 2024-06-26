@@ -15,7 +15,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { filterObject } from '../../constants/constants';
 import _ from 'lodash';
-import { Dispatch, FC, SetStateAction } from 'react';
+import { Dispatch, FC, Fragment, SetStateAction } from 'react';
 import { RestartAlt } from '@mui/icons-material';
 import { CustomSlider } from '../shared/CustomSlider';
 
@@ -91,7 +91,7 @@ export const FilterSelector: FC<Props> = ({
       <Divider variant="fullWidth" sx={{ backgroundColor: 'rgba(233, 218, 241, 1)' }} />
       <Grid item>
         {Object.entries(_.omit(filterObject, 'budget')).map(([key, val]) => (
-          <>
+          <Fragment key={key}>
             <Accordion key={key} sx={{ boxShadow: 'none' }}>
               <AccordionSummary
                 sx={{ '&.Mui-expanded': { minHeight: '56px' } }}
@@ -111,6 +111,7 @@ export const FilterSelector: FC<Props> = ({
                   <FormGroup aria-label="position">
                     {val?.map((tag) => (
                       <FormControlLabel
+                        key={tag}
                         value={tag}
                         control={<Checkbox checked={filters?.includes(tag)} />}
                         label={tag}
@@ -125,7 +126,7 @@ export const FilterSelector: FC<Props> = ({
               </AccordionDetails>
             </Accordion>
             <Divider variant="fullWidth" sx={{ backgroundColor: 'rgba(233, 218, 241, 1)' }} />
-          </>
+          </Fragment>
         ))}
 
         <Accordion key={'budget'} sx={{ boxShadow: 'none' }}>
