@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const mongoose = require('mongoose');
-const { Product, AnalysisProduct } = require('../models');
+const { Product, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { scrapeProduct, AmazonLinkScraper } = require('../lib/scrapeProduct');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
@@ -89,6 +89,19 @@ const queryProducts = async (queryObject) => {
               },
             },
           },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'curated_by',
+          foreignField: '_id',
+          as: 'curator',
+        },
+      },
+      {
+        $addFields: {
+          curator: { $arrayElemAt: ['$curator', 0] },
         },
       },
       {
@@ -296,7 +309,7 @@ const similarProducts = async (productBody) => {
  * @returns {Promise<Product>}
  */
 const createProduct = async (productBody) => {
-  const { product_id, tags, curated } = productBody;
+  const { product_id, tags, curated, user_id } = productBody;
 
   let product = await Product.findById(product_id);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found !');
@@ -306,6 +319,7 @@ const createProduct = async (productBody) => {
     {
       tags: tags,
       curated: !!curated,
+      curated_by: curated ? user_id : null,
       hil: true,
     },
     { new: true, useFindAndModify: false }
@@ -327,13 +341,16 @@ const createProduct = async (productBody) => {
  * @returns {Promise<Product>}
  */
 const updateProductById = async (productId, updateBody) => {
-  const { tags, curated, scrape } = updateBody;
-  const product = await Product.findById(productId);
+  const { tags, curated, scrape, user_id } = updateBody;
+  let product = await Product.findById(productId);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
 
   // From User
   product.tags = tags;
-  if (curated !== undefined) product.curated = !!curated;
+  if (curated !== undefined) {
+    product.curated = !!curated;
+    product.curated_by = curated ? user_id : null;
+  }
   product.hil = true;
 
   // From scraping
@@ -352,6 +369,11 @@ const updateProductById = async (productId, updateBody) => {
   }
   console.log("UPDATE ", product)
   await product.save();
+  
+  if (product?.curated_by !== undefined) {
+    const curator = await User.findById(new mongoose.Types.ObjectId(product.curated_by));
+    product = Object.assign(product.toJSON(), { curator, _id: product?._id || product?.id});
+  }
 
   try {
     axiosInstance.post(`/model_retrain`, {});

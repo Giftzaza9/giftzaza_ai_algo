@@ -64,7 +64,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
       }}
       sx={{
         position: 'relative',
-        height: isAdminView ? '480px' : '518px',
+        height: isAdminView ? '512px' : '518px',
         border: '1px solid rgba(233, 218, 241, 1)',
         borderRadius: '16px',
         padding: 2,
@@ -82,7 +82,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                   setPreviewProduct(product);
                 }}
               >
-                <RemoveRedEyeOutlined color='primary' />
+                <RemoveRedEyeOutlined color="primary" />
               </IconButton>
               <IconButton
                 onClick={(e) => {
@@ -161,20 +161,74 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
         <Stack gap={'16px'}>
           {/* TOP-CHIPS */}
 
-          {/* Title */}
-          {product?.title !== undefined && product?.title?.length > 50 ? (
-            <Tooltip
-              title={product?.title}
-              TransitionComponent={Fade}
-              TransitionProps={{ timeout: 600 }}
-              followCursor
-              children={
+          <Stack gap={'8px'}>
+            {/* Title */}
+            {product?.title !== undefined && product?.title?.length > 50 ? (
+              <Tooltip
+                title={product?.title}
+                TransitionComponent={Fade}
+                TransitionProps={{ timeout: 600 }}
+                followCursor
+                children={
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: 'rgba(43, 50, 59, 1)',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      lineHeight: '20px',
+                      fontFamily: 'Manrope',
+                      overflow: 'hidden',
+                      maxWidth: '100%',
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: 2,
+                    }}
+                  >
+                    {product?.title}
+                  </Typography>
+                }
+              />
+            ) : (
+              <Typography
+                variant="h6"
+                sx={{
+                  color: 'rgba(43, 50, 59, 1)',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  lineHeight: '20px',
+                  fontFamily: 'Manrope',
+                  overflow: 'hidden',
+                  maxWidth: '100%',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 2,
+                }}
+              >
+                {product?.title}
+              </Typography>
+            )}
+
+            {product?.curated && product?.curator && (
+              <Grid container justifyContent="flex-start" alignItems="center" gap="6px">
                 <Typography
-                  variant="h6"
+                  fontWeight={500}
+                  sx={{
+                    color: 'rgba(168, 108, 198, 1)',
+                    display: 'inline-flex',
+                    fontSize: '12px',
+                    textAlign: 'center',
+                  }}
+                >
+                  Curated by:
+                </Typography>
+                <Typography
+                  variant="subtitle1"
+                  component="span"
                   sx={{
                     color: 'rgba(43, 50, 59, 1)',
                     fontSize: '14px',
-                    fontWeight: 500,
+                    fontWeight: 600,
                     lineHeight: '20px',
                     fontFamily: 'Manrope',
                     overflow: 'hidden',
@@ -184,29 +238,11 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                     WebkitLineClamp: 2,
                   }}
                 >
-                  {product?.title}
+                  {product?.curator?.name}
                 </Typography>
-              }
-            />
-          ) : (
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'rgba(43, 50, 59, 1)',
-                fontSize: '14px',
-                fontWeight: 500,
-                lineHeight: '20px',
-                fontFamily: 'Manrope',
-                overflow: 'hidden',
-                maxWidth: '100%',
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 2,
-              }}
-            >
-              {product?.title}
-            </Typography>
-          )}
+              </Grid>
+            )}
+          </Stack>
 
           {/* PRICE + RATING */}
           <Grid container direction={'row'} justifyContent={'space-between'} alignItems={'center'}>

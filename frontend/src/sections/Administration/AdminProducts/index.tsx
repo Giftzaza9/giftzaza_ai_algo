@@ -50,7 +50,7 @@ export const AdminProducts = () => {
       try {
         setProductsLoading(true);
         const { data } = await getProducts(qString);
-        if (data?.docs?.length > 0) {
+        if (data?.docs !== undefined) {
           setProducts((prev) => (page === 1 ? [...data.docs] : [...prev, ...data.docs]));
         }
         setHasNextPage(data?.hasNextPage);
@@ -225,7 +225,7 @@ export const AdminProducts = () => {
               sm={6}
               md={4}
               lg={3}
-              key={product?._id}
+              key={product?._id || product?.id}
               onClick={() => {
                 setEditModalOpen(true);
                 setEditProduct(product);
