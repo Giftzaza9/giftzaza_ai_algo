@@ -9,6 +9,7 @@ const getProducts = {
     search: Joi.string(),
     source: Joi.string(),
     curated: Joi.boolean(),
+    curated_by: Joi.string().custom(objectId),
     filter: Joi.string(),
     price_min: Joi.number().integer(),
     price_max: Joi.number().integer(),

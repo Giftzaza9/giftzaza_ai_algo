@@ -2,6 +2,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Checkbox,
   Divider,
   FormControl,
@@ -9,15 +10,19 @@ import {
   FormGroup,
   Grid,
   IconButton,
+  MenuItem,
+  Select,
   Tooltip,
   Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { filterObject } from '../../constants/constants';
 import _ from 'lodash';
-import { Dispatch, FC, Fragment, SetStateAction } from 'react';
+import { Dispatch, FC, Fragment, SetStateAction, useEffect, useState } from 'react';
 import { RestartAlt } from '@mui/icons-material';
 import { CustomSlider } from '../shared/CustomSlider';
+import { getUsers } from '../../services/user';
+import { User } from '../../constants/types';
 
 interface Props {
   filters: string[];
@@ -32,6 +37,8 @@ interface Props {
   setSource: Dispatch<SetStateAction<string[]>>;
   curated: boolean;
   setCurated: Dispatch<SetStateAction<boolean>>;
+  curatedBy: string;
+  setCuratedBy: Dispatch<SetStateAction<string>>;
 }
 
 export const FilterSelector: FC<Props> = ({
@@ -47,11 +54,28 @@ export const FilterSelector: FC<Props> = ({
   setSource,
   curated,
   setCurated,
+  curatedBy,
+  setCuratedBy,
 }) => {
   const handleFilterChecked = (checked: boolean, value: string) => {
     if (checked) setFilters((prev) => [...prev, value]);
     else setFilters((prev) => prev.filter((el) => el !== value));
   };
+
+
+  const [admins, setAdmins] = useState<User[]>([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await getUsers('page=1&limit=999&sortBy=-createdAt&role=admin');
+        if (data?.docs !== undefined) {
+          setAdmins(data.docs);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    })()
+  }, [])
 
   return (
     <Grid
@@ -79,6 +103,7 @@ export const FilterSelector: FC<Props> = ({
                   setHil(false);
                   setCurated(false);
                   setShowDeletedProducts(false);
+                  setCuratedBy(' ');
                 }}
               >
                 <RestartAlt />
@@ -208,8 +233,8 @@ export const FilterSelector: FC<Props> = ({
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <FormControl component="fieldset">
-              <FormGroup aria-label="position">
+            <FormControl component="fieldset"  sx={{width: '100%'}}>
+              <FormGroup aria-label="position" sx={{width: '100%'}}>
                 <FormControlLabel
                   value={hil}
                   control={<Checkbox checked={hil} />}
@@ -237,6 +262,21 @@ export const FilterSelector: FC<Props> = ({
                     setShowDeletedProducts(checked);
                   }}
                 />
+                <Box width='100%' pt={1}>
+                  <Typography variant="subtitle2">Curated By</Typography>
+                  <Select
+                    size="small"
+                    fullWidth
+                    value={curatedBy}
+                    defaultValue=" "
+                    onChange={(e) => setCuratedBy(e.target.value as string)}
+                  >
+                    <MenuItem value=" ">None</MenuItem>
+                    {admins?.map(admin => (
+                      <MenuItem value={admin?.id}>{admin?.name}</MenuItem>
+                    ))}
+                  </Select>
+                </Box>
               </FormGroup>
             </FormControl>
           </AccordionDetails>

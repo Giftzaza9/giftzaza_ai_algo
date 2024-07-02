@@ -24,6 +24,7 @@ export const AdminProducts = () => {
   const [budgetTuples, setBudgetTuples] = useState<[number, number]>([0, 1000]);
   const [hil, setHil] = useState<boolean>(false);
   const [curated, setCurated] = useState<boolean>(false);
+  const [curatedBy, setCuratedBy] = useState<string>(' ');
   const [showDeletedProducts, setShowDeletedProducts] = useState<boolean>(false);
   const [source, setSource] = useState<string[]>([]);
   const [queryString, setQueryString] = useState<string>('');
@@ -98,6 +99,8 @@ export const AdminProducts = () => {
       if (budgetTuples[1] === 1000) queryParams.push(`price_max=${Number.MAX_SAFE_INTEGER}`);
       else queryParams.push(`price_max=${budgetTuples[1]}`);
     }
+    if (curatedBy?.trim()) queryParams.push(`curated_by=${curatedBy}`);
+    
     const newQueryString = queryParams.join('&');
     if (newQueryString !== queryString) {
       setProducts([]);
@@ -105,7 +108,7 @@ export const AdminProducts = () => {
       setQueryString(newQueryString);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil, source, curated]);
+  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil, source, curated, curatedBy]);
 
   useEffect(() => {
     if (page > 1) {
@@ -171,6 +174,8 @@ export const AdminProducts = () => {
             setShowDeletedProducts={setShowDeletedProducts}
             curated={curated}
             setCurated={setCurated}
+            curatedBy={curatedBy}
+            setCuratedBy={setCuratedBy}
           />
         </Grid>
 
