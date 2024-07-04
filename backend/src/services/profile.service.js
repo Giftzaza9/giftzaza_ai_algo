@@ -3,6 +3,7 @@ const { Profile, Product } = require('../models');
 const ApiError = require('../utils/ApiError');
 const calculateSimilarity = require('../lib/calculateSimilarity');
 const axiosInstance = require('../utils/axiosInstance');
+const { isAxiosError } = require('axios');
 
 /**
  * Get profile by id
@@ -33,6 +34,13 @@ const getRecommendedProducts = async (payload) => {
     console.log('RESPONSEE ', data);
     return data;
   } catch (error) {
+    if (isAxiosError(error)){
+      console.log('ERR', error)
+      console.log('RES', error?.response)
+      console.log('MSG', error?.response?.message)
+      console.log('DAT', error?.response?.data)
+      console.log('DTL', error?.response?.data?.detail)
+    }
     console.log('ERROR IN RECOMMENDATION MSG ', error.message);
     throw new ApiError(httpStatus.BAD_REQUEST, 'Failed in product recommendation');
   }
@@ -48,9 +56,9 @@ const createProfile = async (profileBody) => {
     gender: [profileBody.gender],
     age: [profileBody.age],
     relation: [profileBody.relation],
-    occasion: [profileBody.occasion],
+    occasion: profileBody?.occasion ? [profileBody.occasion] : [],
     styles: profileBody.styles,
-    interests: profileBody.interests,
+    interests: profileBody?.interests,
   };
   const preferences = Object.values(profile_preferences)
     .flat()
@@ -61,10 +69,11 @@ const createProfile = async (profileBody) => {
   profileBody.preferences = preferences;
   const payload = {
     user_id: profileBody?.user_id,
-    new_attributes: preferences,
+    new_attributes: profileBody?.interests?.length ? preferences : [...preferences,'spirituality'],
     top_n: 10,
     min_price: profileBody?.min_price,
     max_price: profileBody?.max_price,
+    semi_hard_filters: []
   };
   try {
     profileBody.recommended_products = await getRecommendedProducts(payload);
@@ -100,7 +109,7 @@ const updateProfile = async (profileBody, profileId) => {
     gender: [profileBody.gender],
     age: [profileBody.age],
     relation: [profileBody.relation],
-    occasion: [profileBody.occasion],
+    occasion: profileBody?.occasion ? [profileBody.occasion] : [],
     styles: profileBody.styles,
     interests: profileBody.interests,
   };

@@ -24,8 +24,8 @@ const deleteProfile = {
 const createProfile = {
   body: Joi.object().keys({
     title: Joi.string(),
-    age: Joi.string(),
-    gender: Joi.string(),
+    age: Joi.string().required(),
+    gender: Joi.string().required(),
     relation: Joi.string(),
     occasion: Joi.string(),
     occasion_date: Joi.date(),

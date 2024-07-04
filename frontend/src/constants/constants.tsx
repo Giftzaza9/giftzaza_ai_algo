@@ -3,7 +3,7 @@
 import { BudgetMap, Product } from './types';
 import { GoHomeFill } from 'react-icons/go';
 import { Bookmark, GridViewRounded, PersonRounded } from '@mui/icons-material';
-import categoryData from "./category.json";
+import categoryData from './category.json';
 
 // const iconStyle = {
 //   fontSize: 'large',
@@ -91,9 +91,26 @@ export const filterObject = {
   budget: categoryData.budget.category,
 };
 
+export const relationShipMap = {
+  Husband: { relation: 'Spouse or Significant Other', gender: 'male' },
+  Wife: { relation: 'Spouse or Significant Other', gender: 'female' },
+  Boyfriend: { relation: 'Girlfriend', gender: 'male' },
+  Girlfriend: { relation: 'Girlfriend', gender: 'female' },
+  Son: { relation: 'Child', gender: 'male' },
+  Daughter: { relation: 'Child', gender: 'female' },
+  Father: { relation: 'Parent', gender: 'male' },
+  Mother: { relation: 'Parent', gender: 'female' },
+  Grandfather: { relation: 'Grand Parent', gender: 'male' },
+  Grandmother: { relation: 'Grand Parent', gender: 'female' },
+  'Male Friend': { relation: 'Friend', gender: 'male' },
+  'Female Friend': { relation: 'Friend', gender: 'female' },
+  'Male Colleague': { relation: 'Colleague', gender: 'male' },
+  'Female Colleague': { relation: 'Colleague', gender: 'female' },
+};
+
 function generateBudgetMap(budget: any): BudgetMap {
   const budgetMap: BudgetMap = {};
-  
+
   for (let i = 0; i < budget?.length; i++) {
     const category = budget[i];
     const range = category.split('-');
@@ -109,12 +126,12 @@ function generateBudgetMap(budget: any): BudgetMap {
       budgetMap[category] = { min: min, max: max };
     }
   }
-  
+
   // Add infinite max value for the last category
   const lastCategory = budget[budget?.length - 1];
   const lastMax = lastCategory.includes('+') ? Number.MAX_SAFE_INTEGER : parseInt(lastCategory.split('-')[1]);
   budgetMap[lastCategory] = { min: parseInt(lastCategory.split('-')[0].slice(1)), max: lastMax };
-  
+
   return budgetMap;
 }
 export const budgetMap: BudgetMap = generateBudgetMap(categoryData.budget.category);
@@ -188,6 +205,14 @@ export const getStartedChips = [
   'View existing giftee profiles',
   'Start shopping',
 ];
+
+export const landingChips = {
+  forHusband: 'Gifts for your husband',
+  forMom: 'Gifts for your mom',
+  createNew: 'Create a new giftee profile',
+  view: 'View existing giftee profiles',
+  shopping: 'Start shopping',
+};
 
 export enum SwipeAction {
   LIKE = 'like',

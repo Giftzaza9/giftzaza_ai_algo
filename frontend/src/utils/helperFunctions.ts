@@ -4,6 +4,7 @@ import { decodeToken } from './decodeToken';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { createErrorLog } from '../services/error';
+import { CreateProfileBody } from '../services/profile';
 
 export const generateErrorMessage = async (error: Error | unknown): Promise<ApiResponse> => {
   let message: string = '';
@@ -113,3 +114,14 @@ export const isIPhoneAndPWA = () => {
 };
 
 export const getVH = (vH: number) => `calc(var(--vh) * ${vH})`;
+
+export const profilePayloadCleaner = (payload: CreateProfileBody) => {
+  for (const key in payload) {
+    if (key === 'title' && !payload[key]) {
+      payload[key] = `Gift for ${payload.relation}`;
+    } else if (!payload?.[key as keyof CreateProfileBody]) {
+      payload[key as keyof CreateProfileBody] = undefined as never;
+    }
+  }
+  return payload;
+};

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Typography,
   Container,
@@ -15,18 +15,34 @@ import { MobileLayout } from '../../components/shared/MobileLayout';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { MobileSingleSelectChip } from '../../components/shared/MobileSingleSelectChip';
-import { budgetMap, filterObject, getStartedChips, iphoneSeCondition } from '../../constants/constants';
-import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
-import TripOriginIcon from '@mui/icons-material/TripOrigin';
+import { budgetMap, filterObject, iphoneSeCondition, landingChips, relationShipMap } from '../../constants/constants';
+// import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
+// import TripOriginIcon from '@mui/icons-material/TripOrigin';
 import { MobileMultiSelectChip } from '../../components/shared/MobileMultiSelectChip';
 import { Profile } from '../../constants/types';
 import { toast } from 'react-toastify';
 import { CreateProfileBody, createProfile } from '../../services/profile';
 import { useNavigate } from 'react-router';
-import { animationStyle, forwardButtonStyle, genderChipsStyle, startedChipsStyle } from './styles';
+import { animationStyle, forwardButtonStyle, startedChipsStyle } from './styles';
 import { theme } from '../../utils/theme';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
+import { SkipNextOutlined } from '@mui/icons-material';
+import _ from 'lodash';
+import { profilePayloadCleaner } from '../../utils/helperFunctions';
+
+enum Steps {
+  LANDING = 0,
+  RELATION = 1,
+  AGE = 2,
+  NAME = 3,
+  OCCASION = 4,
+  DATE = 5,
+  BUDGET = 6,
+  STYLE = 7,
+  INTEREST = 8,
+  END = 9,
+}
 
 const initialProfileData: Partial<Profile> = {
   styles: [],
@@ -48,6 +64,16 @@ export const CreateProfile = () => {
   const [interests, setSelectedInterests] = useState<string[]>([]);
   const [profileData, setProfileData] = useState<Profile>(initialProfileData as Profile);
 
+  const handleCreateProfileData = useCallback((label: string, data: any, page: number) => {
+    if (label) {
+      setProfileData((prev: any) => ({
+        ...prev,
+        [label]: data,
+      }));
+    }
+    setPage((prev) => prev + page);
+  }, []);
+
   useEffect(() => {
     handleCreateProfileData('styles', styles, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,67 +85,64 @@ export const CreateProfile = () => {
   }, [interests?.length]);
 
   const handleStarted = (val: string) => {
-    if (val === 'View existing giftee profiles') {
+    if (val === landingChips.view) {
       navigate('/profiles');
-    } else if (val === 'Discover gifts for your spouse') {
+    } else if (val === landingChips.forHusband) {
       handleCreateProfileData('title', val, 0);
-      handleCreateProfileData('relation', 'Spouse or Significant Other', 3);
-    } else if (val === 'Discover gifts for your mom') {
+      handleCreateProfileData('gender', 'male', 0);
+      handleCreateProfileData('relation', 'Spouse or Significant Other', Steps.AGE);
+    } else if (val === landingChips.forMom) {
       handleCreateProfileData('title', val, 0);
-      handleCreateProfileData('relation', 'Parent', 3);
-    } else if (val === 'Start shopping') navigate('/shopping');
-    else handleCreateProfileData('', val, 1);
+      handleCreateProfileData('gender', 'female', 0);
+      handleCreateProfileData('relation', 'Parent', Steps.AGE);
+    } else if (val === landingChips.shopping) navigate('/shopping');
+    else handleCreateProfileData('', val, Steps.RELATION);
   };
 
   const handleCreateProfile = async () => {
     const { budget, ...payloadWithoutBudget } = profileData;
-    const payload: CreateProfileBody = {
+    let payload: CreateProfileBody = {
       ...payloadWithoutBudget,
-      min_price: budgetMap[budget as keyof typeof budgetMap]?.min,
-      max_price: budgetMap[budget as keyof typeof budgetMap]?.max,
+      min_price: budgetMap[budget as keyof typeof budgetMap]?.min || undefined,
+      max_price: budgetMap[budget as keyof typeof budgetMap]?.max || undefined,
     };
+    payload = profilePayloadCleaner(payload);
     const { data, error } = await createProfile(payload!);
-    // if (error) {
-    //   toast.error(error || 'Failed to create profile !');
-    // } 
-    if(!error) {
+    if (!error && data) {
       console.log(data);
-      // toast.success('Profile Created');
       navigate(`/profiles/${data?.id}`);
     }
   };
 
   const handleArrows = (val: number) => {
-    if (page === 1 && val === 1 && !profileData?.relation) {
+    if (page === Steps.RELATION && val === 1 && !profileData?.relation && !profileData?.gender) {
       toast.warn('Please select relation !');
       return;
-    } else if (page === 2 && val === 1 && !profileData?.title?.trim()) {
-      toast.warn('Please add name !');
-      return;
-    } else if (page === 3 && val === 1 && !profileData?.occasion) {
-      toast.warn('Please select occasion !');
-      return;
-    } else if (page === 4 && val === 1 && !profileData?.occasion_date) {
-      toast.warn('Please select occasion date !');
-      return;
-    } else if (page === 5 && val === 1 && !profileData?.gender) {
-      toast.warn('Please select gender !');
-      return;
-    } else if (page === 6 && val === 1 && !profileData?.age) {
-      toast.warn('Please select age !');
-      return;
-    } else if (page === 7 && val === 1 && !profileData?.budget) {
-      toast.warn('Please select budget !');
-      return;
-    } else if (page === 8 && val === 1 && (profileData?.styles?.length as number) <= 0) {
-      toast.warn('Please select styles !');
-      return;
-    } else if (page === 9 && val === 1 && (profileData?.interests?.length as number) <= 0) {
-      toast.warn('Please select interests !');
+    } else if (page === Steps.AGE && val === 1 && !profileData?.age) {
+      toast.warn('Please select the age-range !');
       return;
     }
+    // } else if (page === Steps.NAME && val === 1 && !profileData?.title) {
+    //   toast.warn('Please add a name !');
+    //   return;
+    // } else if (page === Steps.OCCASION && val === 1 && !profileData?.occasion_date) {
+    //   toast.warn('Please select an occasion !');
+    //   return;
+    // } else if (page === Steps.DATE && val === 1 && !profileData?.age) {
+    //   toast.warn('Please select an date for the occasion!');
+    //   return;
+    // } else if (page === Steps.BUDGET && val === 1 && !profileData?.budget) {
+    //   toast.warn('Please select budget !');
+    //   return;
+    // } else if (page === Steps.STYLE && val === 1 && (profileData?.styles?.length as number) <= 0) {
+    //   toast.warn('Please select styles !');
+    //   return;
+    // } else if (page === Steps.INTEREST && val === 1 && (profileData?.interests?.length as number) <= 0) {
+    //   toast.warn('Please select interests !');
+    //   return;
+    // }
 
-    if (page === 9 && val === 1) {
+    if (page === Steps.INTEREST && val === 1) {
       console.log({ profileData });
       handleCreateProfile();
       return;
@@ -127,27 +150,21 @@ export const CreateProfile = () => {
     setPage((prev) => prev + val);
   };
 
-  const handleSingleSelect = (label: string, val: string) => {
-    if (label === 'occasion_date' && profileData?.title === 'Discover gifts for your mom') {
-      handleCreateProfileData(label, val, 0);
-      handleCreateProfileData('gender', 'Female', 2);
-    } else handleCreateProfileData(label, val, 1);
-  };
+  const handleSingleSelect = useCallback(
+    (label: keyof CreateProfileBody, val: string) => {
+      handleCreateProfileData(label, val, 1);
+    },
+    [handleCreateProfileData]
+  );
 
-  const handleCreateProfileData = (label: string, data: any, page: number) => {
-    if (label) {
-      setProfileData((prev: any) => ({
-        ...prev,
-        [label]: data,
-      }));
-    }
-    setPage((prev) => prev + page);
+  const handleSkip = () => {
+    setPage(Steps.END);
+    handleCreateProfile();
   };
 
   return (
     <MobileLayout>
       <Container
-        // className={'full-screen'}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -156,81 +173,111 @@ export const CreateProfile = () => {
           flexGrow: 1,
         }}
       >
-        {/* Progess bar and next & prev arrows */}
-        {page !== 10 && page !== 0 && (
-          <Grid
-            position={'absolute'}
-            width={'95%'}
-            zIndex={10}
-            bgcolor={theme.palette.secondary.main}
-            alignSelf={'center'}
-            top={0}
-          >
-            <LinearProgress
-              color="primary"
-              variant="determinate"
-              value={page * 10}
-              sx={{
-                '& .MuiLinearProgress-barColorPrimary': {
-                  backgroundColor: 'black',
-                },
-              }}
-            />
-            <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} my={2}>
-              <ArrowBackIosIcon
-                sx={{ cursor: 'pointer', color: 'rgba(221, 110, 63, 1)', visibility: page === 0 ? 'hidden' : 'visible' }}
-                onClick={() => handleArrows(-1)}
+        {/* Progress bar and next & prev arrows */}
+        {page !== Steps.LANDING && page !== Steps.END && (
+          <>
+            <Grid
+              position={'absolute'}
+              width={'95%'}
+              zIndex={10}
+              bgcolor={theme.palette.secondary.main}
+              alignSelf={'center'}
+              top={0}
+            >
+              <LinearProgress
+                color="primary"
+                variant="determinate"
+                value={(page / (Steps.END - 2)) * 100}
+                sx={{
+                  '& .MuiLinearProgress-barColorPrimary': {
+                    backgroundColor: 'black',
+                  },
+                }}
               />
-              <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '500' }}>Step {page}/9</Typography>
-              {page === 9 ? (
-                <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
-                  <Typography
-                    sx={{
-                      fontSize: '16px',
-                      fontFamily: 'Inter',
-                      fontWeight: 600,
-                      textTransform: 'none',
-                    }}
-                  >
-                    Done
-                  </Typography>
-                </Button>
-              ) : (
-                // : page === 8 ? (
-                //   <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
-                //     <Typography
-                //       sx={{
-                //         fontSize: '16px',
-                //         fontFamily: 'Inter',
-                //         fontWeight: 600,
-                //         textTransform: 'none',
-                //       }}
-                //     >
-                //       Next
-                //     </Typography>
-                //   </Button>
-                // )
-                <ArrowForwardIosIcon
+              <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} my={2}>
+                <ArrowBackIosIcon
                   sx={{
                     cursor: 'pointer',
                     color: 'rgba(221, 110, 63, 1)',
-                    visibility: page === 0 && !profileData?.title ? 'hidden' : 'visible',
+                    visibility: page === Steps.LANDING ? 'hidden' : 'visible',
                   }}
-                  onClick={() => handleArrows(1)}
+                  onClick={() => handleArrows(-1)}
                 />
-              )}
-            </Box>
-          </Grid>
+                <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '500' }}>
+                  Step {page}/{Steps.END - 2}
+                </Typography>
+                {page === Steps.END ? (
+                  <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
+                    <Typography
+                      sx={{
+                        fontSize: '16px',
+                        fontFamily: 'Inter',
+                        fontWeight: 600,
+                        textTransform: 'none',
+                      }}
+                    >
+                      Done
+                    </Typography>
+                  </Button>
+                ) : (
+                  <ArrowForwardIosIcon
+                    sx={{
+                      cursor: 'pointer',
+                      color: 'rgba(221, 110, 63, 1)',
+                      visibility: page === Steps.LANDING && !profileData?.title ? 'hidden' : 'visible',
+                    }}
+                    onClick={() => handleArrows(1)}
+                  />
+                )}
+              </Box>
+            </Grid>
+
+            {page !== Steps.END && page !== Steps.LANDING && (
+              <Grid
+                container
+                position={'absolute'}
+                width={'95%'}
+                zIndex={10}
+                // bgcolor={theme.palette.secondary.main}
+                alignSelf={'center'}
+                justifyContent="center"
+                alignItems="center"
+                top={'48px'}
+              >
+                <Button
+                  variant="contained"
+                  disabled={page === Steps.RELATION || page === Steps.AGE}
+                  size="small"
+                  endIcon={<SkipNextOutlined />}
+                  sx={{ padding: '4px 12px!important' }}
+                  onClick={handleSkip}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: '14px',
+                      fontFamily: 'Inter',
+                      fontWeight: 500,
+                      textTransform: 'none',
+                    }}
+                  >
+                    Skip
+                  </Typography>
+                </Button>
+              </Grid>
+            )}
+          </>
         )}
-        {page === 0 && (
+
+        {/* Step 0: Starting Page */}
+
+        {page === Steps.LANDING && (
           <>
-            {/* <Box></Box> */}
             <Grid sx={animationStyle}>
               <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2, pl: 2 }}>
                 Let’s get started
               </Typography>
               <Box display={'flex'} flexDirection={'column'} rowGap={'10px'} p={1}>
-                {getStartedChips.map((el, index) => (
+                {Object.values(landingChips).map((el, index) => (
                   <Chip
                     key={index}
                     variant="outlined"
@@ -247,7 +294,10 @@ export const CreateProfile = () => {
             </Grid>
           </>
         )}
-        {page === 1 && (
+
+        {/* Page 1: Relation */}
+
+        {page === Steps.RELATION && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               Who's this gift for?
@@ -255,13 +305,38 @@ export const CreateProfile = () => {
             <MobileSingleSelectChip
               small
               title={'relation'}
-              items={filterObject.relationship}
-              selectedTag={profileData?.relation as string}
+              items={Object.keys(relationShipMap)}
+              selectedTag={
+                _.findKey(relationShipMap, { relation: profileData?.relation, gender: profileData?.gender }) || ''
+              }
+              handleSelect={(label, val) => {
+                handleCreateProfileData('gender', relationShipMap?.[val as keyof typeof relationShipMap]?.gender, 0);
+                handleSingleSelect('relation', relationShipMap?.[val as keyof typeof relationShipMap]?.relation);
+              }}
+            />
+          </Grid>
+        )}
+
+        {/* Page 2: Age */}
+
+        {page === Steps.AGE && (
+          <Grid sx={animationStyle}>
+            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
+              What’s their age?
+            </Typography>
+            <MobileSingleSelectChip
+              small
+              title={'age'}
+              items={filterObject.age_category}
+              selectedTag={profileData?.age as string}
               handleSelect={handleSingleSelect}
             />
           </Grid>
         )}
-        {page === 2 && (
+
+        {/* Page 3: Name */}
+
+        {page === Steps.NAME && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               What's their name?
@@ -279,7 +354,10 @@ export const CreateProfile = () => {
             </Box>
           </Grid>
         )}
-        {page === 3 && (
+
+        {/* Page 4: Occasion */}
+
+        {page === Steps.OCCASION && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               What’s the occasion?
@@ -293,7 +371,10 @@ export const CreateProfile = () => {
             />
           </Grid>
         )}
-        {page === 4 && (
+
+        {/* Page 5: Date */}
+
+        {page === Steps.DATE && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               When’s the occasion?
@@ -323,6 +404,9 @@ export const CreateProfile = () => {
             </Box>
           </Grid>
         )}
+
+        {/* Page 5: Gender
+
         {page === 5 && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
@@ -345,52 +429,13 @@ export const CreateProfile = () => {
                   onClick={() => handleCreateProfileData('gender', item, 1)}
                 />
               ))}
-              {/* <Chip
-                variant="outlined"
-                color="primary"
-                icon={
-                  profileData?.gender === 'Male' ? (
-                    <TripOriginIcon style={{ marginRight: '1px', fontSize: '36px' }} />
-                  ) : (
-                    <PanoramaFishEyeIcon style={{ marginRight: '5px', fontSize: '30px' }} />
-                  )
-                }
-                sx={genderChipsStyle}
-                label="Male"
-                onClick={() => handleCreateProfileData('gender', 'Male', 1)}
-              />
-              <Chip
-                variant="outlined"
-                color="primary"
-                icon={
-                  profileData?.gender === 'Female' ? (
-                    <TripOriginIcon style={{ marginRight: '1px', fontSize: '36px' }} />
-                  ) : (
-                    <PanoramaFishEyeIcon style={{ marginRight: '5px', fontSize: '30px' }} />
-                  )
-                }
-                sx={genderChipsStyle}
-                label="Female"
-                onClick={() => handleCreateProfileData('gender', 'Female', 1)}
-              /> */}
             </Box>
           </Grid>
-        )}
-        {page === 6 && (
-          <Grid sx={animationStyle}>
-            <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
-              What’s their age?
-            </Typography>
-            <MobileSingleSelectChip
-              small
-              title={'age'}
-              items={filterObject.age_category}
-              selectedTag={profileData?.age as string}
-              handleSelect={handleSingleSelect}
-            />
-          </Grid>
-        )}
-        {page === 7 && (
+        )} */}
+
+        {/* Page 6: Budget */}
+
+        {page === Steps.BUDGET && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 2 }}>
               What’s the budget?
@@ -404,7 +449,10 @@ export const CreateProfile = () => {
             />
           </Grid>
         )}
-        {page === 8 && (
+
+        {/* Page 7: Style */}
+
+        {page === Steps.STYLE && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 1 }}>
               Now, tell me a bit about their style?
@@ -420,7 +468,10 @@ export const CreateProfile = () => {
             />
           </Grid>
         )}
-        {page === 9 && (
+
+        {/* Page 8: Interests */}
+
+        {page === Steps.INTEREST && (
           <Grid sx={animationStyle}>
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 1 }}>
               What are their Interests?
@@ -437,7 +488,10 @@ export const CreateProfile = () => {
             />
           </Grid>
         )}
-        {page === 10 && (
+
+        {/* Page 9: Generating */}
+
+        {page === Steps.END && (
           <Grid
             display={'flex'}
             flexGrow={1}
