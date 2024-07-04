@@ -13,6 +13,8 @@ const getProducts = {
     filter: Joi.string(),
     price_min: Joi.number().integer(),
     price_max: Joi.number().integer(),
+    uploaded_from: Joi.string(),
+    uploaded_until: Joi.string(),
     hil: Joi.boolean(),
     is_active: Joi.boolean()
   }),

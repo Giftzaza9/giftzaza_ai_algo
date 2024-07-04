@@ -12,6 +12,7 @@ import {
   IconButton,
   MenuItem,
   Select,
+  Stack,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -23,6 +24,9 @@ import { RestartAlt } from '@mui/icons-material';
 import { CustomSlider } from '../shared/CustomSlider';
 import { getUsers } from '../../services/user';
 import { User } from '../../constants/types';
+import dayjs from 'dayjs';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
+import { toast } from 'react-toastify';
 
 interface Props {
   filters: string[];
@@ -39,6 +43,8 @@ interface Props {
   setCurated: Dispatch<SetStateAction<boolean>>;
   curatedBy: string;
   setCuratedBy: Dispatch<SetStateAction<string>>;
+  uploadDateRange: [string, string];
+  setUploadDateRange: Dispatch<SetStateAction<[string, string]>>;
 }
 
 export const FilterSelector: FC<Props> = ({
@@ -56,6 +62,8 @@ export const FilterSelector: FC<Props> = ({
   setCurated,
   curatedBy,
   setCuratedBy,
+  uploadDateRange,
+  setUploadDateRange,
 }) => {
   const handleFilterChecked = (checked: boolean, value: string) => {
     if (checked) setFilters((prev) => [...prev, value]);
@@ -76,6 +84,22 @@ export const FilterSelector: FC<Props> = ({
       }
     })()
   }, [])
+
+  const handleFromDateChange = (val: any) => {
+    const newFromDate = val?.format('DD-MM-YY');
+    if (dayjs(newFromDate, 'DD-MM-YY').isAfter(dayjs(uploadDateRange[1], 'DD-MM-YY'))) {
+      toast.warn('From date should be earlier than until date.');
+      return;
+    } else setUploadDateRange((prev) => [newFromDate, prev[1]]);
+  };
+
+  const handleUntilDateChange = (val: any) => {
+    const newUntilDate = val?.format('DD-MM-YY');
+    if (dayjs(newUntilDate, 'DD-MM-YY').isBefore(dayjs(uploadDateRange[0], 'DD-MM-YY'))) {
+      toast.warn('Until date should be later than from date.');
+      return;
+    } else setUploadDateRange((prev) => [prev[0], newUntilDate]);
+  };
 
   return (
     <Grid
@@ -104,6 +128,7 @@ export const FilterSelector: FC<Props> = ({
                   setCurated(false);
                   setShowDeletedProducts(false);
                   setCuratedBy(' ');
+                  setUploadDateRange([dayjs().format('DD-MM-YY'), dayjs().format('DD-MM-YY')]);
                 }}
               >
                 <RestartAlt />
@@ -233,8 +258,8 @@ export const FilterSelector: FC<Props> = ({
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <FormControl component="fieldset"  sx={{width: '100%'}}>
-              <FormGroup aria-label="position" sx={{width: '100%'}}>
+            <FormControl component="fieldset" sx={{ width: '100%' }}>
+              <FormGroup aria-label="position" sx={{ width: '100%' }}>
                 <FormControlLabel
                   value={hil}
                   control={<Checkbox checked={hil} />}
@@ -262,7 +287,7 @@ export const FilterSelector: FC<Props> = ({
                     setShowDeletedProducts(checked);
                   }}
                 />
-                <Box width='100%' pt={1}>
+                <Box width="100%" pt={1}>
                   <Typography variant="subtitle2">Curated By</Typography>
                   <Select
                     size="small"
@@ -272,11 +297,34 @@ export const FilterSelector: FC<Props> = ({
                     onChange={(e) => setCuratedBy(e.target.value as string)}
                   >
                     <MenuItem value=" ">None</MenuItem>
-                    {admins?.map(admin => (
+                    {admins?.map((admin) => (
                       <MenuItem value={admin?.id}>{admin?.name}</MenuItem>
                     ))}
                   </Select>
                 </Box>
+
+                <Stack gap={1} pt={2}>
+                  <Box width="100%">
+                    <Typography variant="subtitle2">Uploaded from</Typography>
+                    <DesktopDatePicker
+                      slotProps={{ textField: { size: 'small' } }}
+                      maxDate={dayjs()}
+                      format="DD-MM-YY"
+                      value={dayjs(uploadDateRange[0], 'DD-MM-YY')}
+                      onChange={handleFromDateChange}
+                    />
+                  </Box>
+                  <Box width="100%">
+                    <Typography variant="subtitle2">Uploaded until</Typography>
+                    <DesktopDatePicker
+                      slotProps={{ textField: { size: 'small' } }}
+                      maxDate={dayjs()}
+                      format="DD-MM-YY"
+                      value={dayjs(uploadDateRange[1], 'DD-MM-YY')}
+                      onChange={handleUntilDateChange}
+                    />
+                  </Box>
+                </Stack>
               </FormGroup>
             </FormControl>
           </AccordionDetails>

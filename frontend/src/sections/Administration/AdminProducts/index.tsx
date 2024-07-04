@@ -14,6 +14,7 @@ import { AddNewProductModal } from '../../../components/product/AddNewProductMod
 import { ScrollToTop } from '../../../components/shared/ScrollToTop';
 import { EditProductModal } from '../../../components/product/EditProductModal';
 import { PreviewModal } from '../../../components/product/PreviewModal';
+import dayjs from 'dayjs';
 
 export const AdminProducts = () => {
   const [page, setPage] = useState<number>(1);
@@ -27,6 +28,7 @@ export const AdminProducts = () => {
   const [curatedBy, setCuratedBy] = useState<string>(' ');
   const [showDeletedProducts, setShowDeletedProducts] = useState<boolean>(false);
   const [source, setSource] = useState<string[]>([]);
+  const [uploadDateRange, setUploadDateRange] = useState<[string, string]>([dayjs().format('DD-MM-YY'), dayjs().format('DD-MM-YY')]);
   const [queryString, setQueryString] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState<boolean>(false);
@@ -99,8 +101,11 @@ export const AdminProducts = () => {
       if (budgetTuples[1] === 1000) queryParams.push(`price_max=${Number.MAX_SAFE_INTEGER}`);
       else queryParams.push(`price_max=${budgetTuples[1]}`);
     }
+    if (dayjs(uploadDateRange[0], 'DD-MM-YY').isBefore(dayjs(uploadDateRange[1], 'DD-MM-YY'))) {
+      queryParams.push(`uploaded_from=${uploadDateRange[0]}&uploaded_until=${uploadDateRange[1]}`);
+    }
     if (curatedBy?.trim()) queryParams.push(`curated_by=${curatedBy}`);
-    
+
     const newQueryString = queryParams.join('&');
     if (newQueryString !== queryString) {
       setProducts([]);
@@ -108,7 +113,7 @@ export const AdminProducts = () => {
       setQueryString(newQueryString);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil, source, curated, curatedBy]);
+  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil, source, curated, curatedBy, uploadDateRange]);
 
   useEffect(() => {
     if (page > 1) {
@@ -176,6 +181,8 @@ export const AdminProducts = () => {
             setCurated={setCurated}
             curatedBy={curatedBy}
             setCuratedBy={setCuratedBy}
+            uploadDateRange={uploadDateRange}
+            setUploadDateRange={setUploadDateRange}
           />
         </Grid>
 
