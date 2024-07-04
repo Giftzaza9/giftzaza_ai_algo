@@ -46,6 +46,8 @@ export type Product = {
   link: string;
   rating: number;
   curated: boolean;
+  curated_by?: string | null;
+  curator?: User;
   price_currency: string;
   thumbnails?: string[];
   features?: string[];
