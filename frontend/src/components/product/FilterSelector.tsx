@@ -2,6 +2,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Checkbox,
   Divider,
   FormControl,
@@ -9,15 +10,23 @@ import {
   FormGroup,
   Grid,
   IconButton,
+  MenuItem,
+  Select,
+  Stack,
   Tooltip,
   Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { filterObject } from '../../constants/constants';
 import _ from 'lodash';
-import { Dispatch, FC, Fragment, SetStateAction } from 'react';
+import { Dispatch, FC, Fragment, SetStateAction, useEffect, useState } from 'react';
 import { RestartAlt } from '@mui/icons-material';
 import { CustomSlider } from '../shared/CustomSlider';
+import { getUsers } from '../../services/user';
+import { User } from '../../constants/types';
+import dayjs from 'dayjs';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
+import { toast } from 'react-toastify';
 
 interface Props {
   filters: string[];
@@ -32,6 +41,10 @@ interface Props {
   setSource: Dispatch<SetStateAction<string[]>>;
   curated: boolean;
   setCurated: Dispatch<SetStateAction<boolean>>;
+  curatedBy: string;
+  setCuratedBy: Dispatch<SetStateAction<string>>;
+  uploadDateRange: [string, string];
+  setUploadDateRange: Dispatch<SetStateAction<[string, string]>>;
 }
 
 export const FilterSelector: FC<Props> = ({
@@ -47,10 +60,45 @@ export const FilterSelector: FC<Props> = ({
   setSource,
   curated,
   setCurated,
+  curatedBy,
+  setCuratedBy,
+  uploadDateRange,
+  setUploadDateRange,
 }) => {
   const handleFilterChecked = (checked: boolean, value: string) => {
     if (checked) setFilters((prev) => [...prev, value]);
     else setFilters((prev) => prev.filter((el) => el !== value));
+  };
+
+
+  const [admins, setAdmins] = useState<User[]>([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await getUsers('page=1&limit=999&sortBy=-createdAt&role=admin');
+        if (data?.docs !== undefined) {
+          setAdmins(data.docs);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    })()
+  }, [])
+
+  const handleFromDateChange = (val: any) => {
+    const newFromDate = val?.format('DD-MM-YY');
+    if (dayjs(newFromDate, 'DD-MM-YY').isAfter(dayjs(uploadDateRange[1], 'DD-MM-YY'))) {
+      toast.warn('From date should be earlier than until date.');
+      return;
+    } else setUploadDateRange((prev) => [newFromDate, prev[1]]);
+  };
+
+  const handleUntilDateChange = (val: any) => {
+    const newUntilDate = val?.format('DD-MM-YY');
+    if (dayjs(newUntilDate, 'DD-MM-YY').isBefore(dayjs(uploadDateRange[0], 'DD-MM-YY'))) {
+      toast.warn('Until date should be later than from date.');
+      return;
+    } else setUploadDateRange((prev) => [prev[0], newUntilDate]);
   };
 
   return (
@@ -79,6 +127,8 @@ export const FilterSelector: FC<Props> = ({
                   setHil(false);
                   setCurated(false);
                   setShowDeletedProducts(false);
+                  setCuratedBy(' ');
+                  setUploadDateRange([dayjs().format('DD-MM-YY'), dayjs().format('DD-MM-YY')]);
                 }}
               >
                 <RestartAlt />
@@ -208,8 +258,8 @@ export const FilterSelector: FC<Props> = ({
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <FormControl component="fieldset">
-              <FormGroup aria-label="position">
+            <FormControl component="fieldset" sx={{ width: '100%' }}>
+              <FormGroup aria-label="position" sx={{ width: '100%' }}>
                 <FormControlLabel
                   value={hil}
                   control={<Checkbox checked={hil} />}
@@ -237,6 +287,44 @@ export const FilterSelector: FC<Props> = ({
                     setShowDeletedProducts(checked);
                   }}
                 />
+                <Box width="100%" pt={1}>
+                  <Typography variant="subtitle2">Curated By</Typography>
+                  <Select
+                    size="small"
+                    fullWidth
+                    value={curatedBy}
+                    defaultValue=" "
+                    onChange={(e) => setCuratedBy(e.target.value as string)}
+                  >
+                    <MenuItem value=" ">None</MenuItem>
+                    {admins?.map((admin) => (
+                      <MenuItem value={admin?.id}>{admin?.name}</MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+
+                <Stack gap={1} pt={2}>
+                  <Box width="100%">
+                    <Typography variant="subtitle2">Uploaded from</Typography>
+                    <DesktopDatePicker
+                      slotProps={{ textField: { size: 'small' } }}
+                      maxDate={dayjs()}
+                      format="DD-MM-YY"
+                      value={dayjs(uploadDateRange[0], 'DD-MM-YY')}
+                      onChange={handleFromDateChange}
+                    />
+                  </Box>
+                  <Box width="100%">
+                    <Typography variant="subtitle2">Uploaded until</Typography>
+                    <DesktopDatePicker
+                      slotProps={{ textField: { size: 'small' } }}
+                      maxDate={dayjs()}
+                      format="DD-MM-YY"
+                      value={dayjs(uploadDateRange[1], 'DD-MM-YY')}
+                      onChange={handleUntilDateChange}
+                    />
+                  </Box>
+                </Stack>
               </FormGroup>
             </FormControl>
           </AccordionDetails>

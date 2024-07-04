@@ -30,6 +30,15 @@ export const getSavedProducts = async (): Promise<ApiResponse> => {
   }
 };
 
+export const getUsers = async (queryString?: string): Promise<ApiResponse> => {
+  try {
+    const { data, status } = await axiosInstance.get(`/users?${queryString ?? ''}`);
+    return { data, status, error: null };
+  } catch (error) {
+    return generateErrorMessage(error);
+  }
+};
+
 export interface RemoveSavedProductBody {
   product_id: string;
   profile_id: string;
