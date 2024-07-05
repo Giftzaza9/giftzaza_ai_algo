@@ -79,6 +79,7 @@ export type Profile = {
   profile_preferences: Record<string, string[]>;
   recommended_products: RecommendedProduct[];
   budget: string;
+  is_shopping_profile?: boolean;
 };
 
 export type SavedItem = {

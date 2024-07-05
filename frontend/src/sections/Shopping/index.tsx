@@ -1,24 +1,33 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
-import { Product } from '../../constants/types';
+import { Product, Profile } from '../../constants/types';
 import { useEffect, useState } from 'react';
 import { shopping, shoppingBody } from '../../services/product';
 import { loaderState } from '../../store/ShowLoader';
 import { observer } from 'mobx-react-lite';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
-import { SwipeAction } from '../../constants/constants';
+import { dummyShoppingProfile, SwipeAction } from '../../constants/constants';
 import { SwipeDirection } from '../../lib/CardSwpierLib';
 import { useNavigate } from 'react-router-dom';
+import { getProfiles } from '../../services/profile';
 
 export const Shopping = observer(() => {
   const { setLoading, loading } = loaderState;
   const navigate = useNavigate();
+  const [shoppingProfile, setShoppingProfile] = useState<Partial<Profile>>({});
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(30);
+  // const [limit, setLimit] = useState<number>(30);
   const [prevProducts, setPrevProducts] = useState(new Set());
   const [prevProductsCount, setPrevProductsCount] = useState<number>(1);
 
+  useEffect(() => {
+    (async()=>{
+      const { data } = await getProfiles({is_shopping_profile: true});
+      setShoppingProfile(data?.length > 0 ? data?.[0]: dummyShoppingProfile);
+    })()
+  },[])
+  
   useEffect(() => {
     fetchShoppingProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -29,7 +38,7 @@ export const Shopping = observer(() => {
       setLoading(true);
       const payload: shoppingBody = {
         page,
-        limit,
+        limit: 30,
       };
       const { data, error } = await shopping(payload);
       // if (error) toast.error(error || 'Failed to shopping products !');
@@ -62,7 +71,7 @@ export const Shopping = observer(() => {
 
   console.log({ products });
   return (
-    <MobileLayout>
+    <MobileLayout profile={shoppingProfile as Profile}>
       <Container
         sx={{
           display: 'flex',

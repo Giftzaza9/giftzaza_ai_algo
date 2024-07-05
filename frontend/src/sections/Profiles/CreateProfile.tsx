@@ -27,7 +27,7 @@ import {
 import { MobileMultiSelectChip } from '../../components/shared/MobileMultiSelectChip';
 import { Profile } from '../../constants/types';
 import { toast } from 'react-toastify';
-import { CreateProfileBody, createProfile } from '../../services/profile';
+import { CreateProfileBody, createProfile, getProfiles } from '../../services/profile';
 import { useNavigate } from 'react-router';
 import { animationStyle, forwardButtonStyle, startedChipsStyle } from './styles';
 import { theme } from '../../utils/theme';
@@ -36,10 +36,13 @@ import dayjs from 'dayjs';
 import { SkipNextOutlined } from '@mui/icons-material';
 import _ from 'lodash';
 import { profilePayloadCleaner } from '../../utils/helperFunctions';
+import { loaderState } from '../../store/ShowLoader';
+import { observer } from 'mobx-react-lite';
 
-export const CreateProfile = () => {
+export const CreateProfile = observer(() => {
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
   const navigate = useNavigate();
+  const { setLoading } = loaderState;
   const [page, setPage] = useState<number>(0);
   const [styles, setSelectedStyles] = useState<string[]>([]);
   const [interests, setSelectedInterests] = useState<string[]>([]);
@@ -64,6 +67,19 @@ export const CreateProfile = () => {
     handleCreateProfileData('interests', interests, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interests?.length]);
+  
+  const handleShoppingClick = async () => {
+    setLoading(true);
+    try {
+      const { data } = await getProfiles({is_shopping_profile: true})
+      if (data?.length > 0) navigate(`/profiles/${data?.[0]?.id}`);
+      else navigate('/shopping')
+    } catch (error) {
+      console.log(error);
+      navigate('/shopping')
+    }
+    setLoading(false);
+  }
 
   const handleStarted = (val: string) => {
     if (val === landingChips.view) {
@@ -76,7 +92,7 @@ export const CreateProfile = () => {
       handleCreateProfileData('title', val, 0);
       handleCreateProfileData('gender', 'female', 0);
       handleCreateProfileData('relation', 'Parent', Steps.AGE);
-    } else if (val === landingChips.shopping) navigate('/shopping');
+    } else if (val === landingChips.shopping) handleShoppingClick();
     else handleCreateProfileData('', val, Steps.RELATION);
   };
 
@@ -499,4 +515,4 @@ export const CreateProfile = () => {
       </Container>
     </MobileLayout>
   );
-};
+});

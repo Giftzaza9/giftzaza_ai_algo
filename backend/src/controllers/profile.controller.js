@@ -16,7 +16,7 @@ const getProfile = catchAsync(async (req, res) => {
 const getProfiles = catchAsync(async (req, res) => {
   // const options = pick(req.query, ['sortBy', 'limit', 'page']);
   // console.log({options});
-  const result = await profileService.queryProfiles(req.user._id);
+  const result = await profileService.queryProfiles(req.user._id, req.query?.is_shopping_profile);
   res.send(result);
 });
 
