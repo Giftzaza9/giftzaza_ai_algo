@@ -61,6 +61,10 @@ const profileSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    is_shopping_profile: {
+      type: Boolean,
+      default: false,
+    }
   },
   {
     timestamps: true,

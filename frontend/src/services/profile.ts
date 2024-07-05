@@ -13,6 +13,7 @@ export interface CreateProfileBody {
   occasion_date?: string;
   min_price?: number;
   max_price?: number;
+  is_shopping_profile?: boolean;
 }
 
 export const createProfile = async (payload: CreateProfileBody): Promise<ApiResponse> => {
@@ -33,9 +34,10 @@ export const getProfile = async (profileId?: string): Promise<ApiResponse> => {
   }
 };
 
-export const getProfiles = async (): Promise<ApiResponse> => {
+export const getProfiles = async (payload?: { is_shopping_profile?: boolean }): Promise<ApiResponse> => {
   try {
-    const { data, status } = await axiosInstance.get(`/profiles`);
+    const { is_shopping_profile } = payload || {};
+    const { data, status } = await axiosInstance.get(`/profiles?is_shopping_profile=${!!is_shopping_profile}`);
     return { data, status, error: null };
   } catch (error) {
     return generateErrorMessage(error);
