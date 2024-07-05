@@ -23,8 +23,9 @@ const getProfileById = async (profileId) => {
   return profile;
 };
 
-const queryProfiles = async (user_id) => {
-  return await Profile.find({ user_id }).sort({ createdAt: -1 });
+const queryProfiles = async (user_id, is_shopping_profile) => {
+  const payload = !!is_shopping_profile ? { is_shopping_profile: true, user_id } : { user_id };
+  return await Profile.find(payload).sort({ createdAt: -1 });
 };
 
 const getRecommendedProducts = async (payload) => {

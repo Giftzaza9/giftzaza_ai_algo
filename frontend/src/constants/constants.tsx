@@ -125,3 +125,12 @@ export const initialProfileData: Partial<Profile> = {
   occasion_date: '',
   budget: '',
 };
+
+export const dummyShoppingProfile: Partial<Profile> = {
+  gender: 'male',
+  age: '18 - 25',
+  relation: 'Spouse or Significant Other',
+  is_shopping_profile: true,
+  title: 'Shopping Profile',
+};
+

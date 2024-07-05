@@ -7,11 +7,12 @@ import { budgetMap, filterObject, relationShipMap } from '../../constants/consta
 import { MobileMultiSelectChip } from '../shared/MobileMultiSelectChip';
 import { Profile } from '../../constants/types';
 import _ from 'lodash';
-import { updateProfile, UpdateProfileBody } from '../../services/profile';
+import { createProfile, updateProfile, UpdateProfileBody } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardButtonStyle } from '../../sections/Profiles/styles';
 import { profilePayloadCleaner } from '../../utils/helperFunctions';
+import { useNavigate } from 'react-router-dom';
 
 interface _Props extends PropsWithChildren {
   title: string;
@@ -72,6 +73,7 @@ interface Props {
 }
 
 export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState<string>(profile?.title);
   const [age, setAge] = useState<string>(profile?.age);
   const [gender, setGender] = useState<string>(profile?.gender);
@@ -116,14 +118,19 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
         styles,
         interests,
         title,
+        is_shopping_profile: profile?.is_shopping_profile,
       });
 
-      const { error } = await updateProfile(profile?.id, payload as UpdateProfileBody);
+      const { error, data } = !profile?.id
+        ? await createProfile(payload)
+        : await updateProfile(profile?.id, payload as UpdateProfileBody);
 
       if (error) {
         console.error(error);
-      } else {
+      } else if (profile.id && !profile.is_shopping_profile) {
         toast.success('Profile updated successfully !');
+      } else if (!profile.id && profile.is_shopping_profile && data) {
+        navigate(`/profiles/${data?.id}`)
       }
 
       onClose(true);
