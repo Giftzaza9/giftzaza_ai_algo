@@ -46,12 +46,12 @@ export interface UpdateProfileBody {
   age: string;
   gender: string;
   relation: string;
-  occasion: string;
+  occasion?: string;
   occasion_date?: string;
-  min_price: number;
-  max_price: number;
-  styles: string[];
-  interests: string[];
+  min_price?: number;
+  max_price?: number;
+  styles?: string[];
+  interests?: string[];
 }
 
 export const updateProfile = async (profileId: string, body: UpdateProfileBody): Promise<ApiResponse> => {

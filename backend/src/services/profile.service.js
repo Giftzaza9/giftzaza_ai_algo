@@ -24,7 +24,7 @@ const getProfileById = async (profileId) => {
 };
 
 const queryProfiles = async (user_id) => {
-  return await Profile.find({user_id}).sort({ createdAt: -1 });
+  return await Profile.find({ user_id }).sort({ createdAt: -1 });
 };
 
 const getRecommendedProducts = async (payload) => {
@@ -34,12 +34,12 @@ const getRecommendedProducts = async (payload) => {
     console.log('RESPONSEE ', data);
     return data;
   } catch (error) {
-    if (isAxiosError(error)){
-      console.log('ERR', error)
-      console.log('RES', error?.response)
-      console.log('MSG', error?.response?.message)
-      console.log('DAT', error?.response?.data)
-      console.log('DTL', error?.response?.data?.detail)
+    if (isAxiosError(error)) {
+      console.log('ERR', error);
+      console.log('RES', error?.response);
+      console.log('MSG', error?.response?.message);
+      console.log('DAT', error?.response?.data);
+      console.log('DTL', error?.response?.data?.detail);
     }
     console.log('ERROR IN RECOMMENDATION MSG ', error.message);
     throw new ApiError(httpStatus.BAD_REQUEST, 'Failed in product recommendation');
@@ -69,11 +69,11 @@ const createProfile = async (profileBody) => {
   profileBody.preferences = preferences;
   const payload = {
     user_id: profileBody?.user_id,
-    new_attributes: profileBody?.interests?.length ? preferences : [...preferences,'spirituality'],
+    new_attributes: profileBody?.interests?.length ? preferences : [...preferences, 'spirituality'],
     top_n: 10,
     min_price: profileBody?.min_price,
     max_price: profileBody?.max_price,
-    semi_hard_filters: []
+    semi_hard_filters: [],
   };
   try {
     profileBody.recommended_products = await getRecommendedProducts(payload);
@@ -111,7 +111,7 @@ const updateProfile = async (profileBody, profileId) => {
     relation: [profileBody.relation],
     occasion: profileBody?.occasion ? [profileBody.occasion] : [],
     styles: profileBody.styles,
-    interests: profileBody.interests,
+    interests: profileBody?.interests,
   };
   const preferences = Object.values(profile_preferences)
     .flat()
@@ -120,17 +120,21 @@ const updateProfile = async (profileBody, profileId) => {
 
   profileBody.profile_preferences = profile_preferences;
   profileBody.preferences = preferences;
-
   const payload = {
     user_id: profileBody?.user_id,
-    new_attributes: preferences,
+    new_attributes: profileBody?.interests?.length ? preferences : [...preferences, 'spirituality'],
     top_n: 10,
     min_price: profileBody?.min_price,
     max_price: profileBody?.max_price,
+    semi_hard_filters: [],
   };
   try {
     profileBody.recommended_products = await getRecommendedProducts(payload);
-    return await Profile.findByIdAndUpdate(profileId, profileBody, { new: true, useFindAndModify: false, populate: 'recommended_products.item_id' });
+    return await Profile.findByIdAndUpdate(profileId, profileBody, {
+      new: true,
+      useFindAndModify: false,
+      populate: 'recommended_products.item_id',
+    });
   } catch (err) {
     console.log('ERROR IN RECOMMENDATION RES ', err);
     throw new ApiError(httpStatus.BAD_REQUEST, 'Something went wrong!');

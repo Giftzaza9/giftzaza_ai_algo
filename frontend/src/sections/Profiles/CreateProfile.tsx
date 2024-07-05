@@ -15,9 +15,15 @@ import { MobileLayout } from '../../components/shared/MobileLayout';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { MobileSingleSelectChip } from '../../components/shared/MobileSingleSelectChip';
-import { budgetMap, filterObject, iphoneSeCondition, landingChips, relationShipMap } from '../../constants/constants';
-// import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
-// import TripOriginIcon from '@mui/icons-material/TripOrigin';
+import {
+  budgetMap,
+  filterObject,
+  initialProfileData,
+  iphoneSeCondition,
+  landingChips,
+  relationShipMap,
+  Steps,
+} from '../../constants/constants';
 import { MobileMultiSelectChip } from '../../components/shared/MobileMultiSelectChip';
 import { Profile } from '../../constants/types';
 import { toast } from 'react-toastify';
@@ -30,31 +36,6 @@ import dayjs from 'dayjs';
 import { SkipNextOutlined } from '@mui/icons-material';
 import _ from 'lodash';
 import { profilePayloadCleaner } from '../../utils/helperFunctions';
-
-enum Steps {
-  LANDING = 0,
-  RELATION = 1,
-  AGE = 2,
-  NAME = 3,
-  OCCASION = 4,
-  DATE = 5,
-  BUDGET = 6,
-  STYLE = 7,
-  INTEREST = 8,
-  END = 9,
-}
-
-const initialProfileData: Partial<Profile> = {
-  styles: [],
-  interests: [],
-  title: '',
-  relation: '',
-  age: '',
-  gender: '',
-  occasion: '',
-  occasion_date: '',
-  budget: '',
-};
 
 export const CreateProfile = () => {
   const isSmallScreen = useMediaQuery(iphoneSeCondition);
@@ -187,7 +168,7 @@ export const CreateProfile = () => {
               <LinearProgress
                 color="primary"
                 variant="determinate"
-                value={(page / (Steps.END - 2)) * 100}
+                value={(page / (Steps.END - 1)) * 100}
                 sx={{
                   '& .MuiLinearProgress-barColorPrimary': {
                     backgroundColor: 'black',
@@ -204,7 +185,7 @@ export const CreateProfile = () => {
                   onClick={() => handleArrows(-1)}
                 />
                 <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '500' }}>
-                  Step {page}/{Steps.END - 2}
+                  Step {page}/{Steps.END - 1}
                 </Typography>
                 {page === Steps.END ? (
                   <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>

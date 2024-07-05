@@ -1,26 +1,8 @@
-// import React from 'react';
-// import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import { BudgetMap, Product } from './types';
+import { BudgetMap, Profile } from './types';
 import { GoHomeFill } from 'react-icons/go';
 import { Bookmark, GridViewRounded, PersonRounded } from '@mui/icons-material';
 import categoryData from './category.json';
-
-// const iconStyle = {
-//   fontSize: 'large',
-//   marginBottom: '-3px',
-//   marginRight: '4px',
-// };
-
-export const navbarLinks = [
-  // {
-  //   name: 'Profiles',
-  //   link: '/profiles',
-  //   icon: <PersonOutlineIcon sx={iconStyle} />,
-  //   access: [roleEnum.ADMIN, roleEnum.USER],
-  // },
-  // { name: 'Administration', link: '/admin', icon: <DescriptionOutlinedIcon sx={iconStyle} />, access: [roleEnum.ADMIN] },
-  // { name: 'Loved', link: '/loved', icon: <FavoriteBorderIcon sx={iconStyle} />, access: [roleEnum.ADMIN, roleEnum.USER] },
-];
+import { generateBudgetMap } from '../utils/helperFunctions';
 
 export const navbarSettings = ['Logout'];
 
@@ -36,52 +18,6 @@ export const sortOptions = [
 ];
 
 export const filterObject = {
-  // gender: ['Male', 'Female'],
-  // age_category: ['Under 12', '12 - 18', '18 - 25', '25 - 45', '45 - 65', '65 +'],
-  // interest: [
-  //   'Fitness and Wellness',
-  //   'Tech and Gadgets',
-  //   'Fashion and Accessories',
-  //   'Books and Learning',
-  //   'Travel and Adventure',
-  //   'Food and Cooking',
-  //   'Arts and Crafts',
-  //   'Music and Entertainment',
-  //   'Outdoor and Nature',
-  //   'Beauty and Self-Care',
-  //   'Home and Decor',
-  //   'Sports and Hobbies',
-  //   'Pets and Animal Lovers',
-  //   'Art and Culture',
-  //   'Social Impact and Charity',
-  //   'Spirituality',
-  // ],
-  // occasion: [
-  //   'Birthdays',
-  //   'Anniversaries',
-  //   'Holidays',
-  //   'Promotions and Achievements',
-  //   'Weddings',
-  //   'Newborns',
-  //   'Retirements',
-  //   'Appreciation',
-  //   'Get Well Soon',
-  //   'Graduations',
-  //   'Apologies',
-  //   'Housewarmings',
-  //   "Valentine's Day",
-  //   'Thank You Gifts',
-  // ],
-  // relationship: ['Spouse or Significant Other', 'Girlfriend', 'Child', 'Parent', 'Grand Parent', 'Friend', 'Colleague'],
-  // style: [
-  //   'Classic and Timeless',
-  //   'Minimalistic',
-  //   'Comfortable Yet Stylish',
-  //   'Bougie',
-  //   'Premium Brands',
-  //   'Chill',
-  //   'Practical',
-  // ],
   gender: categoryData.gender.category,
   age_category: categoryData.age_category.category,
   interest: Object.keys(categoryData.interest.category),
@@ -108,103 +44,13 @@ export const relationShipMap = {
   'Female Colleague': { relation: 'Colleague', gender: 'female' },
 };
 
-function generateBudgetMap(budget: any): BudgetMap {
-  const budgetMap: BudgetMap = {};
-
-  for (let i = 0; i < budget?.length; i++) {
-    const category = budget[i];
-    const range = category.split('-');
-
-    if (range?.length === 1) {
-      // Handle "< $200" and "$200+" cases
-      const max = range[0].includes('<') ? parseInt(range[0].slice(3)) : parseInt(range[0].slice(1));
-      budgetMap[category] = { min: 0, max: max };
-    } else {
-      // Handle "$200-$400" to "$1000-$2000" cases
-      const min = parseInt(range[0].slice(1));
-      const max = parseInt(range[1].slice(1));
-      budgetMap[category] = { min: min, max: max };
-    }
-  }
-
-  // Add infinite max value for the last category
-  const lastCategory = budget[budget?.length - 1];
-  const lastMax = lastCategory.includes('+') ? Number.MAX_SAFE_INTEGER : parseInt(lastCategory.split('-')[1]);
-  budgetMap[lastCategory] = { min: parseInt(lastCategory.split('-')[0].slice(1)), max: lastMax };
-
-  return budgetMap;
-}
 export const budgetMap: BudgetMap = generateBudgetMap(categoryData.budget.category);
 
-// export const budgetMap = {
-//   '< $200': { min: 0, max: 200 },
-//   '$200-$400': { min: 200, max: 400 },
-//   '$400-$600': { min: 400, max: 600 },
-//   '$600-$800': { min: 600, max: 800 },
-//   '$800-$1000': { min: 800, max: 1000 },
-//   '$1000+': { min: 1000, max: Number.MAX_SAFE_INTEGER },
-// };
-
 export const productPerPageAdmin = 12;
-
-export const dummyProduct: Product = {
-  source: 'amazon',
-  views: 0,
-  tags: [
-    'Female',
-    '25 - 45',
-    '45 - 65',
-    'Fashion and Accessories',
-    'Jewelry',
-    'Romantic',
-    'Anniversaries',
-    'Birthdays',
-    "Valentine's Day",
-    'Weddings',
-    'Spouse or Significant Other',
-    'Romantic',
-    'Classic and Timeless',
-  ],
-  similarity: 39,
-  rulebased_tags: [],
-  gptTagging: [
-    {
-      gender: ['Female'],
-      age_category: ['25 - 45', '45 - 65'],
-      interest: ['Fashion and Accessories', 'Jewelry', 'Romantic'],
-      occasion: ['Anniversaries', 'Birthdays', "Valentine's Day", 'Weddings'],
-      relationship: ['Spouse or Significant Other'],
-      style: ['Romantic', 'Classic and Timeless'],
-    },
-  ],
-  hil: false,
-  is_active: false,
-  created_at: null,
-  updated_at: null,
-  title:
-    'TRYNDI Necklace Gifts for Wife from Husband - Gift for Wife Anniversary Birthday Gift Ideas, Gift for Wife, Christmas, Valentines, Wedding Anniversary Romantic Gifts for Her',
-  image: 'https://m.media-amazon.com/images/I/6181Ls1lFWL._AC_SY500_.jpg',
-  link: 'https://www.amazon.com/TRYNDI-Necklace-Gifts-Wife-Husband/dp/B0BH36R7G5/ref=sr_1_31?keywords=gift%2Babove%2B%24100&qid=1706637028&refinements=p_36%3A10000-&rnid=386465011&sr=8-31&th=1',
-  rating: 4.6,
-  price: 12312,
-  description:
-    'tryndi necklace gifts for wife from husband  gift for wife anniversary birthday gift ideas gift for wife christmas valentines wedding anniversary romantic gifts for her go to your orders to start the return print the return shipping label ship it',
-  id: '65b938a782c661c2f563261f',
-  curated: true,
-  price_currency: 'USD',
-};
 
 export const addNewProductSteps = ['Link', 'Product Info', 'Preview'];
 
 export const bottomNavHidePaths = ['welcome', 'login', 'admin'];
-
-export const getStartedChips = [
-  'Discover gifts for your spouse',
-  'Discover gifts for your mom',
-  'Create a new giftee profile',
-  'View existing giftee profiles',
-  'Start shopping',
-];
 
 export const landingChips = {
   forHusband: 'Gifts for your husband',
@@ -254,3 +100,28 @@ export const bottomNavIcons = [
 
 // eslint-disable-next-line no-useless-escape
 export const kickOutMessages = ['Error: No auth token', `\"refreshToken\" must be a string`, `Please authenticate`];
+
+export enum Steps {
+  LANDING = 0,
+  RELATION = 1,
+  AGE = 2,
+  NAME = 3,
+  OCCASION = 4,
+  DATE = 5,
+  BUDGET = 6,
+  STYLE = 7,
+  INTEREST = 8,
+  END = 9,
+}
+
+export const initialProfileData: Partial<Profile> = {
+  styles: [],
+  interests: [],
+  title: '',
+  relation: '',
+  age: '',
+  gender: '',
+  occasion: '',
+  occasion_date: '',
+  budget: '',
+};

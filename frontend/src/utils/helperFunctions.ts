@@ -1,5 +1,5 @@
 import { isAxiosError } from 'axios';
-import { ApiResponse } from '../constants/types';
+import { ApiResponse, BudgetMap } from '../constants/types';
 import { decodeToken } from './decodeToken';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
@@ -125,3 +125,30 @@ export const profilePayloadCleaner = (payload: CreateProfileBody) => {
   }
   return payload;
 };
+
+export function generateBudgetMap(budget: any): BudgetMap {
+  const budgetMap: BudgetMap = {};
+
+  for (let i = 0; i < budget?.length; i++) {
+    const category = budget[i];
+    const range = category.split('-');
+
+    if (range?.length === 1) {
+      // Handle "< $200" and "$200+" cases
+      const max = range[0].includes('<') ? parseInt(range[0].slice(3)) : parseInt(range[0].slice(1));
+      budgetMap[category] = { min: 0, max: max };
+    } else {
+      // Handle "$200-$400" to "$1000-$2000" cases
+      const min = parseInt(range[0].slice(1));
+      const max = parseInt(range[1].slice(1));
+      budgetMap[category] = { min: min, max: max };
+    }
+  }
+
+  // Add infinite max value for the last category
+  const lastCategory = budget[budget?.length - 1];
+  const lastMax = lastCategory.includes('+') ? Number.MAX_SAFE_INTEGER : parseInt(lastCategory.split('-')[1]);
+  budgetMap[lastCategory] = { min: parseInt(lastCategory.split('-')[0].slice(1)), max: lastMax };
+
+  return budgetMap;
+}
