@@ -1,23 +1,33 @@
 import { Grid, Chip, Typography } from '@mui/material';
 import { FC } from 'react';
 import { useStyles } from '../MobileMultiSelectChip/styles';
+import { CreateProfileBody } from '../../../services/profile';
 
 interface Props {
   title: string;
   items: string[];
   selectedTag: string;
-  handleSelect: any;
+  handleSelect: (title: keyof CreateProfileBody, value: string) => void;
   small?: boolean;
   greyText?: boolean;
   sort?: boolean;
   centerAligned?: boolean;
 }
 
-export const MobileSingleSelectChip: FC<Props> = ({ title, items, selectedTag, handleSelect, small, greyText, sort, centerAligned }) => {
+export const MobileSingleSelectChip: FC<Props> = ({
+  title,
+  items,
+  selectedTag,
+  handleSelect,
+  small,
+  greyText,
+  sort,
+  centerAligned,
+}) => {
   const classes = useStyles();
 
   const handleChipClick = (val: string) => {
-    handleSelect(title, val);
+    handleSelect(title as keyof CreateProfileBody, val);
   };
 
   return (
