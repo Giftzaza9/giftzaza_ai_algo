@@ -3,16 +3,16 @@ import { ApiResponse } from '../constants/types';
 import axiosInstance from './axiosInstance';
 
 export interface CreateProfileBody {
-  styles: string[];
-  interests: string[];
-  title: string;
   relation: string;
   age: string;
   gender: string;
-  occasion: string;
-  occasion_date: string;
-  min_price: number;
-  max_price: number;
+  title?: string;
+  styles?: string[];
+  interests?: string[];
+  occasion?: string;
+  occasion_date?: string;
+  min_price?: number;
+  max_price?: number;
 }
 
 export const createProfile = async (payload: CreateProfileBody): Promise<ApiResponse> => {
@@ -46,12 +46,12 @@ export interface UpdateProfileBody {
   age: string;
   gender: string;
   relation: string;
-  occasion: string;
+  occasion?: string;
   occasion_date?: string;
-  min_price: number;
-  max_price: number;
-  styles: string[];
-  interests: string[];
+  min_price?: number;
+  max_price?: number;
+  styles?: string[];
+  interests?: string[];
 }
 
 export const updateProfile = async (profileId: string, body: UpdateProfileBody): Promise<ApiResponse> => {
