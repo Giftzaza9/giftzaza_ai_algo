@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { createErrorLog } from '../services/error';
 import { CreateProfileBody } from '../services/profile';
+import { filterObject } from '../constants/constants';
 
 export const generateErrorMessage = async (error: Error | unknown): Promise<ApiResponse> => {
   let message: string = '';
@@ -151,4 +152,10 @@ export function generateBudgetMap(budget: any): BudgetMap {
   budgetMap[lastCategory] = { min: parseInt(lastCategory.split('-')[0].slice(1)), max: lastMax };
 
   return budgetMap;
+}
+
+
+export const isInterestIncluded = (preferences: string[]): boolean => {
+ return filterObject.interest.some((interest) => preferences?.map(el => el.toLowerCase()).includes(interest?.toLowerCase()));
+
 }
