@@ -99,6 +99,7 @@ export const Products = observer(() => {
   };
 
   const fetchMoreProducts = async (curPage: number, payload: moreProductBody) => {
+    setLoading(true)
     // setLoading(true);
     const { data, error } = await moreProducts(payload);
     console.log({ data });
@@ -114,6 +115,7 @@ export const Products = observer(() => {
 
       if (uniqueNewProducts?.length === 0 && moreProductsCase < 3) {
         setMoreProductsCase((prev) => prev + 1);
+        setLoading(false);
         return ;
       }
       console.log({moreProductsCase, uniqueNewProducts})
@@ -121,6 +123,7 @@ export const Products = observer(() => {
         setHaveMoreProducts(uniqueNewProducts?.length > 0 ? true : false);
         setProducts([]);
         setProductsDuplicate([]);
+        setLoading(false);
         return ;
       }
 

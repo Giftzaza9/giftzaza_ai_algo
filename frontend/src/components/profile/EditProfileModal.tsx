@@ -13,6 +13,8 @@ import { TransitionProps } from '@mui/material/transitions';
 import { forwardButtonStyle } from '../../sections/Profiles/styles';
 import { profilePayloadCleaner } from '../../utils/helperFunctions';
 import { useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { loaderState } from '../../store/ShowLoader';
 
 interface _Props extends PropsWithChildren {
   title: string;
@@ -72,7 +74,8 @@ interface Props {
   profile: Profile;
 }
 
-export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
+export const EditProfileModal: FC<Props> = observer(({ onClose, open, profile }) => {
+  const { setLoading } = loaderState;
   const navigate = useNavigate();
   const [title, setTitle] = useState<string>(profile?.title);
   const [age, setAge] = useState<string>(profile?.age);
@@ -107,6 +110,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
   };
 
   const handleDone = async () => {
+    setLoading(true);
     try {
       const payload = profilePayloadCleaner({
         age,
@@ -130,11 +134,14 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
       } else if (profile.id && !profile.is_shopping_profile) {
         toast.success('Profile updated successfully !');
       } else if (!profile.id && profile.is_shopping_profile && data) {
+        setLoading(false);
         navigate(`/profiles/${data?.id}`)
       }
 
       onClose(true);
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.error(error);
     }
   };
@@ -336,4 +343,4 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
       </Grid>
     </Dialog>
   );
-};
+});
