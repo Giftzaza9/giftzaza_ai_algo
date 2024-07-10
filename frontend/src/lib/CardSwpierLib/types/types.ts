@@ -31,6 +31,7 @@ export interface CardSwiperProps extends CardEvents {
   type: string
   productsShowingCount?: number;
   setProductsShowingCount?: Dispatch<SetStateAction<number>>
+  onDelete?:(id: string) => Promise<void>
 }
 
 export interface CardEvents {
