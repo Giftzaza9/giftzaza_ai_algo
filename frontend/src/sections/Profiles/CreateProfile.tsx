@@ -96,7 +96,7 @@ export const CreateProfile = observer(() => {
     else handleCreateProfileData('', val, Steps.RELATION);
   };
 
-  const handleCreateProfile = async () => {
+  const handleCreateProfile = useCallback(async () => {
     const { budget, ...payloadWithoutBudget } = profileData;
     let payload: CreateProfileBody = {
       ...payloadWithoutBudget,
@@ -109,9 +109,9 @@ export const CreateProfile = observer(() => {
       console.log(data);
       navigate(`/profiles/${data?.id}`);
     }
-  };
+  }, [navigate, profileData]);
 
-  const handleArrows = (val: number) => {
+  const handleArrows = useCallback((val: number) => {
     if (page === Steps.RELATION && val === 1 && !profileData?.relation && !profileData?.gender) {
       toast.warn('Please select relation !');
       return;
@@ -145,7 +145,7 @@ export const CreateProfile = observer(() => {
       return;
     }
     setPage((prev) => prev + val);
-  };
+  }, [handleCreateProfile, page, profileData]);
 
   const handleSingleSelect = useCallback(
     (label: keyof CreateProfileBody, val: string) => {
@@ -154,10 +154,10 @@ export const CreateProfile = observer(() => {
     [handleCreateProfileData]
   );
 
-  const handleSkip = () => {
+  const handleSkip = useCallback(() => {
     setPage(Steps.END);
     handleCreateProfile();
-  };
+  }, [handleCreateProfile]);
 
   return (
     <MobileLayout>

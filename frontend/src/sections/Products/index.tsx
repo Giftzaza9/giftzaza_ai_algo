@@ -71,7 +71,9 @@ export const Products = observer(() => {
           toast.error('Delete product failed');
           return;
         }
-        setProducts((prev) => prev.filter((item) => (item as any)?.item_id?.id !== id));
+        // setProducts((prev) => prev.filter((item) => (item as any)?.item_id?.id !== id));
+        // setProductsDuplicate((prev) => prev.filter((item) => (item as any)?.item_id?.id !== id));
+        toast.success('Product deleted successfully, will be in effect soon');
         setLoading(false);
       } catch (error) {
         setLoading(false);
@@ -85,11 +87,17 @@ export const Products = observer(() => {
     setPage((page) => page + 1);
   }, []);
 
-  const handleProductAction = (direction: SwipeDirection, action: SwipeAction, currentID: string) => {
-    if (action === SwipeAction.SIMILAR) {
-      fetchSimilarProducts(currentID);
-    } else saveUserActivity(currentID, action);
-  };
+  const saveUserActivity = useCallback(async (product_id: string, activity: SwipeAction) => {
+    if ([SwipeAction.FINISHED, SwipeAction.SIMILAR].includes(activity)) return;
+    const payload: UserActivityBody = {
+      product_id,
+      activity,
+      profile_id: profileId!,
+    };
+    const { data, error } = await storeUserActivity(payload);
+    if (data?.activity === SwipeAction.SAVE) toast.success('Product saved successfully', { autoClose: 1000 });
+    console.log({ data, error });
+  }, [profileId]);
 
   const fetchSimilarProducts = async (productId: string) => {
     const payload: SimilarProductBody = {
@@ -104,12 +112,15 @@ export const Products = observer(() => {
     }
   };
 
+  const handleProductAction = useCallback((direction: SwipeDirection, action: SwipeAction, currentID: string) => {
+    if (action === SwipeAction.SIMILAR) {
+      fetchSimilarProducts(currentID);
+    } else saveUserActivity(currentID, action);
+  }, [saveUserActivity]);
+
   const fetchMoreProducts = async (curPage: number, payload: moreProductBody) => {
     setLoading(true);
-    // setLoading(true);
     const { data, error } = await moreProducts(payload);
-    console.log({ data });
-    // if (error) toast.error(error || 'Faild to fetch more products !');
     if (!error) {
       setPrevProductsCount(productsDuplicate?.length + 1);
       const prevIds = new Set(products.map((item: any) => item.item_id?.id));
@@ -142,21 +153,9 @@ export const Products = observer(() => {
     setLoading(false);
   };
 
-  const saveUserActivity = async (product_id: string, activity: SwipeAction) => {
-    if ([SwipeAction.FINISHED, SwipeAction.SIMILAR].includes(activity)) return;
-    const payload: UserActivityBody = {
-      product_id,
-      activity,
-      profile_id: profileId!,
-    };
-    const { data, error } = await storeUserActivity(payload);
-    if (data?.activity === SwipeAction.SAVE) toast.success('Product saved successfully', { autoClose: 1000 });
-    console.log({ data, error });
-  };
-
-  const modelRetrain = () => {
+  const modelRetrain = useCallback(() => {
     retrain();
-  };
+  }, []);
 
   useEffect(() => {
     const payload: moreProductBody = {
@@ -227,7 +226,6 @@ export const Products = observer(() => {
             setPrevProducts={setPrevProducts}
             onFinish={handleFinish}
             actionHandler={handleProductAction}
-            // onDismiss={handleSwipe}
             withActionButtons={true}
             dislikeButton={<button className="">Dislike</button>}
             likeButton={<button className="">Like</button>}

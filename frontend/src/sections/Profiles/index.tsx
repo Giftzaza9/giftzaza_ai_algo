@@ -1,6 +1,6 @@
 import { Grid, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Profile } from '../../constants/types';
 import { deleteProfile, getProfiles } from '../../services/profile';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +18,7 @@ export const Profiles = observer(() => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [editProfileModalOpen, setEditProfileModalOpen] = useState<boolean>(false);
 
-  const fetchProfiles = async () => {
+  const fetchProfiles = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await getProfiles();
@@ -30,20 +30,20 @@ export const Profiles = observer(() => {
     } catch (err) {
       setLoading(false);
     }
-  };
+  }, [setLoading]);
 
-  const handleEditProfileModalClose = async (refetch?: boolean) => {
+  const handleEditProfileModalClose = useCallback(async (refetch?: boolean) => {
     setEditProfileModalOpen(false);
     setProfileToEdit(undefined);
     if (refetch) await fetchProfiles();
-  };
+  }, [fetchProfiles]);
 
-  const handleProfileToEdit = (profile: Profile) => {
+  const handleProfileToEdit = useCallback((profile: Profile) => {
     setProfileToEdit(profile);
     setEditProfileModalOpen(true);
-  };
+  }, []);
 
-  const handleDeleteProfile = async (id: string) => {
+  const handleDeleteProfile = useCallback(async (id: string) => {
     try {
       if (!(await getSwalConfirmation())) return;
       setLoading(true);
@@ -53,7 +53,7 @@ export const Profiles = observer(() => {
     } catch (err) {
       setLoading(false);
     }
-  };
+  }, [setLoading]);
 
   useEffect(() => {
     fetchProfiles();
