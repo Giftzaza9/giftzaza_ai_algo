@@ -1,7 +1,7 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { Product, Profile } from '../../constants/types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { shopping, shoppingBody } from '../../services/product';
 import { loaderState } from '../../store/ShowLoader';
 import { observer } from 'mobx-react-lite';
@@ -22,12 +22,12 @@ export const Shopping = observer(() => {
   const [prevProductsCount, setPrevProductsCount] = useState<number>(1);
 
   useEffect(() => {
-    (async()=>{
-      const { data } = await getProfiles({is_shopping_profile: true});
-      setShoppingProfile(data?.length > 0 ? data?.[0]: dummyShoppingProfile);
-    })()
-  },[])
-  
+    (async () => {
+      const { data } = await getProfiles({ is_shopping_profile: true });
+      setShoppingProfile(data?.length > 0 ? data?.[0] : dummyShoppingProfile);
+    })();
+  }, []);
+
   useEffect(() => {
     fetchShoppingProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,10 +42,9 @@ export const Shopping = observer(() => {
       };
       const { data, error } = await shopping(payload);
       // if (error) toast.error(error || 'Failed to shopping products !');
-      if(!error) {
+      if (!error) {
         console.log({ data });
-        if(data?.data?.length === 0)
-          setProducts([]);
+        if (data?.data?.length === 0) setProducts([]);
         else {
           setPrevProductsCount(products?.length + 1);
           setProducts((prev) => [...prev, ...data?.data?.map((item: any) => ({ ...item })).reverse()]);
@@ -57,17 +56,17 @@ export const Shopping = observer(() => {
     }
   };
 
-  const handleFinish = (status: SwipeAction) => {
+  const handleFinish = useCallback((status: SwipeAction) => {
     // if (status) setEvents((prev) => [...prev, `Finish: ${status}`]);
     // alert('Finished ');
     setPage((page) => page + 1);
-  };
+  }, []);
 
-  const handleProductAction = (direction: SwipeDirection, action: SwipeAction, currentID: string) => {
+  const handleProductAction = useCallback((direction: SwipeDirection, action: SwipeAction, currentID: string) => {
     // if (action === SwipeAction.SIMILAR) {
     //   fetchSimilarProducts(currentID);
     // } else saveUserActivity(currentID, action);
-  };
+  }, []);
 
   console.log({ products });
   return (
