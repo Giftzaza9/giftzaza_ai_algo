@@ -36,6 +36,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
     setRefetch,
     modelRetrain,
     type,
+    onDelete,
   } = props;
 
   const { handleEnter, handleNewCardSwiper, dynamicData, isFinish, swiperIndex, elements, setElements, handleUserActivity, setIsFinish } =
@@ -179,6 +180,7 @@ export const CardSwiper = (props: CardSwiperProps) => {
                   handleSave={handleSave}
                   matchingScore={product?.matching_score}
                   setPrevProducts={setPrevProducts}
+                  onDelete={onDelete}
                 />
               </div>
             )

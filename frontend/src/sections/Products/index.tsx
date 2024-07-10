@@ -4,11 +4,17 @@ import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
 import { SwipeDirection } from '../../lib/CardSwpierLib/types/types';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { useParams } from 'react-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getProfile } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { Product, Profile } from '../../constants/types';
-import { SimilarProductBody, getSimilarProducts, moreProductBody, moreProducts } from '../../services/product';
+import {
+  SimilarProductBody,
+  deleteProduct,
+  getSimilarProducts,
+  moreProductBody,
+  moreProducts,
+} from '../../services/product';
 import { SwipeAction } from '../../constants/constants';
 import { storeUserActivity, UserActivityBody } from '../../services/user';
 import { observer } from 'mobx-react-lite';
@@ -16,6 +22,7 @@ import { loaderState } from '../../store/ShowLoader';
 import { retrain } from '../../services/AI';
 import { useNavigate } from 'react-router-dom';
 import { animationStyle } from '../Profiles/styles';
+import { getSwalConfirmation } from '../../utils/swalConfirm';
 
 export const Products = observer(() => {
   const { setLoading, loading } = loaderState;
@@ -35,41 +42,48 @@ export const Products = observer(() => {
     try {
       setLoading(true);
       const { data, error } = await getProfile(profileId as string);
-      // if (error) toast.error(error || 'Failed to fetch profile data !');
-      if(!error) {
-        setProfile(data);
-        if(data?.recommended_products?.length === 0) {
-          setMoreProductsCase(2);
-          setPage(page => page+1);
-        }
-        setProducts((prev) => [...prev, ...data?.recommended_products?.map((item: any) => ({ ...item })).reverse()]);
-        setProductsDuplicate((prev) => [...prev, ...data?.recommended_products?.map((item: any) => ({ ...item })).reverse()]);
+      if (error) {
+        toast.error(error || 'Failed to fetch profile data !');
+        setLoading(false);
+        return;
       }
+      setProfile(data);
+      if (data?.recommended_products?.length === 0) {
+        setMoreProductsCase(2);
+        setPage((page) => page + 1);
+      }
+      setProducts((prev) => [...prev, ...data?.recommended_products?.map((item: any) => ({ ...item })).reverse()]);
+      setProductsDuplicate((prev) => [...prev, ...data?.recommended_products?.map((item: any) => ({ ...item })).reverse()]);
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileId]);
+  const handleDeleteProduct = useCallback(
+    async (id: string) => {
+      try {
+        const isConfirm = await getSwalConfirmation();
+        if (!isConfirm) return;
+        setLoading(true);
+        const { error } = await deleteProduct(id);
+        if (error) {
+          toast.error('Delete product failed');
+          return;
+        }
+        setProducts((prev) => prev.filter((item) => (item as any)?.item_id?.id !== id));
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+      }
+    },
+    [setLoading]
+  );
 
-  useEffect(() => {
-    if (refetch) { 
-      setHaveMoreProducts(true);
-      // setProducts([]);
-      fetchProfile();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refetch]);
-
-  const handleFinish = (status: SwipeAction) => {
-    // if (status) setEvents((prev) => [...prev, `Finish: ${status}`]);
-    // alert('Finished ');
+  const handleFinish = useCallback((status: SwipeAction) => {
     setPage((page) => page + 1);
-  };
+  }, []);
 
   const handleProductAction = (direction: SwipeDirection, action: SwipeAction, currentID: string) => {
     if (action === SwipeAction.SIMILAR) {
@@ -85,46 +99,37 @@ export const Products = observer(() => {
     const { data, error } = await getSimilarProducts(payload);
     if (error) toast.error(error || 'Faild to get similar products !');
     else {
-      setProducts((prev: any) => [
-        ...prev,
-        ...data,
-        // ...data?.map((item: any) => ({ ...item })).reverse()
-      ]);
-      setProductsDuplicate((prev: any) => [
-        ...prev,
-        ...data,
-        // ...data?.map((item: any) => ({ ...item })).reverse()
-      ]);
+      setProducts((prev: any) => [...prev, ...data]);
+      setProductsDuplicate((prev: any) => [...prev, ...data]);
     }
   };
 
   const fetchMoreProducts = async (curPage: number, payload: moreProductBody) => {
-    setLoading(true)
+    setLoading(true);
     // setLoading(true);
     const { data, error } = await moreProducts(payload);
     console.log({ data });
     // if (error) toast.error(error || 'Faild to fetch more products !');
-    if(!error) {
-      
+    if (!error) {
       setPrevProductsCount(productsDuplicate?.length + 1);
       const prevIds = new Set(products.map((item: any) => item.item_id?.id));
-        // Filter out items from data that are not already present in prev
-        const uniqueNewProducts = data?.filter((item: any) => item.item_id?.id && !prevIds.has(item.item_id?.id));
-        // const uniqueNewProducts = data?.filter((item: any) => !prevIds.has(item.item_id?.id));
-        // setProducts([]);
+      // Filter out items from data that are not already present in prev
+      const uniqueNewProducts = data?.filter((item: any) => item.item_id?.id && !prevIds.has(item.item_id?.id));
+      // const uniqueNewProducts = data?.filter((item: any) => !prevIds.has(item.item_id?.id));
+      // setProducts([]);
 
       if (uniqueNewProducts?.length === 0 && moreProductsCase < 3) {
         setMoreProductsCase((prev) => prev + 1);
         setLoading(false);
-        return ;
+        return;
       }
-      console.log({moreProductsCase, uniqueNewProducts})
+      console.log({ moreProductsCase, uniqueNewProducts });
       if (moreProductsCase === 3 && uniqueNewProducts?.length === 0) {
         setHaveMoreProducts(uniqueNewProducts?.length > 0 ? true : false);
         setProducts([]);
         setProductsDuplicate([]);
         setLoading(false);
-        return ;
+        return;
       }
 
       setProducts((prev: any) => {
@@ -136,35 +141,6 @@ export const Products = observer(() => {
     }
     setLoading(false);
   };
-
-  useEffect(() => {
-    const payload: moreProductBody = {
-      preferences: profile?.preferences!,
-      top_n: page * 10,
-      semi_hard_filters: ["interest"],
-    };
-
-    if (page > 1 && moreProductsCase < 4) {
-
-      let newPayload = {...payload};
-      if(moreProductsCase === 1) {
-        newPayload = {
-          ...payload,
-          min_price: profile?.min_price ?? 0,
-          max_price: profile?.max_price ?? 0,
-        }
-      }
-      else if(moreProductsCase === 3) {
-        newPayload = {
-          ...payload,
-          semi_hard_filters: [],
-        }
-      }
-
-      fetchMoreProducts(page, newPayload);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, moreProductsCase]);
 
   const saveUserActivity = async (product_id: string, activity: SwipeAction) => {
     if ([SwipeAction.FINISHED, SwipeAction.SIMILAR].includes(activity)) return;
@@ -181,6 +157,47 @@ export const Products = observer(() => {
   const modelRetrain = () => {
     retrain();
   };
+
+  useEffect(() => {
+    const payload: moreProductBody = {
+      preferences: profile?.preferences!,
+      top_n: page * 10,
+      semi_hard_filters: ['interest'],
+    };
+
+    if (page > 1 && moreProductsCase < 4) {
+      let newPayload = { ...payload };
+      if (moreProductsCase === 1) {
+        newPayload = {
+          ...payload,
+          min_price: profile?.min_price ?? 0,
+          max_price: profile?.max_price ?? 0,
+        };
+      } else if (moreProductsCase === 3) {
+        newPayload = {
+          ...payload,
+          semi_hard_filters: [],
+        };
+      }
+
+      fetchMoreProducts(page, newPayload);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, moreProductsCase]);
+
+  useEffect(() => {
+    if (profileId) fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileId]);
+
+  useEffect(() => {
+    if (refetch) {
+      setHaveMoreProducts(true);
+      // setProducts([]);
+      fetchProfile();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refetch]);
 
   return (
     <MobileLayout
@@ -204,6 +221,7 @@ export const Products = observer(() => {
             refetch={refetch}
             setRefetch={setRefetch}
             data={products}
+            onDelete={handleDeleteProduct}
             prevProducts={prevProducts}
             prevProductsCount={prevProductsCount}
             setPrevProducts={setPrevProducts}
@@ -261,9 +279,8 @@ export const Products = observer(() => {
             </Button>
           </Box>
         )}
-        {
-          products.length === 0 && haveMoreProducts && !loading &&  (
-            <Grid
+        {products.length === 0 && haveMoreProducts && !loading && (
+          <Grid
             display={'flex'}
             flexGrow={1}
             flexDirection={'column'}
@@ -282,8 +299,7 @@ export const Products = observer(() => {
             />
             <Typography sx={{ fontSize: '26px', fontFamily: 'Inter', fontWeight: '400', mb: 1 }}>Please wait...</Typography>
           </Grid>
-          )
-        }
+        )}
       </Container>
     </MobileLayout>
   );
