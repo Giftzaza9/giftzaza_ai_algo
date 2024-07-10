@@ -2,7 +2,7 @@ import { Box, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { Close, Star } from '@mui/icons-material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getSavedProducts, removeSavedProduct, RemoveSavedProductBody } from '../../services/user';
 import { Product, SavedItem } from '../../constants/types';
 import { ProductPreviewModalUser } from '../../components/product/ProductPreviewModalUser';
@@ -17,10 +17,10 @@ export const Saved = observer(() => {
   const [previewProduct, setPreviewProduct] = useState<Product | undefined>();
   const [previewModalOpen, setPreviewModalOpen] = useState<boolean>(false);
 
-  const handlePreviewClose = () => {
+  const handlePreviewClose = useCallback(() => {
     setPreviewModalOpen(false);
     setPreviewProduct(undefined);
-  };
+  }, []);
 
   const handlePreviewOpen = (product: Product) => {
     setPreviewProduct(product);
