@@ -19,6 +19,9 @@ import { Product } from '../../constants/types';
 import { Save } from '../shared/Icons/Save';
 import _ from 'lodash';
 import { RWebShare } from 'react-web-share';
+import { DeleteOutlineRounded } from '@mui/icons-material';
+import { observer } from 'mobx-react-lite';
+import { userStore } from '../../store/UserStore';
 
 interface Props {
   productData: Product;
@@ -26,9 +29,11 @@ interface Props {
   matches?: string[];
   matchingScore?: string;
   setPrevProducts?: any;
+  onDelete?: (id: string) => Promise<void>;
 }
 
-export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, matchingScore, setPrevProducts }) => {
+export const ProductCard: FC<Props> = observer(({ productData, matches = [], handleSave, matchingScore, setPrevProducts, onDelete }) => {
+  const { user } = userStore;
   const imageBreak = useMediaQuery('(max-height: 790px)');
   const imageBreak2 = useMediaQuery('(max-height: 674px)');
   const { title, description, source, thumbnails, image, price_currency, price, rating, id, link, features, curated } =
@@ -77,6 +82,11 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
               </button>
             </RWebShare>
           </Box>
+          {user?.role === 'admin' && <Box sx={{ cursor: 'pointer' }}>
+            <IconButton onClick={() => onDelete && onDelete(productData.id)}>
+              <DeleteOutlineRounded sx={{color: 'black', height: '26xpx', width: '26xpx'}} />
+            </IconButton>
+          </Box>}
         </Box>
 
         {(matchingScore || curated) && (
@@ -225,4 +235,4 @@ export const ProductCard: FC<Props> = ({ productData, matches = [], handleSave, 
       />
     </>
   );
-};
+});

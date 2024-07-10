@@ -16,10 +16,7 @@ const getProfileById = async (profileId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
   }
   // console.log(profile.recommended_products)
-  // await profile.recommended_products.forEach(recommendedProduct => {
-  //   recommendedProduct.product = {...recommendedProduct.item_id};
-  //   delete recommendedProduct.item_id;
-  // });
+  profile.recommended_products = profile.recommended_products?.filter(recommendedProduct => recommendedProduct?.item_id?.is_active);
   return profile;
 };
 
