@@ -407,7 +407,7 @@ const createAnalysisProduct = async (productBody) => {
         continue;
       }
       const product_data = await scrapeProduct(link, productBody.userId);
-      if (!product_data || !product_data.title || !product_data.image) {
+      if (!product_data || !product_data.title || !product_data.image || (product_data?.price || -1) < 0) {
         console.log(`${count}th failed: Scrape error || Product not found or out of stock'`);
         console.log({product_data});
         failures.notFound = failures.notFound || [];
