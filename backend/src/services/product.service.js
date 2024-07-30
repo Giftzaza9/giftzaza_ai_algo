@@ -458,7 +458,6 @@ const bulkRescrape = async (condition) => {
   console.log('🚀 ~ bulkRescrape ~ condition:', condition)
   const added = [];
   let failures = {};
-  const failed = [];
   const products = await Product.find(condition);
   if (!products.length) throw new Error('No products found !');
 
@@ -517,12 +516,13 @@ const bulkRescrape = async (condition) => {
 
       added.push(product?.link);
     } catch (error) {
-      failed.push(product?.link);
+      failures.error = failures.error || [];
+      failures.error.push(product?.link);
       console.log(error);
     }
   }
-console.log({added, failed});
-  return { added, failed };
+console.log({added, failures});
+  return { added, failures };
 };
 
 module.exports = {
