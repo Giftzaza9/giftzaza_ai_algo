@@ -481,14 +481,15 @@ const bulkRescrape = async (condition) => {
         failures.noPrice = failures.noPrice || [];
         failures.noPrice.push(product?.link);
         // failed.push(product?.link);
-        // await Product.findByIdAndUpdate(product._id, { is_active: false });
+        await Product.findByIdAndUpdate(product._id, { is_active: false });
         continue;
       }
-
+      
       if (price < 25) {
         console.log({ price, title });
         failures.priceBelow25 = failures.priceBelow25 || [];
         failures.priceBelow25.push(product?.link);
+        await Product.findByIdAndUpdate(product._id, { is_active: false });
         continue;
       }
       
@@ -496,6 +497,7 @@ const bulkRescrape = async (condition) => {
         console.log({ image, title });
         failures.noImage = failures.noImage || [];
         failures.noImage.push(product?.link);
+        await Product.findByIdAndUpdate(product._id, { is_active: false });
         continue;
       }
 
