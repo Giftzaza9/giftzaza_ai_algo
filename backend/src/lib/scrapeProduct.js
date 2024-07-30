@@ -26,13 +26,27 @@ const scrapeProduct = async (productLink, userId) => {
 };
 
 async function AmazonScraper(product_link, userId) {
-  // const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
-  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'] });
+  // const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   let blocked = false;
   try {
     const page = await browser.newPage();
 
-    await page.goto(product_link, { waitUntil:  ['domcontentloaded', 'networkidle2'] });
+    await page.goto(product_link, { waitUntil: ['domcontentloaded', 'networkidle2'] });
+
+    // Wait for the location element to be visible and click it
+    await page.waitForSelector('#nav-global-location-popover-link', { visible: true });
+    await page.click('#nav-global-location-popover-link');
+
+    // Wait for the input to appear and type in the new location
+    await page.waitForSelector('#GLUXZipUpdateInput', { visible: true });
+    await page.type('#GLUXZipUpdateInput', '95050'); // Example ZIP code
+
+    // Click the apply button to set the new location
+    await page.click('#GLUXZipUpdate');
+
+    // Wait for the update to complete
+    await page.waitForTimeout(2000); // Adjust timeout as needed
 
     // To see if it is showing the captcha
     blocked = await page.evaluate(() => {
@@ -58,7 +72,6 @@ async function AmazonScraper(product_link, userId) {
       return spanElement?.innerText;
     });
 
-    
     if (!product_title) {
       product_title = await page.evaluate(() => {
         const spanElement = document.querySelector('span#productTitle');
@@ -73,10 +86,10 @@ async function AmazonScraper(product_link, userId) {
         brand = document.querySelector('a#bond-byLine-desktop');
         const spanElement = document.querySelector('span#bond-title-desktop');
         return brand && spanElement
-        ? `${brand?.textContent} - ${spanElement?.textContent}`
-        : spanElement
-        ? spanElement?.innerText
-        : null;
+          ? `${brand?.textContent} - ${spanElement?.textContent}`
+          : spanElement
+          ? spanElement?.innerText
+          : null;
       });
     }
 
@@ -124,7 +137,11 @@ async function AmazonScraper(product_link, userId) {
       if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.aok-offscreen');
       if (!spanElement) spanElement = document.querySelector('div#corePriceDisplay_desktop_feature_div span.a-offscreen');
       if (!spanElement) spanElement = document.querySelector('div#corePriceDisplay_desktop_feature_div span.aok-offscreen');
-      if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.a-price-whole')+"."+document.querySelector('div#corePrice_desktop span.a-price-fraction');
+      if (!spanElement)
+        spanElement =
+          document.querySelector('div#corePrice_desktop span.a-price-whole') +
+          '.' +
+          document.querySelector('div#corePrice_desktop span.a-price-fraction');
       return spanElement?.textContent || null;
     });
 
@@ -183,15 +200,15 @@ async function AmazonScraper(product_link, userId) {
         -1,
       description: product_description,
       features: product_features,
-      price_currency: product_price_currency ? product_price_currency : "",
+      price_currency: product_price_currency ? product_price_currency : '',
       added_by: userId,
       thumbnails: [], // UNABLE TO ADD quality thumbnails
-      blocked: blocked
+      blocked: blocked,
     };
   } catch (error) {
     console.error(error);
     await browser.close();
-    if (blocked) return { blocked }
+    if (blocked) return { blocked };
     return null;
   }
 }
