@@ -132,7 +132,7 @@ const scrapeAndAddProduct = async (productBody) => {
       'Amazon has found this activity as suspicious activity, please try again later.'
     );
   }
-  if (!scrapedProduct || !scrapedProduct.title) {
+  if (!scrapedProduct || !scrapedProduct.title || !scrapedProduct.price || scrapedProduct.price === -1) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
 
@@ -399,7 +399,7 @@ const createAnalysisProduct = async (productBody) => {
       if (link.includes('amazon')) link = amazonUrlCleaner(link) || link;
       if (link.includes('bloomingdale')) link = bloomingdaleUrlCleaner(link) || link;
       
-      const productDB = await Product.findOne({ link: link });
+      const productDB = await Product.findOne({ link: link, is_active: true });
       if (productDB) {
         console.log(`${count}th failed: Existing product`);
         failures.alreadyExist = failures.alreadyExist || [];
@@ -457,6 +457,7 @@ const createAnalysisProduct = async (productBody) => {
 const bulkRescrape = async (condition) => {
   console.log('🚀 ~ bulkRescrape ~ condition:', condition)
   const added = [];
+  let failures = {};
   const failed = [];
   const products = await Product.find(condition);
   if (!products.length) throw new Error('No products found !');
@@ -466,17 +467,35 @@ const bulkRescrape = async (condition) => {
     setTimeout(resolve, delay);
   });
 
-  for (const product of products) {
+  let idx = 1;
 
+  for (const product of products) {
+    console.log(`Processing ${idx++} of ${products?.length}`)
     try {
       const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(
         product.link
       );
 
-      if (price === -1) {
+      if (!price || price === -1) {
         console.log({ price, link, title });
-        failed.push(product?.link);
+        failures.noPrice = failures.noPrice || [];
+        failures.noPrice.push(product?.link);
+        // failed.push(product?.link);
         // await Product.findByIdAndUpdate(product._id, { is_active: false });
+        continue;
+      }
+
+      if (price < 25) {
+        console.log({ price, title });
+        failures.priceBelow25 = failures.priceBelow25 || [];
+        failures.priceBelow25.push(product?.link);
+        continue;
+      }
+      
+      if (!image) {
+        console.log({ image, title });
+        failures.noImage = failures.noImage || [];
+        failures.noImage.push(product?.link);
         continue;
       }
 
