@@ -16,10 +16,10 @@ const scrapeProduct = async (productLink, userId) => {
   //   const res = await NodestormScraper(productLink);
   //   return res;
   // } else
-  if (productLink.includes('bloomingdales')) {
+  if (productLink?.includes('bloomingdales')) {
     const res = await bloomingdaleScrapeProduct(productLink, userId);
     return res;
-  } else if (productLink.includes('amazon')) {
+  } else if (productLink?.includes('amazon')) {
     const res = await AmazonScraper(productLink, userId);
     return res;
   } else return 'unknown source';
