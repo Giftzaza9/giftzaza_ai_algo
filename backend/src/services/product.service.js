@@ -441,7 +441,7 @@ const createAnalysisProduct = async (productBody) => {
     if (scraped.length) await Product.create(scraped);
     // return scraped?.map((p) => p.link);
     const scrapedLinks = scraped?.map((p) => p.link);
-    console.log(`Completed scraping: ${productBody.product_links} links`);
+    console.log(`Completed scraping: ${productBody.product_links?.length} links`);
     return {
       scrapedLinks,
       failures
