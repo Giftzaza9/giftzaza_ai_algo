@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer-extra');
 // import puppeteer from 'puppeteer-extra';
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const randomUseragent = require('random-useragent');
+// const randomUseragent = require('random-useragent');
 
 // plugin to use defaults (all tricks to hide puppeteer usage)
 puppeteer.use(StealthPlugin());
@@ -33,28 +33,16 @@ async function AmazonScraper(product_link, userId) {
   try {
     const page = await browser.newPage();
 
-    // Set a random user agent
-    const userAgent = randomUseragent.getRandom();
-    await page.setUserAgent(userAgent);
-
     await page.goto(product_link, { waitUntil: ['domcontentloaded', 'networkidle2'] });
-
-    await page.waitForTimeout(1000);
-
-    // Interact with the page
-    await page.mouse.move(100, 100);
-    await page.waitForTimeout(200);
-    await page.mouse.move(200, 200);
-    await page.waitForTimeout(500);
 
     blocked = await page.evaluate(() => {
       return document.body.innerText.includes('Type the characters you see in this image:');
     });
     // Try to reload the page
     if (blocked) {
-      await page.waitForTimeout(2500);
+      await new Promise(r => setTimeout(r, 200));
       await page.mouse.move(100, 100);
-      await page.waitForTimeout(200);
+      await new Promise(r => setTimeout(r, 200));
       await page.mouse.move(200, 200);
       await page.keyboard.down('Control');
       await page.keyboard.press('KeyR');
@@ -81,16 +69,16 @@ async function AmazonScraper(product_link, userId) {
       return spanElement?.textContent || null;
     });
 
+    console.log('>>> Price found on step1: ', product_price)
+
     if (!product_price) {
       // Wait for the location element to be visible and click it
       const locationButtonSelector = '#nav-global-location-popover-link';
       try {
-        await page.waitForSelector(locationButtonSelector, { visible: true });
+        await page.waitForSelector(locationButtonSelector, { visible: true, timeout: 10000 });
         await page.click(locationButtonSelector);
       } catch (error) {
         console.error(`Error finding or clicking location button: ${error}`);
-        await browser.close();
-        return;
       }
 
       // Wait for the input to appear and type in the new location
@@ -100,22 +88,28 @@ async function AmazonScraper(product_link, userId) {
         await page.type(zipInputSelector, '90210'); // Example ZIP code
       } catch (error) {
         console.error(`Error finding or typing into zip code input: ${error}`);
-        await browser.close();
-        return;
       }
 
       // Click the apply button to set the new location
-      const applyButtonSelector = '#GLUXZipUpdate';
       try {
-        await page.click(applyButtonSelector);
+        await page.click('#GLUXZipUpdate');
       } catch (error) {
         console.error(`Error clicking the apply button: ${error}`);
-        await browser.close();
-        return;
       }
+      try {
+        await page.click('[aria-labelledby="GLUXZipUpdate-announce"]');
+      } catch (error) {
+        console.error(`Error clicking the apply button: ${error}`);
+      }
+      
+      await new Promise(r => setTimeout(r,3000));
+      
+      await page.keyboard.down('Control');
+      await page.keyboard.press('KeyR');
+      await page.keyboard.up('Control');
+      await page.reload({ waitUntil: ['domcontentloaded', 'networkidle2'] });
 
       // Wait for the update to complete
-      await page.waitForTimeout(5000);
 
       product_price = await page.evaluate(() => {
         let spanElement = document.querySelector('div#corePrice_feature_div span.a-offscreen');

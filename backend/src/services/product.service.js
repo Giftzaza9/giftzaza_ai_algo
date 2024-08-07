@@ -401,15 +401,14 @@ const createAnalysisProduct = async (productBody) => {
       
       const productDB = await Product.findOne({ link: link, is_active: true });
       if (productDB) {
-        console.log(`${count}th failed: Existing product`);
+        console.log(`${count}/${productBody.product_links?.length} failed, link: ${link} >>> Existing product`);
         failures.alreadyExist = failures.alreadyExist || [];
         failures.alreadyExist.push(link);
         continue;
       }
       const product_data = await scrapeProduct(link, productBody.userId);
-      if (!product_data || !product_data.title || !product_data.image || (product_data?.price || -1) < 0) {
-        console.log(`${count}th failed: Scrape error || Product not found or out of stock'`);
-        console.log({product_data});
+      if (!product_data || !product_data.title || !product_data.image) {
+        console.log(`${count}/${productBody.product_links?.length} failed, link: ${link} >>> Product not found or out of stock'`);
         failures.notFound = failures.notFound || [];
         failures.notFound.push(link);
         continue;
@@ -417,7 +416,7 @@ const createAnalysisProduct = async (productBody) => {
       const gptdata = await GPTbasedTagging(product_data.description || product_data.features.join('. '),
       product_data.title);
       if (!gptdata.preferenceData.length) {
-        console.log(`${count}th failed: preference data is not available`);
+        console.log(`${count}/${productBody.product_links?.length} failed, link: ${link} >>> preference data is not available`);
         failures.gptFault = failures.gptFault || [];
         failures.gptFault.push(link);
         continue;
@@ -428,6 +427,7 @@ const createAnalysisProduct = async (productBody) => {
       product_data.hil = false;
       product_data.is_active = product_data.price > 0 ? true : false;
       if(!(product_data.price > 0)) {
+        console.log(`${count}/${productBody.product_links?.length} failed, link: ${link} >>> Price not found or out of stock'`);
         failures.noPrice = failures.noPrice || [];
         failures.noPrice.push(link);
       }
@@ -441,6 +441,7 @@ const createAnalysisProduct = async (productBody) => {
     if (scraped.length) await Product.create(scraped);
     // return scraped?.map((p) => p.link);
     const scrapedLinks = scraped?.map((p) => p.link);
+    console.log(`Completed scraping: ${productBody.product_links} links`);
     return {
       scrapedLinks,
       failures
