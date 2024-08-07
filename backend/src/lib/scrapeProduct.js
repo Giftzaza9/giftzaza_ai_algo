@@ -40,9 +40,9 @@ async function AmazonScraper(product_link, userId) {
     });
     // Try to reload the page
     if (blocked) {
-      await new Promise(r => setTimeout(r, 200));
+      await new Promise((r) => setTimeout(r, 200));
       await page.mouse.move(100, 100);
-      await new Promise(r => setTimeout(r, 200));
+      await new Promise((r) => setTimeout(r, 200));
       await page.mouse.move(200, 200);
       await page.keyboard.down('Control');
       await page.keyboard.press('KeyR');
@@ -69,7 +69,7 @@ async function AmazonScraper(product_link, userId) {
       return spanElement?.textContent || null;
     });
 
-    console.log('>>> Price found on step1: ', product_price)
+    console.log('>>> Price found on step1: ', product_price);
 
     if (!product_price) {
       // Wait for the location element to be visible and click it
@@ -77,39 +77,30 @@ async function AmazonScraper(product_link, userId) {
       try {
         await page.waitForSelector(locationButtonSelector, { visible: true, timeout: 10000 });
         await page.click(locationButtonSelector);
-      } catch (error) {
-        console.error(`Error finding or clicking location button: ${error}`);
-      }
 
-      // Wait for the input to appear and type in the new location
-      const zipInputSelector = '#GLUXZipUpdateInput';
-      try {
-        await page.waitForSelector(zipInputSelector, { visible: true });
-        await page.type(zipInputSelector, '90210'); // Example ZIP code
-      } catch (error) {
-        console.error(`Error finding or typing into zip code input: ${error}`);
-      }
+        await page.waitForSelector(zipInputSelector, { visible: true, timeout: 10000 });
+        await page.type(zipInputSelector, '90210');
 
-      // Click the apply button to set the new location
-      try {
-        await page.click('#GLUXZipUpdate');
-      } catch (error) {
-        console.error(`Error clicking the apply button: ${error}`);
-      }
-      try {
-        await page.click('[aria-labelledby="GLUXZipUpdate-announce"]');
-      } catch (error) {
-        console.error(`Error clicking the apply button: ${error}`);
-      }
-      
-      await new Promise(r => setTimeout(r,3000));
-      
-      await page.keyboard.down('Control');
-      await page.keyboard.press('KeyR');
-      await page.keyboard.up('Control');
-      await page.reload({ waitUntil: ['domcontentloaded', 'networkidle2'] });
+        try {
+          await page.click('#GLUXZipUpdate');
+        } catch (error) {
+          console.error(`Error clicking the apply button: ${error}`);
+        }
+        try {
+          await page.click('[aria-labelledby="GLUXZipUpdate-announce"]');
+        } catch (error) {
+          console.error(`Error clicking the apply button: ${error}`);
+        }
 
-      // Wait for the update to complete
+        await new Promise((r) => setTimeout(r, 3000));
+
+        await page.keyboard.down('Control');
+        await page.keyboard.press('KeyR');
+        await page.keyboard.up('Control');
+        await page.reload({ waitUntil: ['domcontentloaded', 'networkidle2'] });
+      } catch (error) {
+        console.error(`Error changing location: ${error}`);
+      }
 
       product_price = await page.evaluate(() => {
         let spanElement = document.querySelector('div#corePrice_feature_div span.a-offscreen');
