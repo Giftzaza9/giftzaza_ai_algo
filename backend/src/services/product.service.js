@@ -259,6 +259,11 @@ const startShopping = async (payload) => {
 
   const productsPromise = userActivity.aggregate([
     {
+      $match: {
+        is_active: true,
+      },
+    },
+    {
       $group: {
         _id: '$product_id',
         like: { $sum: { $cond: [{ $eq: ['$activity', 'like'] }, 1, 0] } },
