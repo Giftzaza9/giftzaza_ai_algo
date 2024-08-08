@@ -303,7 +303,7 @@ const startShopping = async (payload) => {
 
   const [products, totalRows] = await Promise.all([productsPromise, countPromise]);
 
-  const productsData = products?.map((item) => item.product[0])?.filter((item) => item);
+  const productsData = products?.map((item) => item.product[0])?.filter((item) => item && item.is_active);
 
   const result = {
     row: productsData.length,
@@ -431,12 +431,14 @@ const updateProductById = async (productId, updateBody) => {
 const deleteProductById = async (productId) => {
   const product = await Product.findByIdAndUpdate(productId, { is_active: false });
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
-
-  try {
-    axiosInstance.post(`/model_retrain`, {});
-  } catch (e) {
-    console.error(e);
-  }
+  
+  userActivity
+    .deleteMany({ product_id: product?._id })
+    .then(console.log)
+    .catch(console.error)
+    .finally(() => {
+      axiosInstance.post(`/model_retrain`, {}).then(console.log).catch(console.error);
+    });
 
   return product;
 };
