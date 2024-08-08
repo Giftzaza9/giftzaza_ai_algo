@@ -2,7 +2,7 @@ import { Box, Button, Container, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import { Product, Profile } from '../../constants/types';
 import { useCallback, useEffect, useState } from 'react';
-import { shopping, shoppingBody } from '../../services/product';
+import { deleteProduct, shopping, shoppingBody } from '../../services/product';
 import { loaderState } from '../../store/ShowLoader';
 import { observer } from 'mobx-react-lite';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
@@ -10,6 +10,8 @@ import { dummyShoppingProfile, SwipeAction } from '../../constants/constants';
 import { SwipeDirection } from '../../lib/CardSwpierLib';
 import { useNavigate } from 'react-router-dom';
 import { getProfiles } from '../../services/profile';
+import { getSwalConfirmation } from '../../utils/swalConfirm';
+import { toast } from 'react-toastify';
 
 export const Shopping = observer(() => {
   const { setLoading, loading } = loaderState;
@@ -68,6 +70,29 @@ export const Shopping = observer(() => {
     // } else saveUserActivity(currentID, action);
   }, []);
 
+  const handleDeleteProduct = useCallback(
+    async (id: string) => {
+      try {
+        const isConfirm = await getSwalConfirmation();
+        if (!isConfirm) return;
+        setLoading(true);
+        const { error } = await deleteProduct(id);
+        if (error) {
+          toast.error('Delete product failed');
+          return;
+        }
+        // setProducts((prev) => prev.filter((item) => (item as any)?.item_id?.id !== id));
+        // setProductsDuplicate((prev) => prev.filter((item) => (item as any)?.item_id?.id !== id));
+        toast.success('Product deleted successfully, will be in effect soon');
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+      }
+    },
+    [setLoading]
+  );
+
   console.log({ products });
   return (
     <MobileLayout profile={shoppingProfile as Profile}>
@@ -80,6 +105,7 @@ export const Shopping = observer(() => {
       >
         {products !== undefined && products?.length > 0 && (
           <CardSwiper
+
             type="shopping"
             data={products}
             prevProducts={prevProducts}
@@ -87,6 +113,7 @@ export const Shopping = observer(() => {
             setPrevProducts={setPrevProducts}
             onFinish={handleFinish}
             actionHandler={handleProductAction}
+            onDelete={handleDeleteProduct}
             withActionButtons={true}
             dislikeButton={<button className="">Dislike</button>}
             likeButton={<button className="">Like</button>}
