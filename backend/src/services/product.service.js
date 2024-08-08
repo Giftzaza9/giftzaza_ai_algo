@@ -180,7 +180,7 @@ const scrapeAndAddProduct = async (productBody) => {
       'Amazon has found this activity as suspicious activity, please try again later.'
     );
   }
-  if (!scrapedProduct || !scrapedProduct.title) {
+  if (!scrapedProduct || !scrapedProduct.title || !scrapedProduct.price || scrapedProduct.price === -1) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Product not found or out of stock');
   }
 
@@ -462,18 +462,17 @@ const createAnalysisProduct = async (productBody) => {
       count++;
       if (link.includes('amazon')) link = amazonUrlCleaner(link) || link;
       if (link.includes('bloomingdale')) link = bloomingdaleUrlCleaner(link) || link;
-
-      const productDB = await Product.findOne({ link: link });
+      
+      const productDB = await Product.findOne({ link: link, is_active: true });
       if (productDB) {
-        console.log(`${count}th failed: Existing product`);
+        console.log(`${count}/${productBody.product_links?.length} failed, link: ${link} >>> Existing product`);
         failures.alreadyExist = failures.alreadyExist || [];
         failures.alreadyExist.push(link);
         continue;
       }
       const product_data = await scrapeProduct(link, productBody.userId);
       if (!product_data || !product_data.title || !product_data.image) {
-        console.log(`${count}th failed: Scrape error || Product not found or out of stock'`);
-        console.log({ product_data });
+        console.log(`${count}/${productBody.product_links?.length} failed, link: ${link} >>> Product not found or out of stock'`);
         failures.notFound = failures.notFound || [];
         failures.notFound.push(link);
         continue;
@@ -483,7 +482,7 @@ const createAnalysisProduct = async (productBody) => {
         product_data.title
       );
       if (!gptdata.preferenceData.length) {
-        console.log(`${count}th failed: preference data is not available`);
+        console.log(`${count}/${productBody.product_links?.length} failed, link: ${link} >>> preference data is not available`);
         failures.gptFault = failures.gptFault || [];
         failures.gptFault.push(link);
         continue;
@@ -493,7 +492,8 @@ const createAnalysisProduct = async (productBody) => {
       product_data.curated = false;
       product_data.hil = false;
       product_data.is_active = product_data.price > 0 ? true : false;
-      if (!(product_data.price > 0)) {
+      if(!(product_data.price > 0)) {
+        console.log(`${count}/${productBody.product_links?.length} failed, link: ${link} >>> Price not found or out of stock'`);
         failures.noPrice = failures.noPrice || [];
         failures.noPrice.push(link);
       }
@@ -507,6 +507,7 @@ const createAnalysisProduct = async (productBody) => {
     if (scraped.length) await Product.create(scraped);
     // return scraped?.map((p) => p.link);
     const scrapedLinks = scraped?.map((p) => p.link);
+    console.log(`Completed scraping: ${productBody.product_links?.length} links`);
     return {
       scrapedLinks,
       failures,
@@ -523,7 +524,7 @@ const createAnalysisProduct = async (productBody) => {
 const bulkRescrape = async (condition) => {
   console.log('🚀 ~ bulkRescrape ~ condition:', condition);
   const added = [];
-  const failed = [];
+  let failures = {};
   const products = await Product.find(condition);
   if (!products.length) throw new Error('No products found !');
 
@@ -532,16 +533,37 @@ const bulkRescrape = async (condition) => {
       setTimeout(resolve, delay);
     });
 
+  let idx = 1;
+
   for (const product of products) {
+    console.log(`Processing ${idx++} of ${products?.length}`)
     try {
       const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(
         product.link
       );
 
-      if (price === -1) {
+      if (!price || price === -1) {
         console.log({ price, link, title });
-        failed.push(product?.link);
-        // await Product.findByIdAndUpdate(product._id, { is_active: false });
+        failures.noPrice = failures.noPrice || [];
+        failures.noPrice.push(product?.link);
+        // failed.push(product?.link);
+        await Product.findByIdAndUpdate(product._id, { is_active: false });
+        continue;
+      }
+      
+      if (price < 25) {
+        console.log({ price, title });
+        failures.priceBelow25 = failures.priceBelow25 || [];
+        failures.priceBelow25.push(product?.link);
+        await Product.findByIdAndUpdate(product._id, { is_active: false });
+        continue;
+      }
+      
+      if (!image) {
+        console.log({ image, title });
+        failures.noImage = failures.noImage || [];
+        failures.noImage.push(product?.link);
+        await Product.findByIdAndUpdate(product._id, { is_active: false });
         continue;
       }
 
@@ -561,12 +583,13 @@ const bulkRescrape = async (condition) => {
 
       added.push(product?.link);
     } catch (error) {
-      failed.push(product?.link);
+      failures.error = failures.error || [];
+      failures.error.push(product?.link);
       console.log(error);
     }
   }
-  console.log({ added, failed });
-  return { added, failed };
+console.log({added, failures});
+  return { added, failures };
 };
 
 module.exports = {

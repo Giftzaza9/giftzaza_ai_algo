@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer-extra');
 // import puppeteer from 'puppeteer-extra';
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+// const randomUseragent = require('random-useragent');
 
 // plugin to use defaults (all tricks to hide puppeteer usage)
 puppeteer.use(StealthPlugin());
@@ -16,10 +17,10 @@ const scrapeProduct = async (productLink, userId) => {
   //   const res = await NodestormScraper(productLink);
   //   return res;
   // } else
-  if (productLink.includes('bloomingdales')) {
+  if (productLink?.includes('bloomingdales')) {
     const res = await bloomingdaleScrapeProduct(productLink, userId);
     return res;
-  } else if (productLink.includes('amazon')) {
+  } else if (productLink?.includes('amazon')) {
     const res = await AmazonScraper(productLink, userId);
     return res;
   } else return 'unknown source';
@@ -32,14 +33,17 @@ async function AmazonScraper(product_link, userId) {
   try {
     const page = await browser.newPage();
 
-    await page.goto(product_link, { waitUntil:  ['domcontentloaded', 'networkidle2'] });
+    await page.goto(product_link, { waitUntil: ['domcontentloaded', 'networkidle2'] });
 
-    // To see if it is showing the captcha
     blocked = await page.evaluate(() => {
       return document.body.innerText.includes('Type the characters you see in this image:');
     });
     // Try to reload the page
     if (blocked) {
+      await new Promise((r) => setTimeout(r, 200));
+      await page.mouse.move(100, 100);
+      await new Promise((r) => setTimeout(r, 200));
+      await page.mouse.move(200, 200);
       await page.keyboard.down('Control');
       await page.keyboard.press('KeyR');
       await page.keyboard.up('Control');
@@ -51,6 +55,71 @@ async function AmazonScraper(product_link, userId) {
     // If blocked again throw error
     if (blocked) throw new Error('Amazon has found this activity as suspicious activity, please try again later.');
 
+    let product_price = await page.evaluate(() => {
+      let spanElement = document.querySelector('div#corePrice_feature_div span.a-offscreen');
+      if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.a-offscreen');
+      if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.aok-offscreen');
+      if (!spanElement) spanElement = document.querySelector('div#corePriceDisplay_desktop_feature_div span.a-offscreen');
+      if (!spanElement) spanElement = document.querySelector('div#corePriceDisplay_desktop_feature_div span.aok-offscreen');
+      if (!spanElement)
+        spanElement =
+          document.querySelector('div#corePrice_desktop span.a-price-whole') +
+          '.' +
+          document.querySelector('div#corePrice_desktop span.a-price-fraction');
+      return spanElement?.textContent || null;
+    });
+
+    console.log('>>> Price found on step1: ', product_price);
+
+    if (!product_price) {
+      // Wait for the location element to be visible and click it
+      const locationButtonSelector = '#nav-global-location-popover-link';
+      try {
+        await page.waitForSelector(locationButtonSelector, { visible: true, timeout: 10000 });
+        await page.click(locationButtonSelector);
+
+        await page.waitForSelector(zipInputSelector, { visible: true, timeout: 10000 });
+        await page.type(zipInputSelector, '90210');
+
+        try {
+          await page.click('#GLUXZipUpdate');
+        } catch (error) {
+          console.error(`Error clicking the apply button: ${error}`);
+        }
+        try {
+          await page.click('[aria-labelledby="GLUXZipUpdate-announce"]');
+        } catch (error) {
+          console.error(`Error clicking the apply button: ${error}`);
+        }
+
+        await new Promise((r) => setTimeout(r, 3000));
+
+        await page.keyboard.down('Control');
+        await page.keyboard.press('KeyR');
+        await page.keyboard.up('Control');
+        await page.reload({ waitUntil: ['domcontentloaded', 'networkidle2'] });
+      } catch (error) {
+        console.error(`Error changing location: ${error}`);
+      }
+
+      product_price = await page.evaluate(() => {
+        let spanElement = document.querySelector('div#corePrice_feature_div span.a-offscreen');
+        if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.a-offscreen');
+        if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.aok-offscreen');
+        if (!spanElement) spanElement = document.querySelector('div#corePriceDisplay_desktop_feature_div span.a-offscreen');
+        if (!spanElement)
+          spanElement = document.querySelector('div#corePriceDisplay_desktop_feature_div span.aok-offscreen');
+        if (!spanElement)
+          spanElement =
+            document.querySelector('div#corePrice_desktop span.a-price-whole') +
+            '.' +
+            document.querySelector('div#corePrice_desktop span.a-price-fraction');
+        return spanElement?.textContent || null;
+      });
+    }
+
+    if (!product_price) throw new Error('Unable to find the price, please try again later.');
+
     let isAmazonLuxury = false;
 
     let product_title = await page.evaluate(() => {
@@ -58,7 +127,6 @@ async function AmazonScraper(product_link, userId) {
       return spanElement?.innerText;
     });
 
-    
     if (!product_title) {
       product_title = await page.evaluate(() => {
         const spanElement = document.querySelector('span#productTitle');
@@ -73,18 +141,18 @@ async function AmazonScraper(product_link, userId) {
         brand = document.querySelector('a#bond-byLine-desktop');
         const spanElement = document.querySelector('span#bond-title-desktop');
         return brand && spanElement
-        ? `${brand?.textContent} - ${spanElement?.textContent}`
-        : spanElement
-        ? spanElement?.innerText
-        : null;
+          ? `${brand?.textContent} - ${spanElement?.textContent}`
+          : spanElement
+          ? spanElement?.innerText
+          : null;
       });
     }
 
-    const thumbnails = await page.evaluate(() => {
-      // good quality thumbnails are unavailable
-      const imgs = Array.from(document.querySelectorAll('li > span > span > span > span > img'));
-      return imgs.map((img) => img.getAttribute('src'));
-    });
+    // const thumbnails = await page.evaluate(() => {
+    //   // good quality thumbnails are unavailable
+    //   const imgs = Array.from(document.querySelectorAll('li > span > span > span > span > img'));
+    //   return imgs.map((img) => img.getAttribute('src'));
+    // });
 
     // await page.evaluate(() => {
     //   const imgContainer = document.querySelector('#main-image-container');
@@ -116,16 +184,6 @@ async function AmazonScraper(product_link, userId) {
       const divElement = document.querySelector('div#bundles_feature_div #bundles-card-state');
       if (divElement) return divElement?.getAttribute('data-currencyofpreference');
       return null;
-    });
-
-    const product_price = await page.evaluate(() => {
-      let spanElement = document.querySelector('div#corePrice_feature_div span.a-offscreen');
-      if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.a-offscreen');
-      if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.aok-offscreen');
-      if (!spanElement) spanElement = document.querySelector('div#corePriceDisplay_desktop_feature_div span.a-offscreen');
-      if (!spanElement) spanElement = document.querySelector('div#corePriceDisplay_desktop_feature_div span.aok-offscreen');
-      if (!spanElement) spanElement = document.querySelector('div#corePrice_desktop span.a-price-whole')+"."+document.querySelector('div#corePrice_desktop span.a-price-fraction');
-      return spanElement?.textContent || null;
     });
 
     const product_features = isAmazonLuxury
@@ -183,15 +241,15 @@ async function AmazonScraper(product_link, userId) {
         -1,
       description: product_description,
       features: product_features,
-      price_currency: product_price_currency ? product_price_currency : "",
+      price_currency: product_price_currency ? product_price_currency : '',
       added_by: userId,
       thumbnails: [], // UNABLE TO ADD quality thumbnails
-      blocked: blocked
+      blocked: blocked,
     };
   } catch (error) {
     console.error(error);
     await browser.close();
-    if (blocked) return { blocked }
+    if (blocked) return { blocked };
     return null;
   }
 }
@@ -413,13 +471,13 @@ async function AmazonLinkScraper(link) {
 
     const product_links = await page.evaluate(() => {
       const els = Array.from(document.querySelectorAll('a.a-link-normal.s-no-outline'));
-      return els?.map((el) => el?.href)?.filter(href => href)
+      return els?.map((el) => el?.href)?.filter((href) => href);
     });
 
     await browser.close();
 
     return {
-      product_links
+      product_links,
     };
   } catch (error) {
     console.error(error);
