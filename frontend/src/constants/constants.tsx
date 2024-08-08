@@ -132,5 +132,7 @@ export const dummyShoppingProfile: Partial<Profile> = {
   relation: 'Spouse or Significant Other',
   is_shopping_profile: true,
   title: 'Shopping Profile',
+  styles: [],
+  interests: [],
 };
 
