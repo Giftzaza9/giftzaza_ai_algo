@@ -83,7 +83,7 @@ export const ProductCard: FC<Props> = observer(({ productData, matches = [], han
             </RWebShare>
           </Box>
           {user?.role === 'admin' && <Box sx={{ cursor: 'pointer' }}>
-            <IconButton onClick={() => onDelete && onDelete(productData.id)}>
+            <IconButton onClick={() => onDelete && onDelete(productData.id || (productData?._id as string))}>
               <DeleteOutlineRounded sx={{color: 'black', height: '26xpx', width: '26xpx'}} />
             </IconButton>
           </Box>}
