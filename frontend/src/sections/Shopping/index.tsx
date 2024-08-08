@@ -1,23 +1,32 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
-import { Product } from '../../constants/types';
-import { useEffect, useState } from 'react';
+import { Product, Profile } from '../../constants/types';
+import { useCallback, useEffect, useState } from 'react';
 import { shopping, shoppingBody } from '../../services/product';
 import { loaderState } from '../../store/ShowLoader';
 import { observer } from 'mobx-react-lite';
 import { CardSwiper } from '../../lib/CardSwpierLib/components/CardSwiper';
-import { SwipeAction } from '../../constants/constants';
+import { dummyShoppingProfile, SwipeAction } from '../../constants/constants';
 import { SwipeDirection } from '../../lib/CardSwpierLib';
 import { useNavigate } from 'react-router-dom';
+import { getProfiles } from '../../services/profile';
 
 export const Shopping = observer(() => {
   const { setLoading, loading } = loaderState;
   const navigate = useNavigate();
+  const [shoppingProfile, setShoppingProfile] = useState<Partial<Profile>>({});
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(30);
+  // const [limit, setLimit] = useState<number>(30);
   const [prevProducts, setPrevProducts] = useState(new Set());
   const [prevProductsCount, setPrevProductsCount] = useState<number>(1);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await getProfiles({ is_shopping_profile: true });
+      setShoppingProfile(data?.length > 0 ? data?.[0] : dummyShoppingProfile);
+    })();
+  }, []);
 
   useEffect(() => {
     fetchShoppingProducts();
@@ -29,14 +38,13 @@ export const Shopping = observer(() => {
       setLoading(true);
       const payload: shoppingBody = {
         page,
-        limit,
+        limit: 30,
       };
       const { data, error } = await shopping(payload);
       // if (error) toast.error(error || 'Failed to shopping products !');
-      if(!error) {
+      if (!error) {
         console.log({ data });
-        if(data?.data?.length === 0)
-          setProducts([]);
+        if (data?.data?.length === 0) setProducts([]);
         else {
           setPrevProductsCount(products?.length + 1);
           setProducts((prev) => [...prev, ...data?.data?.map((item: any) => ({ ...item })).reverse()]);
@@ -48,21 +56,21 @@ export const Shopping = observer(() => {
     }
   };
 
-  const handleFinish = (status: SwipeAction) => {
+  const handleFinish = useCallback((status: SwipeAction) => {
     // if (status) setEvents((prev) => [...prev, `Finish: ${status}`]);
     // alert('Finished ');
     setPage((page) => page + 1);
-  };
+  }, []);
 
-  const handleProductAction = (direction: SwipeDirection, action: SwipeAction, currentID: string) => {
+  const handleProductAction = useCallback((direction: SwipeDirection, action: SwipeAction, currentID: string) => {
     // if (action === SwipeAction.SIMILAR) {
     //   fetchSimilarProducts(currentID);
     // } else saveUserActivity(currentID, action);
-  };
+  }, []);
 
   console.log({ products });
   return (
-    <MobileLayout>
+    <MobileLayout profile={shoppingProfile as Profile}>
       <Container
         sx={{
           display: 'flex',

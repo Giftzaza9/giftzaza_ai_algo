@@ -14,6 +14,7 @@ import { AddNewProductModal } from '../../../components/product/AddNewProductMod
 import { ScrollToTop } from '../../../components/shared/ScrollToTop';
 import { EditProductModal } from '../../../components/product/EditProductModal';
 import { PreviewModal } from '../../../components/product/PreviewModal';
+import dayjs from 'dayjs';
 
 export const AdminProducts = () => {
   const [page, setPage] = useState<number>(1);
@@ -24,8 +25,10 @@ export const AdminProducts = () => {
   const [budgetTuples, setBudgetTuples] = useState<[number, number]>([0, 1000]);
   const [hil, setHil] = useState<boolean>(false);
   const [curated, setCurated] = useState<boolean>(false);
+  const [curatedBy, setCuratedBy] = useState<string>(' ');
   const [showDeletedProducts, setShowDeletedProducts] = useState<boolean>(false);
   const [source, setSource] = useState<string[]>([]);
+  const [uploadDateRange, setUploadDateRange] = useState<[string, string]>([dayjs().format('DD-MM-YY'), dayjs().format('DD-MM-YY')]);
   const [queryString, setQueryString] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState<boolean>(false);
@@ -50,7 +53,7 @@ export const AdminProducts = () => {
       try {
         setProductsLoading(true);
         const { data } = await getProducts(qString);
-        if (data?.docs?.length > 0) {
+        if (data?.docs !== undefined) {
           setProducts((prev) => (page === 1 ? [...data.docs] : [...prev, ...data.docs]));
         }
         setHasNextPage(data?.hasNextPage);
@@ -63,27 +66,27 @@ export const AdminProducts = () => {
     [page]
   );
 
-  const removeProduct = (id: string) => {
+  const removeProduct = useCallback((id: string) => {
     setProducts((prev) => prev?.filter((p) => p?._id !== id));
-  };
+  }, []);
 
   const replaceProduct = (product: Product) => {
     setProducts((prev) => prev?.map((p) => (p?._id === product?.id ? product : p)));
   };
 
-  const handleAddNewModalClose = async () => {
+  const handleAddNewModalClose = useCallback(async () => {
     setAddNewModalOpen(false);
     await fetchProducts(`page=1&limit=${productPerPageAdmin}&sort=latest`);
-  };
+  }, [fetchProducts]);
 
-  const handleEditModalClose = async (product?: Product) => {
+  const handleEditModalClose = useCallback(async (product?: Product) => {
     setEditModalOpen(false);
     if (product) replaceProduct(product);
-  };
+  }, []);
 
-  const handlePreviewModalClose = async (product?: Product) => {
+  const handlePreviewModalClose = useCallback(async (product?: Product) => {
     setPreviewModalOpen(false);
-  };
+  }, []);
 
   useEffect(() => {
     const queryParams: string[] = [`page=${1}&limit=${productPerPageAdmin}&sort=${sort}`];
@@ -98,6 +101,11 @@ export const AdminProducts = () => {
       if (budgetTuples[1] === 1000) queryParams.push(`price_max=${Number.MAX_SAFE_INTEGER}`);
       else queryParams.push(`price_max=${budgetTuples[1]}`);
     }
+    if (dayjs(uploadDateRange[0], 'DD-MM-YY').isBefore(dayjs(uploadDateRange[1], 'DD-MM-YY'))) {
+      queryParams.push(`uploaded_from=${uploadDateRange[0]}&uploaded_until=${uploadDateRange[1]}`);
+    }
+    if (curatedBy?.trim()) queryParams.push(`curated_by=${curatedBy}`);
+
     const newQueryString = queryParams.join('&');
     if (newQueryString !== queryString) {
       setProducts([]);
@@ -105,7 +113,7 @@ export const AdminProducts = () => {
       setQueryString(newQueryString);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil, source, curated]);
+  }, [filters, sort, searchDebounced, budgetTuples, showDeletedProducts, hil, source, curated, curatedBy, uploadDateRange]);
 
   useEffect(() => {
     if (page > 1) {
@@ -171,6 +179,10 @@ export const AdminProducts = () => {
             setShowDeletedProducts={setShowDeletedProducts}
             curated={curated}
             setCurated={setCurated}
+            curatedBy={curatedBy}
+            setCuratedBy={setCuratedBy}
+            uploadDateRange={uploadDateRange}
+            setUploadDateRange={setUploadDateRange}
           />
         </Grid>
 
@@ -225,16 +237,16 @@ export const AdminProducts = () => {
               sm={6}
               md={4}
               lg={3}
-              key={product?._id}
+              key={product?._id || product?.id}
               onClick={() => {
-                setPreviewProduct(product);
-                setPreviewModalOpen(true);
+                setEditModalOpen(true);
+                setEditProduct(product);
               }}
               sx={{ cursor: 'pointer' }}
             >
               <ProductCard
-                setEditProduct={setEditProduct}
-                setEditModalOpen={setEditModalOpen}
+                setPreviewModalOpen={setPreviewModalOpen}
+                setPreviewProduct={setPreviewProduct}
                 removeProduct={removeProduct}
                 product={product}
                 isAdminView

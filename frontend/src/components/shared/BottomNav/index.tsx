@@ -15,7 +15,7 @@ const bottomNavStyles = {
   bottom: 0,
   width: '100%',
   zIndex: 1000,
-  height: isIPhoneAndPWA() ? '60px' : '46px',
+  height: isIPhoneAndPWA() ? '66px' : '52px',
   pb: isIPhoneAndPWA() ? '14px' : '0px',
   backgroundColor: theme.palette.secondary.main,
   '& .MuiBottomNavigationAction-root.Mui-selected': { color: 'rgba(221, 110, 63, 1)' },

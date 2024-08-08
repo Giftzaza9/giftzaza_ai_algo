@@ -3,16 +3,17 @@ import { ApiResponse } from '../constants/types';
 import axiosInstance from './axiosInstance';
 
 export interface CreateProfileBody {
-  styles: string[];
-  interests: string[];
-  title: string;
   relation: string;
   age: string;
   gender: string;
-  occasion: string;
-  occasion_date: string;
-  min_price: number;
-  max_price: number;
+  title?: string;
+  styles?: string[];
+  interests?: string[];
+  occasion?: string;
+  occasion_date?: string;
+  min_price?: number;
+  max_price?: number;
+  is_shopping_profile?: boolean;
 }
 
 export const createProfile = async (payload: CreateProfileBody): Promise<ApiResponse> => {
@@ -33,9 +34,10 @@ export const getProfile = async (profileId?: string): Promise<ApiResponse> => {
   }
 };
 
-export const getProfiles = async (): Promise<ApiResponse> => {
+export const getProfiles = async (payload?: { is_shopping_profile?: boolean }): Promise<ApiResponse> => {
   try {
-    const { data, status } = await axiosInstance.get(`/profiles`);
+    const { is_shopping_profile } = payload || {};
+    const { data, status } = await axiosInstance.get(`/profiles?is_shopping_profile=${!!is_shopping_profile}`);
     return { data, status, error: null };
   } catch (error) {
     return generateErrorMessage(error);
@@ -46,12 +48,12 @@ export interface UpdateProfileBody {
   age: string;
   gender: string;
   relation: string;
-  occasion: string;
+  occasion?: string;
   occasion_date?: string;
-  min_price: number;
-  max_price: number;
-  styles: string[];
-  interests: string[];
+  min_price?: number;
+  max_price?: number;
+  styles?: string[];
+  interests?: string[];
 }
 
 export const updateProfile = async (profileId: string, body: UpdateProfileBody): Promise<ApiResponse> => {

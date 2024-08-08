@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const mongoose = require('mongoose');
-const { Product, AnalysisProduct } = require('../models');
+const { Product, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { scrapeProduct, AmazonLinkScraper } = require('../lib/scrapeProduct');
 const GPTbasedTagging = require('../lib/GPTbasedTagging');
@@ -9,7 +9,11 @@ const axiosInstance = require('../utils/axiosInstance');
 const { getRecommendedProducts } = require('../services/profile.service');
 const userActivity = require('../models/useractivity.model');
 const fs = require('fs').promises;
+const dayjs = require('dayjs');
+const customParseFormat = require('dayjs/plugin/customParseFormat');
+dayjs.extend(customParseFormat);
 
+const toDate = (inp) => dayjs(inp, 'DD-MM-YY', true).toDate();
 
 /**
  * Query for products
@@ -17,7 +21,23 @@ const fs = require('fs').promises;
  * @returns {Promise<QueryResult>}
  */
 const queryProducts = async (queryObject) => {
-  const { sort, search = '', filter = '', page = 1, limit = 12, price_min, price_max, hil, curated, is_active, source = '' } = queryObject;
+  const {
+    sort,
+    search = '',
+    filter = '',
+    page = 1,
+    limit = 12,
+    price_min,
+    price_max,
+    hil,
+    curated,
+    is_active,
+    source = '',
+    curated_by,
+    uploaded_from,
+    uploaded_until,
+  } = queryObject;
+
   let filterObject = {
     is_active: true,
     // hil: true,
@@ -53,16 +73,31 @@ const queryProducts = async (queryObject) => {
         optionsObject.sort = { createdAt: -1 };
     }
   }
+
   if (typeof price_min === 'number' && typeof price_max === 'number')
     filterObject = { ...filterObject, $and: [{ price: { $gte: price_min } }, { price: { $lte: price_max } }] };
   else if (typeof price_min === 'number') filterObject.price = { $gte: price_min };
   else if (typeof price_max === 'number') filterObject.price = { $lte: price_max };
+
+  if (typeof uploaded_from === 'string' && typeof uploaded_until === 'string')
+    filterObject = {
+      ...filterObject,
+      createdAt: { $gte: toDate(uploaded_from), $lte: toDate(uploaded_until) },
+    };
+
   if (typeof hil === 'boolean') filterObject.hil = hil;
   if (typeof curated === 'boolean' && curated) filterObject.curated = curated;
+  if (typeof curated_by === 'string' && curated_by) filterObject.curated_by = new mongoose.Types.ObjectId(curated_by);
   if (typeof is_active === 'boolean') filterObject.is_active = is_active;
   if (search) filterObject.title = { $regex: new RegExp(search, 'i') };
   if (filter) filterObject.tags = { $all: filter?.split(',')?.map((el) => (el?.trim() === '65' ? '65 +' : el)) };
-  if (source && source?.split(',')?.length == 1) filterObject.source = (source?.split(',')?.[0]?.toLowerCase()) === "bloomingdales" ? {$in: ['bloomingdales', 'bloomingdale']} : source?.split(',')?.[0]?.toLowerCase();
+  if (source && source?.split(',')?.length == 1)
+    filterObject.source =
+      source?.split(',')?.[0]?.toLowerCase() === 'bloomingdales'
+        ? { $in: ['bloomingdales', 'bloomingdale'] }
+        : source?.split(',')?.[0]?.toLowerCase();
+
+  console.log(filterObject);
 
   const [total, products] = await Promise.all([
     Product.count(filterObject),
@@ -89,6 +124,19 @@ const queryProducts = async (queryObject) => {
               },
             },
           },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'curated_by',
+          foreignField: '_id',
+          as: 'curator',
+        },
+      },
+      {
+        $addFields: {
+          curator: { $arrayElemAt: ['$curator', 0] },
         },
       },
       {
@@ -180,17 +228,19 @@ const getMoreProducts = async (productBody) => {
     ...rest,
     new_attributes: preferences,
   };
-  console.log({payload});
+  console.log({ payload });
   return await getRecommendedProducts(payload)
     .then(async (res) => {
-            const objectIds = convertToObjectId(res);
-            // console.log("OBJECT ID AFTER REC ", objectIds);
-            const products = await Product.find({ _id: { $in: objectIds } });
-            // console.log("PRODUCTS AFTER RECOMMENDATION ", products);
-            const products_detail = objectIds?.map((obj) => {
-        const productDetails = products.find((product) => product._id == obj?.item_id);
-        return { ...obj, item_id: productDetails };
-      }).filter((item) => item.item_id);
+      const objectIds = convertToObjectId(res);
+      // console.log("OBJECT ID AFTER REC ", objectIds);
+      const products = await Product.find({ _id: { $in: objectIds } });
+      // console.log("PRODUCTS AFTER RECOMMENDATION ", products);
+      const products_detail = objectIds
+        ?.map((obj) => {
+          const productDetails = products.find((product) => product._id == obj?.item_id);
+          return { ...obj, item_id: productDetails };
+        })
+        .filter((item) => item.item_id);
       return products_detail;
     })
     .catch((error) => {
@@ -206,7 +256,8 @@ const getMoreProducts = async (productBody) => {
  */
 const startShopping = async (payload) => {
   const { page, limit } = payload;
-  const products = await userActivity.aggregate([
+
+  const productsPromise = userActivity.aggregate([
     {
       $group: {
         _id: '$product_id',
@@ -248,8 +299,11 @@ const startShopping = async (payload) => {
     },
   ]);
 
-  const productsData = products.map((item) => item.product[0]).filter((item) => item);
-  const totalRows = await userActivity.aggregate([{ $group: { _id: '$product_id', totalRows: { $sum: 1 } } }]);
+  const countPromise = userActivity.aggregate([{ $group: { _id: '$product_id', totalRows: { $sum: 1 } } }]);
+
+  const [products, totalRows] = await Promise.all([productsPromise, countPromise]);
+
+  const productsData = products?.map((item) => item.product[0])?.filter((item) => item);
 
   const result = {
     row: productsData.length,
@@ -292,7 +346,7 @@ const similarProducts = async (productBody) => {
  * @returns {Promise<Product>}
  */
 const createProduct = async (productBody) => {
-  const { product_id, tags, curated } = productBody;
+  const { product_id, tags, curated, user_id } = productBody;
 
   let product = await Product.findById(product_id);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found !');
@@ -302,6 +356,7 @@ const createProduct = async (productBody) => {
     {
       tags: tags,
       curated: !!curated,
+      curated_by: curated ? user_id : null,
       hil: true,
     },
     { new: true, useFindAndModify: false }
@@ -323,19 +378,24 @@ const createProduct = async (productBody) => {
  * @returns {Promise<Product>}
  */
 const updateProductById = async (productId, updateBody) => {
-  const { tags, curated, scrape } = updateBody;
-  const product = await Product.findById(productId);
+  const { tags, curated, scrape, user_id } = updateBody;
+  let product = await Product.findById(productId);
   if (!product) throw new ApiError(httpStatus.NOT_FOUND, 'Product not found');
 
   // From User
   product.tags = tags;
-  if (curated !== undefined) product.curated = !!curated;
+  if (curated !== undefined) {
+    product.curated = !!curated;
+    product.curated_by = curated ? user_id : null;
+  }
   product.hil = true;
 
   // From scraping
   if (scrape) {
-    const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(product.link);
-    console.log({ title, price, image, link, rating, description, thumbnails, price_currency, features })
+    const { title, price, image, link, rating, description, thumbnails, price_currency, features } = await scrapeProduct(
+      product.link
+    );
+    console.log({ title, price, image, link, rating, description, thumbnails, price_currency, features });
     product.title = title;
     product.price = price;
     product.image = image;
@@ -346,8 +406,13 @@ const updateProductById = async (productId, updateBody) => {
     product.link = link;
     product.price_currency = price_currency;
   }
-  console.log("UPDATE ", product)
+  console.log('UPDATE ', product);
   await product.save();
+
+  if (product?.curated_by !== undefined) {
+    const curator = await User.findById(new mongoose.Types.ObjectId(product.curated_by));
+    product = Object.assign(product.toJSON(), { curator, _id: product?._id || product?.id });
+  }
 
   try {
     axiosInstance.post(`/model_retrain`, {});
@@ -383,7 +448,6 @@ const deleteProductById = async (productId) => {
  */
 // For bulk scrape products and upload to mongoDB products collection at once to avoid multiple db writes
 const createAnalysisProduct = async (productBody) => {
-
   const scraped = [];
   let failures = {};
 
@@ -413,14 +477,16 @@ const createAnalysisProduct = async (productBody) => {
         failures.notFound.push(link);
         continue;
       }
-      const gptdata = await GPTbasedTagging(product_data.description || product_data.features.join('. '),
-      product_data.title);
+      const gptdata = await GPTbasedTagging(
+        product_data.description || product_data.features.join('. '),
+        product_data.title
+      );
       if (!gptdata.preferenceData.length) {
         console.log(`${count}/${productBody.product_links?.length} failed, link: ${link} >>> preference data is not available`);
         failures.gptFault = failures.gptFault || [];
         failures.gptFault.push(link);
         continue;
-      };
+      }
       product_data.tags = gptdata.preferenceData;
       product_data.gptTagging = gptdata.JSON_response;
       product_data.curated = false;
@@ -444,28 +510,28 @@ const createAnalysisProduct = async (productBody) => {
     console.log(`Completed scraping: ${productBody.product_links?.length} links`);
     return {
       scrapedLinks,
-      failures
-    }
+      failures,
+    };
   } catch (error) {
     console.error(error);
-  } 
+  }
   // finally {
   //   const jsonData = JSON.stringify(scraped, null, 2);
   //   await fs.writeFile('output.json', jsonData, 'utf8');
   // }
-}
+};
 
 const bulkRescrape = async (condition) => {
-  console.log('🚀 ~ bulkRescrape ~ condition:', condition)
+  console.log('🚀 ~ bulkRescrape ~ condition:', condition);
   const added = [];
   let failures = {};
   const products = await Product.find(condition);
   if (!products.length) throw new Error('No products found !');
 
   const sleepy = (delay) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
+    new Promise((resolve) => {
+      setTimeout(resolve, delay);
+    });
 
   let idx = 1;
 

@@ -3,13 +3,14 @@ const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const userValidation = require('../../validations/user.validation');
 const userController = require('../../controllers/user.controller');
+const { rightsEnum } = require('../../config/roles');
 
 const router = express.Router();
 
-// router
-//   .route('/')
+router
+  .route('/')
 //   .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
-//   .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers);
+  .get(auth(rightsEnum.GET_USERS), validate(userValidation.getUsers), userController.getUsers);
 
 // router
 //   .route('/:userId')

@@ -1,4 +1,4 @@
-import { generateErrorMessage } from '../utils/helperFunctions';
+import { generateErrorMessage, isInterestIncluded } from '../utils/helperFunctions';
 import { ApiResponse } from '../constants/types';
 import axiosInstance from './axiosInstance';
 
@@ -34,6 +34,8 @@ export interface moreProductBody {
 
 export const moreProducts = async (payload: moreProductBody): Promise<ApiResponse> => {
   try {
+    if (payload.semi_hard_filters?.length)
+      payload.semi_hard_filters = isInterestIncluded(payload?.preferences || []) ? ['interest'] : [];
     const { data, status } = await axiosInstance.post(`/products/more-products`, payload);
     return { data, status, error: null };
   } catch (error) {

@@ -1,9 +1,11 @@
 import { isAxiosError } from 'axios';
-import { ApiResponse } from '../constants/types';
+import { ApiResponse, BudgetMap } from '../constants/types';
 import { decodeToken } from './decodeToken';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { createErrorLog } from '../services/error';
+import { CreateProfileBody } from '../services/profile';
+import { filterObject } from '../constants/constants';
 
 export const generateErrorMessage = async (error: Error | unknown): Promise<ApiResponse> => {
   let message: string = '';
@@ -113,3 +115,47 @@ export const isIPhoneAndPWA = () => {
 };
 
 export const getVH = (vH: number) => `calc(var(--vh) * ${vH})`;
+
+export const profilePayloadCleaner = (payload: CreateProfileBody) => {
+  for (const key in payload) {
+    if (key === 'title' && !payload[key]) {
+      payload[key] = `Gift for ${payload.relation}`;
+    } else if (!payload?.[key as keyof CreateProfileBody]) {
+      payload[key as keyof CreateProfileBody] = undefined as never;
+    }
+  }
+  return payload;
+};
+
+export function generateBudgetMap(budget: any): BudgetMap {
+  const budgetMap: BudgetMap = {};
+
+  for (let i = 0; i < budget?.length; i++) {
+    const category = budget[i];
+    const range = category.split('-');
+
+    if (range?.length === 1) {
+      // Handle "< $200" and "$200+" cases
+      const max = range[0].includes('<') ? parseInt(range[0].slice(3)) : parseInt(range[0].slice(1));
+      budgetMap[category] = { min: 0, max: max };
+    } else {
+      // Handle "$200-$400" to "$1000-$2000" cases
+      const min = parseInt(range[0].slice(1));
+      const max = parseInt(range[1].slice(1));
+      budgetMap[category] = { min: min, max: max };
+    }
+  }
+
+  // Add infinite max value for the last category
+  const lastCategory = budget[budget?.length - 1];
+  const lastMax = lastCategory.includes('+') ? Number.MAX_SAFE_INTEGER : parseInt(lastCategory.split('-')[1]);
+  budgetMap[lastCategory] = { min: parseInt(lastCategory.split('-')[0].slice(1)), max: lastMax };
+
+  return budgetMap;
+}
+
+
+export const isInterestIncluded = (preferences: string[]): boolean => {
+ return filterObject.interest.some((interest) => preferences?.map(el => el.toLowerCase()).includes(interest?.toLowerCase()));
+
+}

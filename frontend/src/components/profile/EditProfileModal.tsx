@@ -3,14 +3,18 @@ import { FC, PropsWithChildren, forwardRef, useEffect, useState } from 'react';
 import { theme } from '../../utils/theme';
 import { ArrowBackIos } from '@mui/icons-material';
 import { MobileSingleSelectChip } from '../shared/MobileSingleSelectChip';
-import { budgetMap, filterObject } from '../../constants/constants';
+import { budgetMap, filterObject, relationShipMap } from '../../constants/constants';
 import { MobileMultiSelectChip } from '../shared/MobileMultiSelectChip';
 import { Profile } from '../../constants/types';
 import _ from 'lodash';
-import { updateProfile } from '../../services/profile';
+import { createProfile, updateProfile, UpdateProfileBody } from '../../services/profile';
 import { toast } from 'react-toastify';
 import { TransitionProps } from '@mui/material/transitions';
 import { forwardButtonStyle } from '../../sections/Profiles/styles';
+import { profilePayloadCleaner } from '../../utils/helperFunctions';
+import { useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import { loaderState } from '../../store/ShowLoader';
 
 interface _Props extends PropsWithChildren {
   title: string;
@@ -70,7 +74,9 @@ interface Props {
   profile: Profile;
 }
 
-export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
+export const EditProfileModal: FC<Props> = observer(({ onClose, open, profile }) => {
+  const { setLoading } = loaderState;
+  const navigate = useNavigate();
   const [title, setTitle] = useState<string>(profile?.title);
   const [age, setAge] = useState<string>(profile?.age);
   const [gender, setGender] = useState<string>(profile?.gender);
@@ -104,27 +110,38 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
   };
 
   const handleDone = async () => {
+    setLoading(true);
     try {
-      const { error } = await updateProfile(profile?.id, {
+      const payload = profilePayloadCleaner({
         age,
         gender,
         relation,
         occasion,
-        min_price: minPrice,
-        max_price: maxPrice,
+        min_price: minPrice || undefined,
+        max_price: maxPrice || undefined,
         styles,
         interests,
         title,
+        is_shopping_profile: profile?.is_shopping_profile,
       });
+
+      const { error, data } = !profile?.id
+        ? await createProfile(payload)
+        : await updateProfile(profile?.id, payload as UpdateProfileBody);
 
       if (error) {
         console.error(error);
-      } else {
+      } else if (profile.id && !profile.is_shopping_profile) {
         toast.success('Profile updated successfully !');
+      } else if (!profile.id && profile.is_shopping_profile && data) {
+        setLoading(false);
+        navigate(`/profiles/${data?.id}`)
       }
 
       onClose(true);
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.error(error);
     }
   };
@@ -242,7 +259,7 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
                         color: 'rgba(107, 60, 102, 1)',
                       }}
                     >
-                      {relation}
+                      {_.findKey(relationShipMap, { relation, gender }) || ''}
                     </Typography>
                   </InputAdornment>
                 ),
@@ -250,33 +267,21 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
             />
           </EditProfileInputWrapper>
 
-          <EditProfileInputWrapper title="Relationship">
+          <EditProfileInputWrapper title="Relationship*">
             <MobileSingleSelectChip
               greyText
               small
-              title={'relationship'}
-              items={filterObject.relationship}
-              selectedTag={relation}
+              title={'relation'}
+              items={Object.keys(relationShipMap)}
+              selectedTag={_.findKey(relationShipMap, { relation, gender }) || ''}
               handleSelect={(label: string, val: string) => {
-                setRelation(val);
+                setGender(relationShipMap?.[val as keyof typeof relationShipMap]?.gender);
+                setRelation(relationShipMap?.[val as keyof typeof relationShipMap]?.relation);
               }}
             />
           </EditProfileInputWrapper>
 
-          <EditProfileInputWrapper title="Gender">
-            <MobileSingleSelectChip
-              greyText
-              small
-              title={'gender'}
-              items={[...filterObject.gender]}
-              selectedTag={gender}
-              handleSelect={(label: string, val: string) => {
-                setGender(val);
-              }}
-            />
-          </EditProfileInputWrapper>
-
-          <EditProfileInputWrapper title="Age">
+          <EditProfileInputWrapper title="Age*">
             <MobileSingleSelectChip
               greyText
               small
@@ -338,4 +343,4 @@ export const EditProfileModal: FC<Props> = ({ onClose, open, profile }) => {
       </Grid>
     </Dialog>
   );
-};
+});

@@ -1,10 +1,10 @@
-import { AccessTimeFilled, Delete } from '@mui/icons-material';
+import { Delete } from '@mui/icons-material';
 import { Grid, Stack, Box, Typography, IconButton } from '@mui/material';
 import { EditProfile } from '../shared/Icons/EditProfile';
 import { Profile } from '../../constants/types';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { comingUpOn, daysRemaining } from '../../utils/helperFunctions';
+import { comingUpOn } from '../../utils/helperFunctions';
 
 interface Props {
   profile: Profile;
@@ -55,27 +55,6 @@ export const ProfileCard: FC<Props> = ({ profile, onEditProfile, onDeleteProfile
       >
         {/* Header */}
         <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-          {/* <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '2px',
-              borderRadius: '67px',
-              bgcolor: '#D54747',
-              p: '2px 6px',
-            }}
-            display={'inline-flex'}
-            alignItems={'center'}
-          >
-            <AccessTimeFilled sx={{ color: 'white', fontSize: '12px' }} />
-            <Typography
-              variant="caption"
-              sx={{ color: 'white', fontSize: '8px', fontFamily: 'Inter', lineHeight: '16px', fontWeight: 600 }}
-            >
-              {daysRemaining(profile?.occasion_date)}
-            </Typography>
-          </Box> */}
-
           <Stack flexDirection={'row'} gap={'4px'}>
             <IconButton
               sx={{ bgcolor: '#F7E38D' }}
@@ -127,7 +106,7 @@ export const ProfileCard: FC<Props> = ({ profile, onEditProfile, onDeleteProfile
             variant="subtitle1"
             sx={{ color: 'white', fontSize: '10px', fontFamily: 'Inter', lineHeight: '16px', fontWeight: 700 }}
           >
-            {comingUpOn(profile?.occasion_date)}
+            {profile?.occasion_date ? comingUpOn(profile?.occasion_date) : ''}
           </Typography>
         </Box>
       </Stack>

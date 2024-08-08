@@ -18,22 +18,21 @@ import { getCurrencySymbol } from '../../utils/helperFunctions';
 import { deleteProduct } from '../../services/product';
 import { getSwalConfirmation } from '../../utils/swalConfirm';
 import { filterObject } from '../../constants/constants';
-import { EditDocumentIcon } from '../shared/Icons/EditDocumentIcon';
 import { DeleteIcon } from '../shared/Icons/DeleteIcon';
 import _ from 'lodash';
 import { Amazon } from '../shared/Icons/Amazon';
 import { Bloomingdales } from '../shared/Icons/Bloomingdales';
-import { Verified } from '@mui/icons-material';
+import { RemoveRedEyeOutlined, Verified } from '@mui/icons-material';
 
 interface Props {
   product: Product;
   isAdminView?: boolean;
   removeProduct: (id: string) => void;
-  setEditProduct: Dispatch<SetStateAction<Product | undefined>>;
-  setEditModalOpen: Dispatch<SetStateAction<boolean>>;
+  setPreviewProduct: Dispatch<SetStateAction<Product | undefined>>;
+  setPreviewModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, setEditProduct, setEditModalOpen }) => {
+export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, setPreviewProduct, setPreviewModalOpen }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const showTags: string[] = [];
@@ -65,7 +64,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
       }}
       sx={{
         position: 'relative',
-        height: isAdminView ? '480px' : '518px',
+        height: isAdminView ? '512px' : '518px',
         border: '1px solid rgba(233, 218, 241, 1)',
         borderRadius: '16px',
         padding: 2,
@@ -79,11 +78,11 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
               <IconButton
                 onClick={(e) => {
                   e.stopPropagation();
-                  setEditModalOpen(true);
-                  setEditProduct(product);
+                  setPreviewModalOpen(true);
+                  setPreviewProduct(product);
                 }}
               >
-                <EditDocumentIcon />
+                <RemoveRedEyeOutlined color="primary" />
               </IconButton>
               <IconButton
                 onClick={(e) => {
@@ -162,20 +161,74 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
         <Stack gap={'16px'}>
           {/* TOP-CHIPS */}
 
-          {/* Title */}
-          {product?.title !== undefined && product?.title?.length > 50 ? (
-            <Tooltip
-              title={product?.title}
-              TransitionComponent={Fade}
-              TransitionProps={{ timeout: 600 }}
-              followCursor
-              children={
+          <Stack gap={'8px'}>
+            {/* Title */}
+            {product?.title !== undefined && product?.title?.length > 50 ? (
+              <Tooltip
+                title={product?.title}
+                TransitionComponent={Fade}
+                TransitionProps={{ timeout: 600 }}
+                followCursor
+                children={
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: 'rgba(43, 50, 59, 1)',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      lineHeight: '20px',
+                      fontFamily: 'Manrope',
+                      overflow: 'hidden',
+                      maxWidth: '100%',
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: 2,
+                    }}
+                  >
+                    {product?.title}
+                  </Typography>
+                }
+              />
+            ) : (
+              <Typography
+                variant="h6"
+                sx={{
+                  color: 'rgba(43, 50, 59, 1)',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  lineHeight: '20px',
+                  fontFamily: 'Manrope',
+                  overflow: 'hidden',
+                  maxWidth: '100%',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 2,
+                }}
+              >
+                {product?.title}
+              </Typography>
+            )}
+
+            {product?.curated && product?.curator && (
+              <Grid container justifyContent="flex-start" alignItems="center" gap="6px">
                 <Typography
-                  variant="h6"
+                  fontWeight={500}
+                  sx={{
+                    color: 'rgba(168, 108, 198, 1)',
+                    display: 'inline-flex',
+                    fontSize: '12px',
+                    textAlign: 'center',
+                  }}
+                >
+                  Curated by:
+                </Typography>
+                <Typography
+                  variant="subtitle1"
+                  component="span"
                   sx={{
                     color: 'rgba(43, 50, 59, 1)',
                     fontSize: '14px',
-                    fontWeight: 500,
+                    fontWeight: 600,
                     lineHeight: '20px',
                     fontFamily: 'Manrope',
                     overflow: 'hidden',
@@ -185,29 +238,11 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
                     WebkitLineClamp: 2,
                   }}
                 >
-                  {product?.title}
+                  {product?.curator?.name}
                 </Typography>
-              }
-            />
-          ) : (
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'rgba(43, 50, 59, 1)',
-                fontSize: '14px',
-                fontWeight: 500,
-                lineHeight: '20px',
-                fontFamily: 'Manrope',
-                overflow: 'hidden',
-                maxWidth: '100%',
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 2,
-              }}
-            >
-              {product?.title}
-            </Typography>
-          )}
+              </Grid>
+            )}
+          </Stack>
 
           {/* PRICE + RATING */}
           <Grid container direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
@@ -237,7 +272,7 @@ export const ProductCard: FC<Props> = ({ product, isAdminView, removeProduct, se
 
           <Grid container gap={1} height={'56px'}>
             {showTags.map((tag) => (
-              <Grid item>
+              <Grid item key={tag}>
                 <Chip
                   size="small"
                   label={
