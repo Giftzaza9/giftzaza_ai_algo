@@ -498,7 +498,14 @@ export const CreateProfile = observer(() => {
             sx={animationStyle}
           >
             <Typography sx={{ fontSize: '32px', fontFamily: 'DM Serif Display', fontWeight: '400', mb: 1 }}>
-              Giftzaza recommendations are being generated
+              {`I'm finding the gifts ${
+                profileData?.relation
+                  ? `for your ${_.findKey(relationShipMap, {
+                      relation: profileData?.relation,
+                      gender: profileData?.gender,
+                    })}`
+                  : ''
+              }`}
             </Typography>
             <CircularProgress
               sx={{
