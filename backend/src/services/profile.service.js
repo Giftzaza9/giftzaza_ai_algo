@@ -65,13 +65,18 @@ const createProfile = async (profileBody) => {
 
   profileBody.profile_preferences = profile_preferences;
   profileBody.preferences = preferences;
+
+  const semi_hard_filters = [];
+  if (profileBody.styles?.length) semi_hard_filters.push('style');
+  if (profileBody.interests?.length) semi_hard_filters.push('interest');
+  
   const payload = {
     user_id: profileBody?.user_id,
     new_attributes: profileBody?.interests?.length ? preferences : [...preferences, 'spirituality'],
     top_n: 10,
     min_price: profileBody?.min_price,
     max_price: profileBody?.max_price,
-    semi_hard_filters: [],
+    semi_hard_filters: semi_hard_filters,
   };
   try {
     profileBody.recommended_products = await getRecommendedProducts(payload);
@@ -118,6 +123,11 @@ const updateProfile = async (profileBody, profileId) => {
 
   profileBody.profile_preferences = profile_preferences;
   profileBody.preferences = preferences;
+
+  const semi_hard_filters = [];
+  if (profileBody.styles?.length) semi_hard_filters.push('style');
+  if (profileBody.interests?.length) semi_hard_filters.push('interest');
+
   const payload = {
     user_id: profileBody?.user_id,
     new_attributes: profileBody?.interests?.length ? preferences : [...preferences, 'spirituality'],
