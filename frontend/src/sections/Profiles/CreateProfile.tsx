@@ -10,6 +10,7 @@ import {
   CircularProgress,
   Button,
   useMediaQuery,
+  Stack,
 } from '@mui/material';
 import { MobileLayout } from '../../components/shared/MobileLayout';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -67,26 +68,26 @@ export const CreateProfile = observer(() => {
     handleCreateProfileData('interests', interests, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interests?.length]);
-  
+
   const handleShoppingClick = async () => {
     setLoading(true);
     try {
-      const { data } = await getProfiles({is_shopping_profile: true})
+      const { data } = await getProfiles({ is_shopping_profile: true });
       if (data?.length > 0) navigate(`/profiles/${data?.[0]?.id}`);
-      else navigate('/shopping')
+      else navigate('/shopping');
     } catch (error) {
       console.log(error);
-      navigate('/shopping')
+      navigate('/shopping');
     }
     setLoading(false);
-  }
+  };
 
   const handleStarted = (val: string) => {
     if (val === landingChips.view) {
       navigate('/profiles');
-    } else if (val === landingChips.forHusband) {
+    } else if (val === landingChips.forWife) {
       handleCreateProfileData('title', val, 0);
-      handleCreateProfileData('gender', 'male', 0);
+      handleCreateProfileData('gender', 'female', 0);
       handleCreateProfileData('relation', 'Spouse or Significant Other', Steps.AGE);
     } else if (val === landingChips.forMom) {
       handleCreateProfileData('title', val, 0);
@@ -111,41 +112,44 @@ export const CreateProfile = observer(() => {
     }
   }, [navigate, profileData]);
 
-  const handleArrows = useCallback((val: number) => {
-    if (page === Steps.RELATION && val === 1 && !profileData?.relation && !profileData?.gender) {
-      toast.warn('Please select relation !');
-      return;
-    } else if (page === Steps.AGE && val === 1 && !profileData?.age) {
-      toast.warn('Please select the age-range !');
-      return;
-    }
-    // } else if (page === Steps.NAME && val === 1 && !profileData?.title) {
-    //   toast.warn('Please add a name !');
-    //   return;
-    // } else if (page === Steps.OCCASION && val === 1 && !profileData?.occasion_date) {
-    //   toast.warn('Please select an occasion !');
-    //   return;
-    // } else if (page === Steps.DATE && val === 1 && !profileData?.age) {
-    //   toast.warn('Please select an date for the occasion!');
-    //   return;
-    // } else if (page === Steps.BUDGET && val === 1 && !profileData?.budget) {
-    //   toast.warn('Please select budget !');
-    //   return;
-    // } else if (page === Steps.STYLE && val === 1 && (profileData?.styles?.length as number) <= 0) {
-    //   toast.warn('Please select styles !');
-    //   return;
-    // } else if (page === Steps.INTEREST && val === 1 && (profileData?.interests?.length as number) <= 0) {
-    //   toast.warn('Please select interests !');
-    //   return;
-    // }
+  const handleArrows = useCallback(
+    (val: number) => {
+      if (page === Steps.RELATION && val === 1 && !profileData?.relation && !profileData?.gender) {
+        toast.warn('Please select relation !');
+        return;
+      } else if (page === Steps.AGE && val === 1 && !profileData?.age) {
+        toast.warn('Please select the age-range !');
+        return;
+      }
+      // } else if (page === Steps.NAME && val === 1 && !profileData?.title) {
+      //   toast.warn('Please add a name !');
+      //   return;
+      // } else if (page === Steps.OCCASION && val === 1 && !profileData?.occasion_date) {
+      //   toast.warn('Please select an occasion !');
+      //   return;
+      // } else if (page === Steps.DATE && val === 1 && !profileData?.age) {
+      //   toast.warn('Please select an date for the occasion!');
+      //   return;
+      // } else if (page === Steps.BUDGET && val === 1 && !profileData?.budget) {
+      //   toast.warn('Please select budget !');
+      //   return;
+      // } else if (page === Steps.STYLE && val === 1 && (profileData?.styles?.length as number) <= 0) {
+      //   toast.warn('Please select styles !');
+      //   return;
+      // } else if (page === Steps.INTEREST && val === 1 && (profileData?.interests?.length as number) <= 0) {
+      //   toast.warn('Please select interests !');
+      //   return;
+      // }
 
-    if (page === Steps.INTEREST && val === 1) {
-      console.log({ profileData });
-      handleCreateProfile();
-      return;
-    }
-    setPage((prev) => prev + val);
-  }, [handleCreateProfile, page, profileData]);
+      if (page === Steps.INTEREST && val === 1) {
+        console.log({ profileData });
+        handleCreateProfile();
+        return;
+      }
+      setPage((prev) => prev + val);
+    },
+    [handleCreateProfile, page, profileData]
+  );
 
   const handleSingleSelect = useCallback(
     (label: keyof CreateProfileBody, val: string) => {
@@ -200,9 +204,30 @@ export const CreateProfile = observer(() => {
                   }}
                   onClick={() => handleArrows(-1)}
                 />
-                <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '500' }}>
-                  Step {page}/{Steps.END - 1}
-                </Typography>
+                <Stack direction="row" gap={1.5} alignItems="center">
+                  <Typography sx={{ fontSize: '16px', fontFamily: 'Inter', fontWeight: '500' }}>
+                    Step {page}/{Steps.END - 1}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    disabled={page === Steps.RELATION || page === Steps.AGE}
+                    size="small"
+                    endIcon={<SkipNextOutlined />}
+                    sx={{ padding: '4px 12px!important' }}
+                    onClick={handleSkip}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: '14px',
+                        fontFamily: 'Inter',
+                        fontWeight: 500,
+                        textTransform: 'none',
+                      }}
+                    >
+                      Skip
+                    </Typography>
+                  </Button>
+                </Stack>
                 {page === Steps.END ? (
                   <Button variant="contained" sx={forwardButtonStyle} onClick={() => handleArrows(1)}>
                     <Typography
@@ -228,40 +253,6 @@ export const CreateProfile = observer(() => {
                 )}
               </Box>
             </Grid>
-
-            {page !== Steps.END && page !== Steps.LANDING && (
-              <Grid
-                container
-                position={'absolute'}
-                width={'95%'}
-                zIndex={10}
-                // bgcolor={theme.palette.secondary.main}
-                alignSelf={'center'}
-                justifyContent="center"
-                alignItems="center"
-                top={'48px'}
-              >
-                <Button
-                  variant="contained"
-                  disabled={page === Steps.RELATION || page === Steps.AGE}
-                  size="small"
-                  endIcon={<SkipNextOutlined />}
-                  sx={{ padding: '4px 12px!important' }}
-                  onClick={handleSkip}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: '14px',
-                      fontFamily: 'Inter',
-                      fontWeight: 500,
-                      textTransform: 'none',
-                    }}
-                  >
-                    Skip
-                  </Typography>
-                </Button>
-              </Grid>
-            )}
           </>
         )}
 
