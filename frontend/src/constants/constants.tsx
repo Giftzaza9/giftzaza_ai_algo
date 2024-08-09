@@ -53,7 +53,7 @@ export const addNewProductSteps = ['Link', 'Product Info', 'Preview'];
 export const bottomNavHidePaths = ['welcome', 'login', 'admin'];
 
 export const landingChips = {
-  forHusband: 'Gifts for husband',
+  forWife: 'Gifts for wife',
   forMom: 'Gifts for mom',
   createNew: 'Create a new giftee profile',
   view: 'View existing giftee profiles',
