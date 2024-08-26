@@ -4,6 +4,7 @@ const ApiError = require('../utils/ApiError');
 const calculateSimilarity = require('../lib/calculateSimilarity');
 const axiosInstance = require('../utils/axiosInstance');
 const { isAxiosError } = require('axios');
+const activityEmitter = require('../lib/FbEventTracker');
 
 /**
  * Get profile by id
@@ -16,7 +17,9 @@ const getProfileById = async (profileId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Profile not found');
   }
   // console.log(profile.recommended_products)
-  profile.recommended_products = profile.recommended_products?.filter(recommendedProduct => recommendedProduct?.item_id?.is_active);
+  profile.recommended_products = profile.recommended_products?.filter(
+    (recommendedProduct) => recommendedProduct?.item_id?.is_active
+  );
   return profile;
 };
 
@@ -49,7 +52,7 @@ const getRecommendedProducts = async (payload) => {
  * @param {Object} profileBody
  * @returns {Promise<Profile>}
  */
-const createProfile = async (profileBody) => {
+const createProfile = async (profileBody, user) => {
   const profile_preferences = {
     gender: [profileBody.gender],
     age: [profileBody.age],
@@ -69,7 +72,7 @@ const createProfile = async (profileBody) => {
   const semi_hard_filters = [];
   if (profileBody.styles?.length) semi_hard_filters.push('style');
   if (profileBody.interests?.length) semi_hard_filters.push('interest');
-  
+
   const payload = {
     user_id: profileBody?.user_id,
     new_attributes: profileBody?.interests?.length ? preferences : [...preferences, 'spirituality'],
@@ -80,7 +83,13 @@ const createProfile = async (profileBody) => {
   };
   try {
     profileBody.recommended_products = await getRecommendedProducts(payload);
-    return await Profile.create(profileBody);
+    const profile = await Profile.create(profileBody);
+    try {
+      activityEmitter.emitProfileEvent(profile, user);
+    } catch (error) {
+      console.error(error);
+    }
+    return profile;
   } catch (err) {
     console.log('ERROR IN RECOMMENDATION RES ', err);
     throw new ApiError(httpStatus.BAD_REQUEST, 'Something went wrong!');
