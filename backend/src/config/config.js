@@ -23,6 +23,8 @@ const envVarsSchema = Joi.object()
     SMTP_USERNAME: Joi.string().description('username for email server'),
     SMTP_PASSWORD: Joi.string().description('password for email server'),
     EMAIL_FROM: Joi.string().description('the from field in the emails sent by the app'),
+    PIXEL_ID: Joi.string().description('Meta Pixel ID for event tracking'),
+    META_ACCESS_TOKEN: Joi.string().description('Meta Access Token for event tracking'),
   })
   .unknown();
 
@@ -61,4 +63,8 @@ module.exports = {
     },
     from: envVars.EMAIL_FROM,
   },
+  eventTracker: {
+    pixel_id: envVars.PIXEL_ID,
+    meta_access_token: envVars.META_ACCESS_TOKEN
+  }
 };
