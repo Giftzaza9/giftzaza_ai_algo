@@ -4,7 +4,7 @@ const { userActivityService } = require('../services');
 
 const createUserActivity = catchAsync(async (req, res) => {
   req.body.user_id = req.user._id;
-  const activity = await userActivityService.createUserActivity(req.body);
+  const activity = await userActivityService.createUserActivity(req.body, req.user);
   res.status(httpStatus.OK).send(activity);
 });
 

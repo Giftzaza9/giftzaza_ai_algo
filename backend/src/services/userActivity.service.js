@@ -1,18 +1,32 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const userActivity = require('../models/useractivity.model');
+const activityEmitter = require('../lib/FbEventTracker');
+const { productService } = require('.');
 
-const createUserActivity = async (body) => {
+const createUserActivity = async (body, user) => {
   const { product_id, activity, profile_id, user_id } = body;
   try {
     const activityExists = await userActivity.findOne({ product_id, user_id, activity, profile_id });
     if (activityExists) return activityExists;
-    return await userActivity.create({
+
+    const newUserActivity = await userActivity.create({
       product_id,
       user_id,
       activity,
       profile_id,
     });
+
+    if (['like', 'dislike', 'buy'].includes(activity)) {
+      try {
+        const product = await productService.getProductById(product_id);
+        activityEmitter.emitCardEvent(newUserActivity, user, product);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    return newUserActivity;
   } catch (error) {
     throw new ApiError(httpStatus.BAD_REQUEST, error?.message || 'Something went wrong!');
   }
