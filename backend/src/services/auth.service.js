@@ -4,8 +4,9 @@ const userService = require('./user.service');
 const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
-const User = require("../models/user.model");
+const User = require('../models/user.model');
 const { v4: uuidv4 } = require('uuid');
+const activityEmitter = require('../lib/FbEventTracker');
 
 /**
  * Login with username and password
@@ -23,26 +24,30 @@ const loginUserWithEmailAndPassword = async (email, password) => {
 
 const loginUserWithGoogle = async (token) => {
   const userData = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`);
-  let userInfo = await userData.json()
-  console.log("USER INFO ",userInfo);
-  const user = await User.findOne({email: userInfo?.email})
-  if(!user) {
-    return await User.create({...userInfo, profile_picture: userInfo?.picture , password: uuidv4()});
+  let userInfo = await userData.json();
+  console.log('USER INFO ', userInfo);
+  let user = await User.findOne({ email: userInfo?.email });
+  if (!user) {
+    user = await User.create({ ...userInfo, profile_picture: userInfo?.picture, password: uuidv4() });
+    try {
+      activityEmitter.emitSignupEvent(user);
+    } catch (error) {
+      console.error(error);
+    }
   }
+
   return user;
-}
+};
 
 const loginUserWithFacebook = async (name, email) => {
-  const user = await User.findOne({email: email})
-  console.log("USER  ", user, name, email)
-  if(!user) {
-    console.log("IN IF ");
-    return await User.create({name, email, password: uuidv4()});
+  const user = await User.findOne({ email: email });
+  console.log('USER  ', user, name, email);
+  if (!user) {
+    console.log('IN IF ');
+    return await User.create({ name, email, password: uuidv4() });
   }
-  return user;  
-}
-
-
+  return user;
+};
 
 /**
  * Logout
