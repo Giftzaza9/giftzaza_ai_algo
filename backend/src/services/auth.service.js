@@ -22,7 +22,7 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   return user;
 };
 
-const loginUserWithGoogle = async (token) => {
+const loginUserWithGoogle = async (token, ip) => {
   const userData = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`);
   let userInfo = await userData.json();
   console.log('USER INFO ', userInfo);
@@ -30,7 +30,7 @@ const loginUserWithGoogle = async (token) => {
   if (!user) {
     user = await User.create({ ...userInfo, profile_picture: userInfo?.picture, password: uuidv4() });
     try {
-      activityEmitter.emitSignupEvent(user);
+      activityEmitter.emitSignupEvent(user, ip);
     } catch (error) {
       console.error(error);
     }
