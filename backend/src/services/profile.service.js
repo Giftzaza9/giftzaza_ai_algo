@@ -52,7 +52,7 @@ const getRecommendedProducts = async (payload) => {
  * @param {Object} profileBody
  * @returns {Promise<Profile>}
  */
-const createProfile = async (profileBody, user) => {
+const createProfile = async (profileBody, user, ip) => {
   const profile_preferences = {
     gender: [profileBody.gender],
     age: [profileBody.age],
@@ -85,7 +85,7 @@ const createProfile = async (profileBody, user) => {
     profileBody.recommended_products = await getRecommendedProducts(payload);
     const profile = await Profile.create(profileBody);
     try {
-      activityEmitter.emitProfileEvent(profile, user);
+      activityEmitter.emitProfileEvent(profile, user, ip);
     } catch (error) {
       console.error(error);
     }

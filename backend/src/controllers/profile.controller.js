@@ -22,7 +22,7 @@ const getProfiles = catchAsync(async (req, res) => {
 
 const createProfile = catchAsync(async (req, res) => {
   req.body.user_id = req.user._id;
-  const profile = await profileService.createProfile(req.body, req.user);
+  const profile = await profileService.createProfile(req.body, req.user, req.ip);
   res.status(httpStatus.CREATED).send(profile);
 });
 

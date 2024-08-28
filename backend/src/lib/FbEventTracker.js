@@ -15,11 +15,12 @@ function hash(data) {
   return require('crypto').createHash('sha256').update(data).digest('hex');
 }
 
-function createUserData(user) {
+function createUserData(user, ip) {
   return new UserData()
-    .setEmail(hash(user.email))
-    .setFirstName(hash(user.name))
-    .setExternalId(hash(user._id?.toString() || user.id));
+    .setEmail(user.email)
+    .setFirstName(user.name)
+    .setClientIpAddress(ip)
+    .setAppUserId(user._id?.toString() || user.id);
 }
 
 function createProfileData(profile) {
@@ -30,6 +31,7 @@ function createProductData(product) {
   return new Content()
     .setId(product._id?.toString() || product.id)
     .setTitle(product.title)
+    .setItemPrice(product.price)
     .setBrand(product.link);
 }
 
@@ -39,12 +41,12 @@ function emitEvent(serverEvent) {
 
   eventRequest
     .execute()
-    // .then((response) => console.log('Event sent:', response))
+    .then((response) => console.log('Event sent to Meta'))
     .catch((error) => console.error('Error sending event to Meta:', error));
 }
 
-const emitSignupEvent = (user) => {
-  const userData = createUserData(user);
+const emitSignupEvent = (user, ip) => {
+  const userData = createUserData(user, ip);
 
   const serverEvent = new ServerEvent()
     .setEventName('SIGNUP')
@@ -55,8 +57,8 @@ const emitSignupEvent = (user) => {
   emitEvent(serverEvent);
 };
 
-const emitProfileEvent = (profile, user) => {
-  const userData = createUserData(user);
+const emitProfileEvent = (profile, user, ip) => {
+  const userData = createUserData(user, ip);
   const profileData = createProfileData(profile);
 
   const serverEvent = new ServerEvent()
@@ -69,9 +71,9 @@ const emitProfileEvent = (profile, user) => {
   emitEvent(serverEvent);
 };
 
-const emitCardEvent = async (userActivity, user, product) => {
+const emitCardEvent = async (userActivity, user, product, ip) => {
   const eventName = userActivity.activity?.toUpperCase();
-  const userData = createUserData(user);
+  const userData = createUserData(user, ip);
   const productData = createProductData(product);
 
   const serverEvent = new ServerEvent()
