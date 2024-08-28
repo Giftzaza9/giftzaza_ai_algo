@@ -17,10 +17,8 @@ const login = catchAsync(async (req, res) => {
 
 const googleLogin = catchAsync(async (req, res) => {
   const { token } = req.body;
-  const user = await authService.loginUserWithGoogle(token);
-  console.log("CONTROLLER ", user);
+  const user = await authService.loginUserWithGoogle(token, req.ip);
   const tokens = await tokenService.generateAuthTokens(user);
-  console.log("CONTROLLER ", tokens);
   res.send({ user, tokens });
 });
 
