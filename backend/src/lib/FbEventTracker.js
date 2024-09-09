@@ -9,12 +9,6 @@ const access_token = config.eventTracker.meta_access_token;
 const pixel_id = config.eventTracker.pixel_id;
 const api = bizSdk.FacebookAdsApi.init(access_token);
 
-let current_timestamp = Math.floor(new Date() / 1000);
-
-function hash(data) {
-  return require('crypto').createHash('sha256').update(data).digest('hex');
-}
-
 function createUserData(user, ip) {
   return new UserData()
     .setEmail(user.email)
@@ -50,9 +44,9 @@ const emitSignupEvent = (user, ip) => {
 
   const serverEvent = new ServerEvent()
     .setEventName('SIGNUP')
-    .setEventTime(current_timestamp)
+    .setEventTime(Math.floor(new Date() / 1000))
     .setUserData(userData)
-    .setActionSource('website');
+    .setActionSource('server');
 
   emitEvent(serverEvent);
 };
@@ -63,10 +57,10 @@ const emitProfileEvent = (profile, user, ip) => {
 
   const serverEvent = new ServerEvent()
     .setEventName('NEW_PROFILE')
-    .setEventTime(current_timestamp)
+    .setEventTime(Math.floor(new Date() / 1000))
     .setUserData(userData)
     .setCustomData(profileData)
-    .setActionSource('website');
+    .setActionSource('server');
 
   emitEvent(serverEvent);
 };
@@ -78,10 +72,10 @@ const emitCardEvent = async (userActivity, user, product, ip) => {
 
   const serverEvent = new ServerEvent()
     .setEventName(eventName)
-    .setEventTime(current_timestamp)
+    .setEventTime(Math.floor(new Date() / 1000))
     .setUserData(userData)
     .setCustomData(productData)
-    .setActionSource('website');
+    .setActionSource('server');
 
   emitEvent(serverEvent);
 };
